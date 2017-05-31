@@ -10,7 +10,71 @@
 		<script src="bootstrap/js/bootstrap.min.js"></script>
 		
 		<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		
+		<style>
+			text {
+			  font: bold 48px monospace;
+			}
+
+			.enter {
+			  fill: green;
+			}
+
+			.update {
+			  fill: #333;
+			}
+		</style>
 	</head>
 	<body>
+		<svg width="960" height="500"></svg>
+		<div id="app-typem">
+			<p>Graphic above shows {{show}}</>
+		</div>
+		
+		<script type="text/javascript">
+			var svg = d3.select("svg"),
+				width = +svg.attr("width"),
+				height = +svg.attr("height"),
+
+			typem = new Vue({
+				el: '#app-typem',
+				data: {
+					alphabet: "abcdefghijklmnopqrstuvwxyz".split(""),
+					show: [],
+					g: ''
+				},
+				mounted: function() {
+					this.g = d3.select("svg").append("g").attr("transform", "translate(32," + (height / 2) + ")");
+					this.random_shuffle();
+				},
+				methods: {
+					update: function(data) {
+						var text = this.g.selectAll("text")
+							.data(data);
+
+						text.attr("class", "update");
+
+						text.enter().append("text")
+							.attr("class", "enter")
+							.attr("x", function(d, i) { return i * 32; })
+							.attr("dy", ".35em")
+							.merge(text)
+							.text(function(d) { return d; });
+						
+						text.exit().remove();
+					},
+					random_shuffle: function() {
+						this.show = d3.shuffle(this.alphabet).slice(0, Math.floor(Math.random() * 26)).sort();
+					}
+				},
+				watch: {
+					show: function(val) { this.update(val) }
+				}
+			});
+			
+			$(function() {
+				d3.interval(function() { typem.random_shuffle(); }, 1500);
+			});
+		</script>
 	</body>
 </html>
