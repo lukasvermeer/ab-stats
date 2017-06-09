@@ -17,7 +17,7 @@
 	</head>
 	<body>	
 		<div id="app-typem" class="container">
-			<svg width="1100" height="500"></svg>
+			<svg width="1140" height="500"></svg>
 			<p>
 				<table class="table table-hover table-condensed">
 					<tr v-for="row in reversed_tail_show">
@@ -32,8 +32,9 @@
 				BINS = 50;
 
 			var svg = d3.select("svg"),
-				width = +svg.attr("width"),
-				height = +svg.attr("height");
+				margin = {top: 10, right: 20, bottom: 20, left: 20},
+				width = +svg.attr("width") - margin.left - margin.right,
+				height = +svg.attr("height") - margin.top - margin.bottom;
 
 			typem = new Vue({
 				el: '#app-typem',
@@ -47,7 +48,7 @@
 					}
 				},
 				mounted: function() {
-					this.g = d3.select("svg").append("g").attr("transform", "translate(0,0)");
+					this.g = d3.select("svg").append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 				},
 				methods: {
 					update: function(data) {
@@ -68,6 +69,12 @@
 								.transition().duration(SPEED)
 									.attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
 									.attr("height", function(d) { return height - y(d.length); });
+						
+						this.g.selectAll(".axis").remove();
+						this.g.append("g")
+							.attr("class", "axis axis--x")
+							.attr("transform", "translate(0," + height + ")")
+							.call(d3.axisBottom(x));
 					},
 					add_one: function() {
 						if (this.show.length > 1000000) return;
