@@ -18,6 +18,22 @@
 	<body>	
 		<div id="app-typem" class="container">
 			<svg width="1140" height="500"></svg>
+			<p></p>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="jumbotron">
+						<p class="text-center">samples</p>
+						<h1 class="text-center">{{show.length.toLocaleString('nl')}}</h1>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="jumbotron">
+						<p class="text-center">average</p>
+						<h1 class="text-center">{{average.toFixed(5)}}</h1>
+					</div>
+				</div>
+
+			</div>
 			<p>
 				<table class="table table-hover table-condensed">
 					<tr v-for="row in reversed_tail_show">
@@ -45,10 +61,16 @@
 				computed: {
 					reversed_tail_show: function() {
 						return this.show.slice(Math.max(0,this.show.length-10)).reverse();
+					},
+					average: function() {
+						if (this.show.length == 0) return NaN;
+						var sum = this.show.reduce(function(a, b) { return a + b; });
+						return sum / this.show.length;
 					}
 				},
 				mounted: function() {
 					this.g = d3.select("svg").append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+					this.update(this.show);
 				},
 				methods: {
 					update: function(data) {
@@ -77,8 +99,8 @@
 							.call(d3.axisBottom(x));
 					},
 					add_one: function() {
-						if (this.show.length > 1000000) return;
-						for (var j = 0; j < 10**(""+this.show.length).length/10; ++j) {
+						if (this.show.length >= 1000000) return;
+						for (var j = 0; j < 10**(""+(this.show.length-1)).length/10; ++j) {
 							this.show.push(this.rbinom(BINS, 0.5));
 						}
 					},
