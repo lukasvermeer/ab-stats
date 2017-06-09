@@ -15,14 +15,20 @@
 			.bar { fill: steelblue; }
 		</style>
 	</head>
-	<body>
-		<svg width="900" height="500"></svg>
-		<div id="app-typem">
-			<p>Graphic above shows {{show}}</p>
+	<body>	
+		<div id="app-typem" class="container">
+			<svg width="1100" height="500"></svg>
+			<p>
+				<table class="table table-hover table-condensed">
+					<tr v-for="row in reversed_tail_show">
+						<td>{{row}}</td>
+					</tr>
+				</table>
+			</p>
 		</div>
 		
 		<script type="text/javascript">
-			var SPEED = 10,
+			var SPEED = 500,
 				BINS = 50;
 
 			var svg = d3.select("svg"),
@@ -34,6 +40,11 @@
 				data: {
 					show: [],
 					g: ''
+				},
+				computed: {
+					reversed_tail_show: function() {
+						return this.show.slice(Math.max(0,this.show.length-10)).reverse();
+					}
 				},
 				mounted: function() {
 					this.g = d3.select("svg").append("g").attr("transform", "translate(0,0)");
@@ -59,9 +70,15 @@
 									.attr("height", function(d) { return height - y(d.length); });
 					},
 					add_one: function() {
+						if (this.show.length > 1000000) return;
+						for (var j = 0; j < 10**(""+this.show.length).length/10; ++j) {
+							this.show.push(this.rbinom(BINS, 0.5));
+						}
+					},
+					rbinom: function(n, p) {
 						var b = 0;
-						for (var i = 0; i < BINS; ++i) { if (Math.random() > 0.5) ++b; }
-						this.show.push(b);
+						for (var i = 0; i < n; ++i) { if (Math.random() > p) ++b; };
+						return b;
 					}
 				},
 				watch: {
