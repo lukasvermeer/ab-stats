@@ -12,59 +12,56 @@
 		<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
 		
 		<style>
-			text {
-			  font: bold 48px monospace;
-			}
-
-			.enter {
-			  fill: green;
-			}
-
-			.update {
-			  fill: #333;
-			}
+			.bar { fill: steelblue; }
 		</style>
 	</head>
 	<body>
-		<svg width="960" height="500"></svg>
+		<svg width="900" height="500"></svg>
 		<div id="app-typem">
-			<p>Graphic above shows {{show}}</>
+			<p>Graphic above shows {{show}}</p>
 		</div>
 		
 		<script type="text/javascript">
+			var SPEED = 10,
+				BINS = 50;
+
 			var svg = d3.select("svg"),
 				width = +svg.attr("width"),
-				height = +svg.attr("height"),
+				height = +svg.attr("height");
 
 			typem = new Vue({
 				el: '#app-typem',
 				data: {
-					alphabet: "abcdefghijklmnopqrstuvwxyz".split(""),
 					show: [],
 					g: ''
 				},
 				mounted: function() {
-					this.g = d3.select("svg").append("g").attr("transform", "translate(32," + (height / 2) + ")");
-					this.random_shuffle();
+					this.g = d3.select("svg").append("g").attr("transform", "translate(0,0)");
 				},
 				methods: {
 					update: function(data) {
-						var text = this.g.selectAll("text")
-							.data(data);
-
-						text.attr("class", "update");
-
-						text.enter().append("text")
-							.attr("class", "enter")
-							.attr("x", function(d, i) { return i * 32; })
-							.attr("dy", ".35em")
-							.merge(text)
-							.text(function(d) { return d; });
-						
-						text.exit().remove();
+						var x = d3.scaleLinear().domain([1,BINS+1]).rangeRound([0, width]);
+						var bins = d3.histogram().domain(x.domain()).thresholds(x.ticks(BINS))(data);
+						var y = d3.scaleLinear().domain([0, d3.max(bins, function(d) { return d.length; })]).range([height, 0]);
+    
+						var gr = this.g.selectAll(".bar").data(bins);
+							
+						var bar = gr
+							.enter().append("rect")
+								.attr("class", "bar")
+								.attr("x", 1)
+								.attr("width", x(bins[0].x1) - x(bins[0].x0) - 1)
+								.attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(0) + ")"; })
+								.attr("height", 0)
+							.merge(gr)
+								.transition().duration(SPEED)
+									.attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
+									.attr("height", function(d) { return height - y(d.length); });
 					},
-					random_shuffle: function() {
-						this.show = d3.shuffle(this.alphabet).slice(0, Math.floor(Math.random() * 26)).sort();
+					add_one: function() {
+						var b = 0;
+						for (var i = 0; i < BINS; ++i) { if (Math.random() > 0.5) ++b; }
+						this.show.push(b);
 					}
 				},
 				watch: {
@@ -73,7 +70,7 @@
 			});
 			
 			$(function() {
-				d3.interval(function() { typem.random_shuffle(); }, 1500);
+				d3.interval(function() { typem.add_one(); }, SPEED*2);
 			});
 		</script>
 	</body>
