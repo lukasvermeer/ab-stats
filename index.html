@@ -72,10 +72,13 @@
 					add_one: function() {
 						if (this.show.length > 1000000) return;
 						for (var j = 0; j < 10**(""+this.show.length).length/10; ++j) {
-							var b = 0;
-							for (var i = 0; i < BINS; ++i) { if (Math.random() > 0.5) ++b; }
-							this.show.push(b);
+							this.show.push(this.rbinom(BINS, 0.5));
 						}
+					},
+					rbinom: function(n, p) {
+						var b = 0;
+						for (var i = 0; i < n; ++i) { if (Math.random() > p) ++b; };
+						return b;
 					}
 				},
 				watch: {
