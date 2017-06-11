@@ -9,39 +9,59 @@
 		<script type="text/javascript" src="vue/vue.js"></script>
 		<script src="bootstrap/js/bootstrap.min.js"></script>
 		
-		<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		
-		<style>
-			.bar { fill: steelblue; }
-		</style>
+		<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">		
 	</head>
 	<body>	
 		<div id="app-typem" class="container">
-			<h1 class="text-center">Flip <code>{{bins}}</code> coins, count number of heads, plot distribution, repeat.</h1>
+			<h1 class="text-center">Observed effects with n = {{parameters.n}}, base rate {{parameters.cr}}, and effect size {{parameters.lift}}</h1>
 			<svg width="1140" height="500"></svg>
 			<p></p>
 			<div class="row">
 				<div class="col-md-6">
 					<div class="jumbotron">
 						<p class="text-center">number of trials simulated</p>
-						<h1 class="text-center">{{show.length.toLocaleString('nl')}}</h1>
+						<h1 class="text-center">{{trials.toLocaleString('nl')}}</h1>
 					</div>
 				</div>
 				<div class="col-md-6">
 					<div class="jumbotron">
-						<p class="text-center">average number of heads per trial</p>
-						<h1 class="text-center">{{average.toFixed(5)}}</h1>
+						<p class="text-center">observed power</p>
+						<h1 class="text-center">{{power.toLocaleString('nl', {style: 'percent'})}}</h1>
 					</div>
 				</div>
-
 			</div>
-			<p class="text-center">
-				According to the <a href="https://en.wikipedia.org/wiki/Central_limit_theorem">Central Limit Theorem</a>, the result should tend toward a normal distribution, and the mean should converge on <code>{{bins/2}}</code>.
-			</p>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="jumbotron">
+						<p class="text-center">average observed effect per trial</p>
+						<h1 class="text-center">{{averages.total.toFixed(5)}}</h1>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="jumbotron">
+						<p class="text-center">average observed effect per significant trial</p>
+						<h1 class="text-center">{{averages.significant.toFixed(5)}}</h1>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="jumbotron">
+						<p class="text-center">type-M error</p>
+						<h1 class="text-center">{{type_m_error.toLocaleString('nl')}}</h1>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="jumbotron">
+						<p class="text-center">type-S error</p>
+						<h1 class="text-center">{{type_s_error.toLocaleString('nl', {style: 'percent'})}}</h1>
+					</div>
+				</div>
+			</div>
 		</div>
 		
 		<script type="text/javascript">
-			var SPEED = 500;
+			var SPEED = 100;
 
 			var svg = d3.select("svg"),
 				margin = {top: 10, right: 20, bottom: 20, left: 20},
@@ -51,43 +71,72 @@
 			typem = new Vue({
 				el: '#app-typem',
 				data: {
-					bins: 50,
-					show: [],
+					bins: 200,
+					parameters: { n: 1000, cr: 0.1, lift: 0.2 },
+					results: { significant: [], insignificant: [], significant_opposite: [] },
 					g: ''
 				},
 				computed: {
-					reversed_tail_show: function() {
-						return this.show.slice(Math.max(0,this.show.length-10)).reverse();
+					averages: function() {
+						var a = {}, total_sum = 0;
+						for (var k in this.results) {
+							if (this.results[k].length == 0) { 
+								a[k] = NaN;
+							} else {
+								var sum = this.results[k].reduce(function(a, b) { return a + b; });
+								a[k] = sum / this.results[k].length;
+								total_sum += sum;
+							}
+						}
+						a.total = total_sum / this.trials;
+						return a;
 					},
-					average: function() {
-						if (this.show.length == 0) return NaN;
-						var sum = this.show.reduce(function(a, b) { return a + b; });
-						return sum / this.show.length;
+					type_m_error: function() {
+						return ((this.averages.significant * this.results.significant.length) +
+								(Math.abs(this.averages.significant_opposite||0) * this.results.significant_opposite.length))
+								/ (this.results.significant.length + this.results.significant_opposite.length) / this.parameters.lift;
+					},
+					type_s_error: function() {
+						return this.results.significant_opposite.length / (this.results.significant.length + this.results.significant_opposite.length);
+					},
+					trials: function() {
+						return this.results.significant.length + this.results.significant_opposite.length + this.results.insignificant.length;
+					},
+					power: function() {
+						return (this.results.significant.length + this.results.significant_opposite.length) / this.trials;
 					}
 				},
 				mounted: function() {
 					this.g = d3.select("svg").append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-					this.update(this.show);
+					this.update(this.results);
 				},
 				methods: {
 					update: function(data) {
-						var x = d3.scaleLinear().domain([1,this.bins+1]).rangeRound([0, width]);
-						var b = d3.histogram().domain(x.domain()).thresholds(x.ticks(this.bins))(data);
-						var y = d3.scaleLinear().domain([0, d3.max(b, function(d) { return d.length; })]).range([height, 0]);
-    
-						var gr = this.g.selectAll(".bar").data(b);
-							
-						var bar = gr
-							.enter().append("rect")
-								.attr("class", "bar")
+						var x = d3.scaleLinear().domain([-0.8,1.2]).rangeRound([0, width]);
+						var histogram = d3.histogram().domain(x.domain()).thresholds(x.ticks(this.bins));
+						var b1 = histogram(this.results.significant);
+						var b2 = histogram(this.results.insignificant);
+						var b3 = histogram(this.results.significant_opposite);
+						var b = d3.stack().keys(d3.range(3))(d3.transpose([b1.map(function(d) {return d.length}),b2.map(function(d) {return d.length}),b3.map(function(d) {return d.length})]));
+						var y = d3.scaleLinear().domain([0, d3.max(b[1], function(d) { return d[1]; })]).range([height, 0]);
+						var color = d3.scaleOrdinal().domain(d3.range(3)).range(d3.schemeCategory20);
+
+						var series = this.g.selectAll(".series").data(b);						
+						series.enter().append("g")
+								.attr("class", "series")
+								.attr("fill", function(d, i) { return color(i); })
+							.merge(series);
+
+						var rect = series.selectAll("rect").data(function(d) { return d; });
+						rect.enter().append("rect")
 								.attr("x", 1)
-								.attr("width", x(b[0].x1) - x(b[0].x0) - 1)
-								.attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(0) + ")"; })
+								.attr("width", x(b1[0].x1) - x(b1[0].x0))
+								.attr("transform", function(d, i) { return "translate(" + x(b1[i].x0) + "," + y(d[0]) + ")"; })
 								.attr("height", 0)
-							.merge(gr)
+							.merge(rect)
 								.transition().duration(SPEED)
-									.attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
-									.attr("height", function(d) { return height - y(d.length); });
+									.attr("transform", function(d, i) { return "translate(" + x(b1[i].x0) + "," + y(d[1]) + ")"; })
+									.attr("height", function(d) { return height - y(d[1]-d[0]); });
 						
 						this.g.selectAll(".axis").remove();
 						this.g.append("g")
@@ -96,25 +145,86 @@
 							.call(d3.axisBottom(x));
 					},
 					add_one: function() {
-						if (this.show.length >= 1000000) return;
-						for (var j = 0; j < 10**(""+(this.show.length-1)).length/10; ++j) {
-							this.show.push(this.rbinom(this.bins, 0.5));
+						var n = this.trials;
+						if (n >= 1000000) return;
+						for (var j = 0; j < Math.min(1000,10**(""+(n)).length/10); ++j) {
+							base_n = this.rbinom(this.parameters.n, 0.5);
+							var_n = this.parameters.n - base_n;
+							
+							base_c = this.rbinom(base_n, this.parameters.cr);
+							var_c = this.rbinom(var_n, (this.parameters.cr * (1+this.parameters.lift)));
+							
+							effect = (var_c/var_n) / (base_c/base_n) - 1;
+							gval = calculate_g_test([[base_n - base_c, base_c], [var_n - var_c, var_c]]);
+
+							if (gval >= 2.7055) {
+								if (effect > 0) {
+									this.results.significant.push(effect);
+								} else {
+									this.results.significant_opposite.push(effect);
+								}
+							} else {
+								this.results.insignificant.push(effect);
+							}
 						}
 					},
 					rbinom: function(n, p) {
 						var b = 0;
-						for (var i = 0; i < n; ++i) { if (Math.random() > p) ++b; };
+						for (var i = 0; i < n; ++i) { if (Math.random() < p) ++b; };
 						return b;
 					}
 				},
 				watch: {
-					show: function(val) { this.update(val) }
+					trials: function(val) { this.update(val) }
 				}
 			});
 			
 			$(function() {
 				d3.interval(function() { typem.add_one(); }, SPEED*2);
 			});
+			
+			// This takes an array of arrays of any size, and calculates
+			// the raw g-test value.  It assumes a square matrix of arguments.
+			function calculate_g_test (data) {
+				var rows = data.length;
+				var columns = data[0].length;
+
+				// Initialize our subtotals
+				var row_totals = [];
+				for (var i = 0; i < rows; i++) {
+					row_totals[i] = 0;
+				}
+
+				var column_totals = [];
+				for (var j = 0; j < columns; j++) {
+					column_totals[j] = 0;
+				}
+
+				var total = 0;
+
+				// First we calculate the totals for the row and the column
+				for (var i = 0; i < rows; i++) {
+					for (var j = 0; j < columns; j++) {
+						var entry = data[i][j] - 0;  // - 0 ensures numeric
+						row_totals[i]    += entry;
+						column_totals[j] += entry;
+						total            += entry;
+					}
+				}
+
+				// Now we calculate the g-test contribution from each entry.
+				var g_test = 0;;
+				for (var i = 0; i < rows; i++) {
+					for (var j = 0; j < columns; j++) {
+						var expected = row_totals[i] * column_totals[j] / total;
+						var seen     = data[i][j];
+
+						g_test      += 2 * seen * Math.log( seen / expected );
+					}
+				}
+
+				return g_test;
+			};
 		</script>
 	</body>
 </html>
