@@ -13,6 +13,26 @@
 	</head>
 	<body>	
 		<div id="app-typem" class="container">
+			<div class="modal" tabindex="-1" role="dialog" id="paramModal">
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h4 class="modal-title">Choose your power</h4>
+						</div>
+						<div class="modal-body">
+							<div class="row" v-for="(v,i) in parameter_sets">
+								<div class="col-md-9">
+									<input type="radio" id="one" :value="i" v-model="selected_parameter_set"> {{v.title}}
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" v-on:click="restart" data-dismiss="modal">Start</button>
+						</div>
+					</div><!-- /.modal-content -->
+				</div><!-- /.modal-dialog -->
+			</div>
+		
 			<h1 class="text-center">Observed effects with n = {{parameters.n}}, base rate {{parameters.cr}}, and effect size {{parameters.effect}}</h1>
 			<svg width="1140" height="500"></svg>
 			<p></p>
@@ -72,11 +92,19 @@
 				el: '#app-typem',
 				data: {
 					bins: 200,
-					parameters: { n: 1000, cr: 0.1, effect: 0.01 },
+					parameter_sets: [
+						{ n: 1000, cr: 0.1, effect: 0.001, bounds: [-0.099,0.101], title: 'Massively underpowered (10%)' },
+						{ n: 1000, cr: 0.1, effect: 0.052, bounds: [-0.04,0.144], title: 'Properly powered (80%)' },
+						{ n: 1000, cr: 0.1, effect: 0.1, bounds: [0,0.2], title: 'Massively overpowered (100%)' },
+						],
+					selected_parameter_set: 0,
 					results: { significant: [], insignificant: [], significant_opposite: [] },
 					g: ''
 				},
 				computed: {
+					parameters: function() {
+						return this.parameter_sets[this.selected_parameter_set];
+					},
 					averages: function() {
 						var a = {}, total_sum = 0;
 						for (var k in this.results) {
@@ -115,7 +143,7 @@
 				},
 				methods: {
 					update: function(data) {
-						var x = d3.scaleLinear().domain([-0.09,0.11]).rangeRound([0, width]);
+						var x = d3.scaleLinear().domain(this.parameters.bounds).rangeRound([0, width]);
 						var histogram = d3.histogram().domain(x.domain()).thresholds(x.ticks(this.bins));
 						var b1 = histogram(this.results.significant);
 						var b2 = histogram(this.results.insignificant);
@@ -175,6 +203,9 @@
 						var b = 0;
 						for (var i = 0; i < n; ++i) { if (Math.random() < p) ++b; };
 						return b;
+					},
+					restart: function() {
+						d3.interval(function() { typem.add_one(); }, SPEED);
 					}
 				},
 				watch: {
@@ -183,7 +214,7 @@
 			});
 			
 			$(function() {
-				d3.interval(function() { typem.add_one(); }, SPEED*2);
+				$("#paramModal").modal('show');
 			});
 			
 			// This takes an array of arrays of any size, and calculates
