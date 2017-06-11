@@ -13,7 +13,7 @@
 	</head>
 	<body>	
 		<div id="app-typem" class="container">
-			<h1 class="text-center">Observed effects with n = {{parameters.n}}, base rate {{parameters.cr}}, and effect size {{parameters.lift}}</h1>
+			<h1 class="text-center">Observed effects with n = {{parameters.n}}, base rate {{parameters.cr}}, and effect size {{parameters.effect}}</h1>
 			<svg width="1140" height="500"></svg>
 			<p></p>
 			<div class="row">
@@ -40,7 +40,7 @@
 				<div class="col-md-6">
 					<div class="jumbotron">
 						<p class="text-center">average observed effect per significant trial</p>
-						<h1 class="text-center">{{averages.significant.toFixed(5)}}</h1>
+						<h1 class="text-center">{{average_abs_effect.toFixed(5)}}</h1>
 					</div>
 				</div>
 			</div>
@@ -72,7 +72,7 @@
 				el: '#app-typem',
 				data: {
 					bins: 200,
-					parameters: { n: 1000, cr: 0.1, lift: 0.2 },
+					parameters: { n: 1000, cr: 0.1, effect: 0.01 },
 					results: { significant: [], insignificant: [], significant_opposite: [] },
 					g: ''
 				},
@@ -91,10 +91,13 @@
 						a.total = total_sum / this.trials;
 						return a;
 					},
-					type_m_error: function() {
-						return ((this.averages.significant * this.results.significant.length) +
+					average_abs_effect: function() {
+						return ((this.averages.significant * this.results.significant.length) + 
 								(Math.abs(this.averages.significant_opposite||0) * this.results.significant_opposite.length))
-								/ (this.results.significant.length + this.results.significant_opposite.length) / this.parameters.lift;
+								/ (this.results.significant.length + this.results.significant_opposite.length);
+					},
+					type_m_error: function() {
+						return this.average_abs_effect / this.parameters.effect;
 					},
 					type_s_error: function() {
 						return this.results.significant_opposite.length / (this.results.significant.length + this.results.significant_opposite.length);
@@ -112,7 +115,7 @@
 				},
 				methods: {
 					update: function(data) {
-						var x = d3.scaleLinear().domain([-0.8,1.2]).rangeRound([0, width]);
+						var x = d3.scaleLinear().domain([-0.09,0.11]).rangeRound([0, width]);
 						var histogram = d3.histogram().domain(x.domain()).thresholds(x.ticks(this.bins));
 						var b1 = histogram(this.results.significant);
 						var b2 = histogram(this.results.insignificant);
@@ -152,9 +155,9 @@
 							var_n = this.parameters.n - base_n;
 							
 							base_c = this.rbinom(base_n, this.parameters.cr);
-							var_c = this.rbinom(var_n, (this.parameters.cr * (1+this.parameters.lift)));
+							var_c = this.rbinom(var_n, (this.parameters.cr + this.parameters.effect));
 							
-							effect = (var_c/var_n) / (base_c/base_n) - 1;
+							effect = (var_c/var_n) - (base_c/base_n);
 							gval = calculate_g_test([[base_n - base_c, base_c], [var_n - var_c, var_c]]);
 
 							if (gval >= 2.7055) {
