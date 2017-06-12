@@ -2,7 +2,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="nl">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-		<title>Type-M</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Type-M and Type-S Simulator</title>
 
 		<script type="text/javascript" src="jquery/jquery-3.2.1.js"></script>
 		<script type="text/javascript" src="d3/d3.js"></script>
@@ -88,17 +89,22 @@
 				</div>
 			</div>
 		
-			<h1 class="text-center">{{parameters.title}} simulation scenario</h1>
-			<svg width="1140" height="500"></svg>
+			<h3 class="text-center">Type-M and Type-S Simulator</h3>
+			<div class="lead text-center">{{parameters.title}} scenario</div>
+			<div class="row">
+				<div class="col-md-12 col-xs-12">
+					<div class="chart-container"></div>
+				</div>
+			</div>
 			<p></p>
 			<div class="row">
-				<div class="col-md-6">
+				<div class="col-md-6 col-xs-12">
 					<div class="jumbotron">
 						<p class="text-center">number of trials simulated</p>
 						<h1 class="text-center">{{trials.toLocaleString('nl')}}</h1>
 					</div>
 				</div>
-				<div class="col-md-6">
+				<div class="col-md-6 col-xs-12">
 					<div class="jumbotron">
 						<p class="text-center">observed power</p>
 						<h1 class="text-center">{{power.toLocaleString('nl', {style: 'percent'})}}</h1>
@@ -106,13 +112,13 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="col-md-6">
+				<div class="col-md-6 col-xs-12">
 					<div class="jumbotron">
 						<p class="text-center">average observed effect per trial</p>
 						<h1 class="text-center">{{averages.total.toFixed(5)}}</h1>
 					</div>
 				</div>
-				<div class="col-md-6">
+				<div class="col-md-6 col-xs-12">
 					<div class="jumbotron">
 						<p class="text-center">average observed effect per significant trial</p>
 						<h1 class="text-center">{{average_abs_effect.toFixed(5)}}</h1>
@@ -120,13 +126,13 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="col-md-6">
+				<div class="col-md-6 col-xs-12">
 					<div class="jumbotron">
 						<p class="text-center">type-M error</p>
 						<h1 class="text-center">{{type_m_error.toLocaleString('nl')}}</h1>
 					</div>
 				</div>
-				<div class="col-md-6">
+				<div class="col-md-6 col-xs-12">
 					<div class="jumbotron">
 						<p class="text-center">type-S error</p>
 						<h1 class="text-center">{{type_s_error.toLocaleString('nl', {style: 'percent'})}}</h1>
@@ -137,11 +143,18 @@
 		
 		<script type="text/javascript">
 			var SPEED = 100;
+			
+			var w = 1140, h = 500;
 
-			var svg = d3.select("svg"),
-				margin = {top: 10, right: 20, bottom: 20, left: 20},
-				width = +svg.attr("width") - margin.left - margin.right,
-				height = +svg.attr("height") - margin.top - margin.bottom;
+			var svg = d3.select('.chart-container').append("svg")
+				.attr("width", '100%')
+				.attr("height", '100%')
+				.attr('viewBox','0 0 '+w+' '+h)
+				.attr('preserveAspectRatio','xMinYMin');
+				
+			var margin = {top: 10, right: 20, bottom: 20, left: 20},
+				width = +w - margin.left - margin.right,
+				height = +h - margin.top - margin.bottom;
 
 			typem = new Vue({
 				el: '#app-typem',
