@@ -9,7 +9,20 @@
 		<script type="text/javascript" src="vue/vue.js"></script>
 		<script src="bootstrap/js/bootstrap.min.js"></script>
 		
-		<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">		
+		<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		<style>
+			.alert-nope {
+				color: #767676;
+				background-color: #f0f0f0;
+				border-color: #e9e9e9;
+			}
+			.form-group-closer {
+				margin-bottom: 0px;
+			}
+			.form-group-closer .alert {
+				margin-bottom: 5px;
+			}
+		</style>
 	</head>
 	<body>	
 		<div id="app-typem" class="container">
@@ -17,23 +30,65 @@
 				<div class="modal-dialog modal-lg" role="document">
 					<div class="modal-content">
 						<div class="modal-header">
-							<h4 class="modal-title">Choose your power</h4>
+							<h4 class="modal-title">To start the simulation, please choose one of the following scenarios</h4>
 						</div>
 						<div class="modal-body">
-							<div class="row" v-for="(v,i) in parameter_sets">
-								<div class="col-md-9">
-									<input type="radio" id="one" :value="i" v-model="selected_parameter_set"> {{v.title}}
+							<p>This simulation, and the accompanying visualisation and explanations, are intended to illustrate the effects of statistical power on errors in estimations of effect size and direction. Please choose one of the following scenarios.</p>
+							<form>
+								<div class="form-group form-group-closer" v-for="(v,i) in parameter_sets">
+									<div :class="[ (i==selected_parameter_set) ? 'alert alert-success' : 'alert alert-nope']" v-on:click="selected_parameter_set = i">
+										<label><input type="radio" name="params" id="params" :value="i" v-model="selected_parameter_set">&nbsp;&nbsp;{{v.title}}</label> <var>n</var> = <var>{{v.n}}</var>, <var>base conversion rate</var> = <var>{{v.cr}}</var>, <var>effect of treatment</var> = <var>{{v.effect}}</var>, <var>power</var> = <var>{{v.power.toLocaleString('nl', {style: 'percent'})}}</var>
+										<p>{{v.description}}</p>
+										<p v-if="v.recommendation"><b>{{v.recommendation}}</b></p>
+									</div>
 								</div>
-							</div>
+							</form>
+							</p><small>For more details about the underlying concepts, and recommendations for experiment design calculations, please refer to <a href="http://www.stat.columbia.edu/~gelman/research/published/PPS551642_REV2.pdf" target="_blank">Beyond Power Calculations: Assessing Type S (Sign) and Type M (Magnitude) Errors</a> by Andrew Gelman and John Carlin.</small></p>
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-primary" v-on:click="restart" data-dismiss="modal">Start</button>
+							<button type="button" class="btn btn-success" v-on:click="restart" data-dismiss="modal">Start the simulation</button>
 						</div>
-					</div><!-- /.modal-content -->
-				</div><!-- /.modal-dialog -->
+					</div>
+				</div>
+			</div>
+			
+			<div class="modal" tabindex="-1" role="dialog" id="errorsModal">
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h4 class="modal-title"></h4>
+						</div>
+						<div class="modal-body">
+							<p>
+								Three concepts are central to this simulation. These will be explained using examples as the simulation unfolds.
+								<dl class="dl-horizontal">
+									<dt>Power</dt>
+									<dd>
+										The likelihood that a statistical test will detect a significant effect, assuming the effect actually exists.<br />
+										<em>e.g. How likely is it that we will obtain a significant result?</em>
+									</dd>
+									<dt>Type-M (Magnitude)</dt>
+									<dd>
+										The expectation of the absolute value of the estimate divided by the simulated effect size, if statistically significantly different from zero.<br />
+										<em>e.g. How wrong are we on average about the size of the effect?</em>
+									</dd>
+									<dt>Type-S (Sign)</dt>
+									<dd>
+										The probability that the estimate of the effect size has the incorrect sign, if it is statistically significantly different from zero.<br />
+										<em>e.g. How often are we wrong about the direction of a significant effect?</em>
+									</dd>
+								</dl>
+							</p>
+							</p><small>For more details about the underlying concepts, and recommendations for experiment design calculations, please refer to <a href="http://www.stat.columbia.edu/~gelman/research/published/PPS551642_REV2.pdf" target="_blank">Beyond Power Calculations: Assessing Type S (Sign) and Type M (Magnitude) Errors</a> by Andrew Gelman and John Carlin.</small></p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
 			</div>
 		
-			<h1 class="text-center">Observed effects with n = {{parameters.n}}, base rate {{parameters.cr}}, and effect size {{parameters.effect}}</h1>
+			<h1 class="text-center">{{parameters.title}} simulation scenario</h1>
 			<svg width="1140" height="500"></svg>
 			<p></p>
 			<div class="row">
@@ -93,9 +148,23 @@
 				data: {
 					bins: 200,
 					parameter_sets: [
-						{ n: 1000, cr: 0.1, effect: 0.001, bounds: [-0.099,0.101], title: 'Massively underpowered (10%)' },
-						{ n: 1000, cr: 0.1, effect: 0.052, bounds: [-0.04,0.144], title: 'Properly powered (80%)' },
-						{ n: 1000, cr: 0.1, effect: 0.1, bounds: [0,0.2], title: 'Massively overpowered (100%)' },
+						{ n: 1000, cr: 0.1, effect: 0.1, bounds: [0,0.2], power: 1,
+							title: 'Massively overpowered',
+							description: 'The simulated effect is so large compared to the sample size, it will be almost impossible to miss. This means power is effectively 100%. As a result, the type-M error will be very tiny, and the likelihood of making a type-S error will be negligible.',
+							recommendation: 'Try this one first to get an idea of what a good result should look like.'
+						},
+						{ n: 1000, cr: 0.1, effect: 0.052, bounds: [-0.04,0.144], power: 0.8,
+							title: 'Properly powered',
+							description: 'We have powered the test according to common practise, so that approximately 80% of all replications will detect a significant effect. As a result, the type-M error will be manageable, and the likelihood of making a type-S error will still be negligible.'
+						},
+						{ n: 1000, cr: 0.1, effect: 0.025, bounds: [-0.07,0.12], power: 0.35,
+							title: 'Somewhat underpowered',
+							description: 'We have somewhat underpowered the test, so that approximately 35% of all replications will detect a significant effect. As a result, the type-M error will be substantial, and the likelihood of making a type-S error will start to be noticeable.'
+						},
+						{ n: 1000, cr: 0.1, effect: 0.001, bounds: [-0.099,0.101], power: 0.1,
+							title: 'Massively underpowered',
+							description: 'The simulated effect is so tiny compared to the sample size, it will be almost impossible to detect. Power will be effectively only 10%. As a result, the type-M error will be ginormous, and the likelihood of making a type-S error will be substantial.'
+						},
 						],
 					selected_parameter_set: 0,
 					results: { significant: [], insignificant: [], significant_opposite: [] },
@@ -214,7 +283,7 @@
 			});
 			
 			$(function() {
-				$("#paramModal").modal('show');
+				$("#paramModal").modal({ backdrop: 'static', keyboard: false });
 			});
 			
 			// This takes an array of arrays of any size, and calculates
