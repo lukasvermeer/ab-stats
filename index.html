@@ -3,7 +3,7 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>Type-M and Type-S Simulator</title>
+		<title>AB Statistics Presentation</title>
 
 		<script type="text/javascript" src="jquery/jquery-3.2.1.js"></script>
 		<script type="text/javascript" src="d3/d3.js"></script>
@@ -24,122 +24,80 @@
 				margin-bottom: 5px;
 			}
 		</style>
-	</head>
-	<body>	
-		<div id="app-typem" class="container">
-			<div class="modal" tabindex="-1" role="dialog" id="paramModal">
-				<div class="modal-dialog modal-lg" role="document">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h4 class="modal-title">To start the simulation, please choose one of the following scenarios</h4>
-						</div>
-						<div class="modal-body">
-							<p>This simulation, and the accompanying visualisation and explanations, are intended to illustrate the effects of statistical power on errors in estimations of effect size and direction. Please choose one of the following scenarios.</p>
-							<form>
-								<div class="form-group form-group-closer" v-for="(v,i) in parameter_sets">
-									<div :class="[ (i==selected_parameter_set) ? 'alert alert-success' : 'alert alert-nope']" v-on:click="selected_parameter_set = i">
-										<label><input type="radio" name="params" id="params" :value="i" v-model="selected_parameter_set">&nbsp;&nbsp;{{v.title}}</label> <var>n</var> = <var>{{v.n}}</var>, <var>base conversion rate</var> = <var>{{v.cr}}</var>, <var>effect of treatment</var> = <var>{{v.effect}}</var>, <var>power</var> = <var>{{v.power.toLocaleString('nl', {style: 'percent'})}}</var>
-										<p>{{v.description}}</p>
-										<p v-if="v.recommendation"><b>{{v.recommendation}}</b></p>
-									</div>
-								</div>
-							</form>
-							</p><small>For more details about the underlying concepts, and recommendations for experiment design calculations, please refer to <a href="http://www.stat.columbia.edu/~gelman/research/published/PPS551642_REV2.pdf" target="_blank">Beyond Power Calculations: Assessing Type S (Sign) and Type M (Magnitude) Errors</a> by Andrew Gelman and John Carlin.</small></p>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-success" v-on:click="restart" data-dismiss="modal">Start the simulation</button>
-						</div>
-					</div>
-				</div>
-			</div>
-			
-			<div class="modal" tabindex="-1" role="dialog" id="errorsModal">
-				<div class="modal-dialog modal-lg" role="document">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h4 class="modal-title"></h4>
-						</div>
-						<div class="modal-body">
-							<p>
-								Three concepts are central to this simulation. These will be explained using examples as the simulation unfolds.
-								<dl class="dl-horizontal">
-									<dt>Power</dt>
-									<dd>
-										The likelihood that a statistical test will detect a significant effect, assuming the effect actually exists.<br />
-										<em>e.g. How likely is it that we will obtain a significant result?</em>
-									</dd>
-									<dt>Type-M (Magnitude)</dt>
-									<dd>
-										The expectation of the absolute value of the estimate divided by the simulated effect size, if statistically significantly different from zero.<br />
-										<em>e.g. How wrong are we on average about the size of the effect?</em>
-									</dd>
-									<dt>Type-S (Sign)</dt>
-									<dd>
-										The probability that the estimate of the effect size has the incorrect sign, if it is statistically significantly different from zero.<br />
-										<em>e.g. How often are we wrong about the direction of a significant effect?</em>
-									</dd>
-								</dl>
-							</p>
-							</p><small>For more details about the underlying concepts, and recommendations for experiment design calculations, please refer to <a href="http://www.stat.columbia.edu/~gelman/research/published/PPS551642_REV2.pdf" target="_blank">Beyond Power Calculations: Assessing Type S (Sign) and Type M (Magnitude) Errors</a> by Andrew Gelman and John Carlin.</small></p>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-						</div>
-					</div>
-				</div>
-			</div>
 		
-			<h3 class="text-center">Type-M and Type-S Simulator</h3>
-			<div class="lead text-center">{{parameters.title}} scenario</div>
-			<div class="row">
-				<div class="col-md-12 col-xs-12">
-					<div class="chart-container"></div>
-				</div>
-			</div>
-			<p></p>
-			<div class="row">
-				<div class="col-md-6 col-xs-12">
-					<div class="jumbotron">
-						<p class="text-center">number of trials simulated</p>
-						<h1 class="text-center">{{trials.toLocaleString('nl')}}</h1>
+		<link rel="stylesheet" href="reveal/css/reveal.css">
+		<link rel="stylesheet" href="reveal/css/theme/white.css">
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section data-markdown>
+						## Design of experiments
+
+						Statistical foundations for people who do not like math
+						(and let’s be honest, very few people really like math)
+						
+						Lukas Vermeer is Senior Product Owner for Experimentation at Booking.com
+				</section>
+				
+				<section>
+					<div id="app-typem" class="container">
+						<h2 class="text-center">
+							Expectation Simulation
+							<button type="button" class="btn btn-default" v-on:click="add_one">Run one experiment</button>
+							<button type="button" class="btn btn-default" v-on:click="restart">Repeat many experiments</button>
+						</h2>
+						<small>
+							Repeated simulation to show how the average treatment effect approximates the underlying parameter.
+						</small>
+						<div class="stretch chart-container"></div>
+						<p></p>
+						<div class="row">
+							<div class="col-md-6 col-xs-12">
+								<div class="jumbotron">
+									<p class="text-center">simulated effect</p>
+									<h1 class="text-center">{{this.parameters.effect.toFixed(5)}}</h1>
+								</div>
+							</div>
+							<div class="col-md-6 col-xs-12">
+								<div class="jumbotron">
+									<p class="text-center">average observed effect</p>
+									<h1 class="text-center">{{averages.total ? averages.total.toFixed(5) : '-'}}</h1>
+								</div>
+							</div>
+						</div>
 					</div>
-				</div>
-				<div class="col-md-6 col-xs-12">
-					<div class="jumbotron">
-						<p class="text-center">observed power</p>
-						<h1 class="text-center">{{power.toLocaleString('nl', {style: 'percent'})}}</h1>
-					</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-md-6 col-xs-12">
-					<div class="jumbotron">
-						<p class="text-center">average observed effect per trial</p>
-						<h1 class="text-center">{{averages.total.toFixed(5)}}</h1>
-					</div>
-				</div>
-				<div class="col-md-6 col-xs-12">
-					<div class="jumbotron">
-						<p class="text-center">average observed effect per significant trial</p>
-						<h1 class="text-center">{{average_abs_effect.toFixed(5)}}</h1>
-					</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-md-6 col-xs-12">
-					<div class="jumbotron">
-						<p class="text-center">type-M error</p>
-						<h1 class="text-center">{{type_m_error.toLocaleString('nl')}}</h1>
-					</div>
-				</div>
-				<div class="col-md-6 col-xs-12">
-					<div class="jumbotron">
-						<p class="text-center">type-S error</p>
-						<h1 class="text-center">{{type_s_error.toLocaleString('nl', {style: 'percent'})}}</h1>
-					</div>
-				</div>
+				</section>
 			</div>
 		</div>
+		
+		<script src="reveal/lib/js/head.min.js"></script>		
+		<script src="reveal/js/reveal.js"></script>
+		<script>
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+				width: 1140,
+				height: 960,
+				margin: 0.1,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'reveal/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'reveal/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'reveal/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'reveal/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'reveal/plugin/zoom-js/zoom.js', async: true },
+					{ src: 'reveal/plugin/notes/notes.js', async: true }
+				]
+			});
+		</script>
 		
 		<script type="text/javascript">
 			var SPEED = 100;
@@ -161,7 +119,7 @@
 				data: {
 					bins: 200,
 					parameter_sets: [
-						{ n: 1000, cr: 0.1, effect: 0.1, bounds: [0,0.2], power: 1,
+						{ n: 1000, cr: 0.1, effect: 0.1, bounds: [-0.2,0.2], power: 1,
 							title: 'Massively overpowered',
 							description: 'The simulated effect is so large compared to the sample size, it will be almost impossible to miss. This means power is effectively 100%. As a result, the type-M error will be very tiny, and the likelihood of making a type-S error will be negligible.',
 							recommendation: 'Try this one first to get an idea of what a good result should look like.'
@@ -270,7 +228,7 @@
 							effect = (var_c/var_n) - (base_c/base_n);
 							gval = calculate_g_test([[base_n - base_c, base_c], [var_n - var_c, var_c]]);
 
-							if (gval >= 2.7055) {
+							if (gval >= 3.841459) {
 								if (effect > 0) {
 									this.results.significant.push(effect);
 								} else {
