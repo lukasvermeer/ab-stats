@@ -29,122 +29,55 @@
 		<link rel="stylesheet" href="reveal/css/theme/white.css">
 	</head>
 	<body>
-		<div class="reveal">
-			<div class="slides">
-				<section data-markdown>
-						## Design of experiments
-
-						Statistical foundations for people who do not like math
-						(and let’s be honest, very few people really like math)
+		<script type="text/javascript">
+			var SPEED = 100;
 						
-						Lukas Vermeer is Senior Product Owner for Experimentation at Booking.com
-				</section>
-				
-				<section>
-					<div id="app-typem" class="container">
-						<h2 class="text-center">
-							Expectation Simulation
+			Vue.component('simulation', {
+				template: `
+					<div class="container">
+						<div class="stretch chart-container"></div>
+						<div class="text-center">
 							<button type="button" class="btn btn-default" v-on:click="add_one">Run one experiment</button>
 							<button type="button" class="btn btn-default" v-on:click="restart">Repeat many experiments</button>
-						</h2>
-						<small>
-							Repeated simulation to show how the average treatment effect approximates the underlying parameter.
-						</small>
-						<div class="stretch chart-container"></div>
-						<p></p>
+						</div>
 						<div class="row">
 							<div class="col-md-6 col-xs-12">
 								<div class="jumbotron">
 									<p class="text-center">simulated effect</p>
-									<h1 class="text-center">{{this.parameters.effect.toFixed(5)}}</h1>
+									<h1 class="text-center">{{this.effect}}</h1>
 								</div>
 							</div>
 							<div class="col-md-6 col-xs-12">
 								<div class="jumbotron">
 									<p class="text-center">average observed effect</p>
-									<h1 class="text-center">{{averages.total ? averages.total.toFixed(5) : '-'}}</h1>
+									<h1 class="text-center">{{averages.total ? averages.total.toFixed(5) : "-"}}</h1>
 								</div>
 							</div>
 						</div>
 					</div>
-				</section>
-			</div>
-		</div>
-		
-		<script src="reveal/lib/js/head.min.js"></script>		
-		<script src="reveal/js/reveal.js"></script>
-		<script>
-			// Full list of configuration options available at:
-			// https://github.com/hakimel/reveal.js#configuration
-			Reveal.initialize({
-				controls: true,
-				progress: true,
-				history: true,
-				center: true,
-				width: 1140,
-				height: 960,
-				margin: 0.1,
-
-				transition: 'slide', // none/fade/slide/convex/concave/zoom
-
-				// Optional reveal.js plugins
-				dependencies: [
-					{ src: 'reveal/lib/js/classList.js', condition: function() { return !document.body.classList; } },
-					{ src: 'reveal/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-					{ src: 'reveal/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-					{ src: 'reveal/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
-					{ src: 'reveal/plugin/zoom-js/zoom.js', async: true },
-					{ src: 'reveal/plugin/notes/notes.js', async: true }
-				]
-			});
-		</script>
-		
-		<script type="text/javascript">
-			var SPEED = 100;
-			
-			var w = 1140, h = 500;
-
-			var svg = d3.select('.chart-container').append("svg")
-				.attr("width", '100%')
-				.attr("height", '100%')
-				.attr('viewBox','0 0 '+w+' '+h)
-				.attr('preserveAspectRatio','xMinYMin');
-				
-			var margin = {top: 10, right: 20, bottom: 20, left: 20},
-				width = +w - margin.left - margin.right,
-				height = +h - margin.top - margin.bottom;
-
-			typem = new Vue({
-				el: '#app-typem',
-				data: {
-					bins: 200,
-					parameter_sets: [
-						{ n: 1000, cr: 0.1, effect: 0.1, bounds: [-0.2,0.2], power: 1,
-							title: 'Massively overpowered',
-							description: 'The simulated effect is so large compared to the sample size, it will be almost impossible to miss. This means power is effectively 100%. As a result, the type-M error will be very tiny, and the likelihood of making a type-S error will be negligible.',
-							recommendation: 'Try this one first to get an idea of what a good result should look like.'
-						},
-						{ n: 1000, cr: 0.1, effect: 0.052, bounds: [-0.04,0.144], power: 0.8,
-							title: 'Properly powered',
-							description: 'We have powered the test according to common practise, so that approximately 80% of all replications will detect a significant effect. As a result, the type-M error will be manageable, and the likelihood of making a type-S error will still be negligible.'
-						},
-						{ n: 1000, cr: 0.1, effect: 0.025, bounds: [-0.07,0.12], power: 0.35,
-							title: 'Somewhat underpowered',
-							description: 'We have somewhat underpowered the test, so that approximately 35% of all replications will detect a significant effect. As a result, the type-M error will be substantial, and the likelihood of making a type-S error will start to be noticeable.'
-						},
-						{ n: 1000, cr: 0.1, effect: 0.001, bounds: [-0.099,0.101], power: 0.1,
-							title: 'Massively underpowered',
-							description: 'The simulated effect is so tiny compared to the sample size, it will be almost impossible to detect. Power will be effectively only 10%. As a result, the type-M error will be ginormous, and the likelihood of making a type-S error will be substantial.'
-						},
-						],
-					selected_parameter_set: 0,
-					results: { significant: [], insignificant: [], significant_opposite: [] },
-					g: ''
+				`,
+				props: {
+					effect:  {
+						type: Number,
+						default: 0
+					},
+				},
+				data: function () {
+					return {
+						w: 1140,
+						h: 500,
+						margin: {top: 10, right: 20, bottom: 20, left: 20},
+						bins: 200,
+						n: 1000,
+						cr: 0.1,
+						bounds: [-0.2,0.2],
+						results: { significant: [], insignificant: [], significant_opposite: [] },
+						g: ''
+					}
 				},
 				computed: {
-					parameters: function() {
-						return this.parameter_sets[this.selected_parameter_set];
-					},
+					width: function() { return +this.w - this.margin.left - this.margin.right },
+					height: function() { return +this.h - this.margin.top - this.margin.bottom},
 					averages: function() {
 						var a = {}, total_sum = 0;
 						for (var k in this.results) {
@@ -165,7 +98,7 @@
 								/ (this.results.significant.length + this.results.significant_opposite.length);
 					},
 					type_m_error: function() {
-						return this.average_abs_effect / this.parameters.effect;
+						return this.average_abs_effect / this.effect;
 					},
 					type_s_error: function() {
 						return this.results.significant_opposite.length / (this.results.significant.length + this.results.significant_opposite.length);
@@ -177,19 +110,25 @@
 						return (this.results.significant.length + this.results.significant_opposite.length) / this.trials;
 					}
 				},
-				mounted: function() {
-					this.g = d3.select("svg").append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+				mounted: function() {	
+					var svg = d3.select(this.$el).select('.chart-container').append("svg")
+						.attr("width", '100%')
+						.attr("height", '100%')
+						.attr('viewBox','0 0 '+this.w+' '+this.h)
+						.attr('preserveAspectRatio','xMinYMin');
+
+					this.g = d3.select(this.$el).select("svg").append("g").attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 					this.update(this.results);
 				},
 				methods: {
 					update: function(data) {
-						var x = d3.scaleLinear().domain(this.parameters.bounds).rangeRound([0, width]);
+						var x = d3.scaleLinear().domain(this.bounds).rangeRound([0, this.width]);
 						var histogram = d3.histogram().domain(x.domain()).thresholds(x.ticks(this.bins));
 						var b1 = histogram(this.results.significant);
 						var b2 = histogram(this.results.insignificant);
 						var b3 = histogram(this.results.significant_opposite);
 						var b = d3.stack().keys(d3.range(3))(d3.transpose([b1.map(function(d) {return d.length}),b2.map(function(d) {return d.length}),b3.map(function(d) {return d.length})]));
-						var y = d3.scaleLinear().domain([0, d3.max(b[1], function(d) { return d[1]; })]).range([height, 0]);
+						var y = d3.scaleLinear().domain([0, d3.max(b[1], function(d) { return d[1]; })]).range([this.height, 0]);
 						var color = d3.scaleOrdinal().domain(d3.range(3)).range(d3.schemeCategory20);
 
 						var series = this.g.selectAll(".series").data(b);						
@@ -207,23 +146,23 @@
 							.merge(rect)
 								.transition().duration(SPEED)
 									.attr("transform", function(d, i) { return "translate(" + x(b1[i].x0) + "," + y(d[1]) + ")"; })
-									.attr("height", function(d) { return height - y(d[1]-d[0]); });
+									.attr("height", function(d) { return y(0) - y(d[1]-d[0]); });
 						
 						this.g.selectAll(".axis").remove();
 						this.g.append("g")
 							.attr("class", "axis axis--x")
-							.attr("transform", "translate(0," + height + ")")
+							.attr("transform", "translate(0," + this.height + ")")
 							.call(d3.axisBottom(x));
 					},
 					add_one: function() {
 						var n = this.trials;
 						if (n >= 1000000) return;
 						for (var j = 0; j < Math.min(1000,10**(""+(n)).length/10); ++j) {
-							base_n = this.rbinom(this.parameters.n, 0.5);
-							var_n = this.parameters.n - base_n;
+							base_n = this.rbinom(this.n, 0.5);
+							var_n = this.n - base_n;
 							
-							base_c = this.rbinom(base_n, this.parameters.cr);
-							var_c = this.rbinom(var_n, (this.parameters.cr + this.parameters.effect));
+							base_c = this.rbinom(base_n, this.cr);
+							var_c = this.rbinom(var_n, (this.cr + this.effect));
 							
 							effect = (var_c/var_n) - (base_c/base_n);
 							gval = calculate_g_test([[base_n - base_c, base_c], [var_n - var_c, var_c]]);
@@ -245,16 +184,12 @@
 						return b;
 					},
 					restart: function() {
-						d3.interval(function() { typem.add_one(); }, SPEED);
+						d3.interval(this.add_one, SPEED);
 					}
 				},
 				watch: {
 					trials: function(val) { this.update(val) }
 				}
-			});
-			
-			$(function() {
-				$("#paramModal").modal({ backdrop: 'static', keyboard: false });
 			});
 			
 			// This takes an array of arrays of any size, and calculates
@@ -299,6 +234,60 @@
 
 				return g_test;
 			};
+		</script>
+
+		<div class="reveal">
+			<div class="slides">
+				<section data-markdown>
+						## Design of experiments
+
+						Statistical foundations for people who do not like math
+						(and let’s be honest, very few people really like math)
+						
+						Lukas Vermeer is Senior Product Owner for Experimentation at Booking.com
+				</section>
+				
+				<section id="app-expectation">
+					<simulation v-bind:effect="0.1"></simulation>
+				</section>
+
+				<section id="app-type-i">
+					<simulation v-bind:effect="0.0"></simulation>
+				</section>
+			</div>
+		</div>
+		
+		<script src="reveal/lib/js/head.min.js"></script>		
+		<script src="reveal/js/reveal.js"></script>
+		<script>
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+				width: 1140,
+				height: 960,
+				margin: 0.1,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'reveal/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'reveal/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'reveal/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'reveal/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'reveal/plugin/zoom-js/zoom.js', async: true },
+					{ src: 'reveal/plugin/notes/notes.js', async: true }
+				]
+			});
+		</script>
+		
+		<script type="text/javascript">
+			appExpectation = new Vue({ el: '#app-expectation' });
+			new Vue({ el: '#app-type-i' });
 		</script>
 	</body>
 </html>
