@@ -11,22 +11,17 @@
 		<script src="bootstrap/js/bootstrap.min.js"></script>
 		
 		<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		<style>
-			.alert-nope {
-				color: #767676;
-				background-color: #f0f0f0;
-				border-color: #e9e9e9;
-			}
-			.form-group-closer {
-				margin-bottom: 0px;
-			}
-			.form-group-closer .alert {
-				margin-bottom: 5px;
-			}
-		</style>
-		
 		<link rel="stylesheet" href="reveal/css/reveal.css">
 		<link rel="stylesheet" href="reveal/css/theme/white.css">
+		<style>
+			.text-very-muted {
+				color: #BBB;
+			}
+			.reveal h1 {
+				line-height: 0.9em;
+				margin-bottom: 0.75em;
+			}
+		</style>
 	</head>
 	<body>
 		<script type="text/javascript">
@@ -61,6 +56,11 @@
 						type: Number,
 						default: 0
 					},
+					n:  {
+						type: Number,
+						default: 1000
+					},
+
 				},
 				data: function () {
 					return {
@@ -68,7 +68,6 @@
 						h: 500,
 						margin: {top: 10, right: 20, bottom: 20, left: 20},
 						bins: 200,
-						n: 1000,
 						cr: 0.1,
 						bounds: [-0.2,0.2],
 						results: { significant: [], insignificant: [], significant_opposite: [] },
@@ -238,30 +237,377 @@
 
 		<div class="reveal">
 			<div class="slides">
-				<section data-markdown>
-						## Design of experiments
-
+				<section>
+					<h1>Design of experiments</h1>
+					<p>
 						Statistical foundations for people who do not like math
-						(and let’s be honest, very few people really like math)
-						
-						Lukas Vermeer is Senior Product Owner for Experimentation at Booking.com
+						<br />
+						<span class="text-very-muted">(and let’s be honest, very few people <em>really</em> like math)</span>
+					</p>
+					<br />
+					<p>
+						<small>
+							Lukas Vermeer <span class="text-very-muted">is</span> Senior Product Owner <span class="text-very-muted">for</span> Experimentation <span class="text-very-muted">at</span> Booking.com
+						</small>
+					</p>
+					<p>
+						<small>							
+							<a href="http://twitter.com/lukasvermeer" target="_blank">@lukasvermeer</a> &mdash; <a href="http://lukasvermeer.github.io/ab-stats" target="_blank">lukasvermeer.github.io/ab-stats</a>
+						</small>
+					</p>
+				</section>
+				
+				<section data-markdown>
+					## Controlled Experiments for Hypothesis Testing
+
+					- We want gather evidence for a causal link between a change and behaviour
+						- “By switching to B, we will cause more people to click ads or buy our product!”
+					- Correlation is not sufficient for supporting decision making
+						- Direction of effect is as important as showing there is a relation at all
+						- Banning umbrellas will not stop the rain; it will just make everyone more wet
+					- We will want to refute the hypothesis that there is no effect
+						- We will consider rejection of the “null hypothesis” as evidence for the “alternative hypothesis”
+					- We will encounter two main types of uncertainty
+						- Is there any causal effect?
+						- What is the size of the causal effect?
+				</section>
+				
+				<section>
+					<h3>Rubin causal model <small>(what we want to know)</small></h3>
+					
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th></th>
+								<th>Under A</th>
+								<th>Treatment Effect</th>
+								<th>Under B</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Alice</td>
+								<td>0.4</td>
+								<td>0.1</td>
+								<td>0.5</td>
+							</tr>
+							<tr>
+								<td>Bob</td>
+								<td>0.3</td>
+								<td>0.1</td>
+								<td>0.4</td>
+							</tr>
+							<tr>
+								<td>Charlie</td>
+								<td>0.5</td>
+								<td>0.1</td>
+								<td>0.6</td>
+							</tr>
+							<tr>
+								<td>Dirk</td>
+								<td>0.2</td>
+								<td>0.1</td>
+								<td>0.3</td>
+							</tr>
+							<tr>
+								<td>(Everyone)</td>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+							</tr>
+							<tr class="info">
+								<td>Average</td>
+								<td>0.35</td>
+								<td><b>0.1</b></td>
+								<td>0.45</td>
+							</tr>
+
+						</tbody>
+					</table>
+					
+					<p><small>[1] Rubin, Donald B. 1974. “Estimating Causal Effects of Treatments in Randomized and Nonrandomized Studies.” Journal of Educational Psychology 66 (5): 688–701.</small></p>
+				</section>
+
+				<section>
+					<h3>Rubin causal model <small>(what we can measure)</small></h3>
+					
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th></th>
+								<th>Under A</th>
+								<th>Treatment Effect</th>
+								<th>Under B</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Alice</td>
+								<td>Yes</td>
+								<td>?</td>
+								<td>?</td>
+							</tr>
+							<tr>
+								<td>Bob</td>
+								<td>?</td>
+								<td>?</td>
+								<td>No</td>
+							</tr>
+							<tr>
+								<td>Charlie</td>
+								<td>No</td>
+								<td>?</td>
+								<td>?</td>
+							</tr>
+							<tr>
+								<td>Dirk</td>
+								<td>?</td>
+								<td>?</td>
+								<td>Yes</td>
+							</tr>
+							<tr>
+								<td>(Sample)</td>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+							</tr>
+							<tr class="info">
+								<td>Average</td>
+								<td>?</td>
+								<td><b>?</b></td>
+								<td>?</td>
+							</tr>
+
+						</tbody>
+					</table>
+
+					<p><small>[1] Rubin, Donald B. 1974. “Estimating Causal Effects of Treatments in Randomized and Nonrandomized Studies.” Journal of Educational Psychology 66 (5): 688–701.</small></p>
+				</section>
+
+				<section data-markdown>
+					## Gathering evidence for causality
+					
+					- The “fundamental problem of causal inference” limits what we can measure
+						- We cannot sample the entire population
+						- We cannot expose units to both treatments exclusively
+						- We cannot directly observe underlying probabilities
+					- Randomized controlled trials can help us gather evidence for causality
+						- Random assignment does not depend on externalities and controls for other factors
+					- Controlling for other things, only a few possible explanations remain
+						- **Causation** resulted in people behaving differently after treatment was applied 
+						- **Pure chance** resulted in a difference in the groups that was unrelated to the treatment
+						- **Measurement error** resulted in a difference unrelated to the experiment
+					- Controlled experiments are not the panacea for everything. ​
+						- Issues discussed in the journal survey paper ([http://bit.ly/expSurvey](http://bit.ly/expSurvey))​
+				</section>
+
+				<section data-markdown>
+					## Randomisation and expectation
+					
+					- In expectation, the average of a random sample will approximate true mean
+						- This implies that we do not need to gather data for the entire population
+						- A random, representative sample will be sufficient
+					- In expectation, the fraction of wins will approximate underlying probability
+						- We do not need to observe the probabilities directly if we have the outcomes for individuals
+					- In expectation, the difference between averages will give us the ATE
+						- We do not need to measure the treatment effects of each individual participant
+					- Therefore, if we show A and B to random samples of the population, the difference between the fraction of wins in both groups will approximate the average treatment effect.
+				</section>
+
+				<section>
+					<h3>Rubin causal model <small>(what randomisation gives us)</small></h3>
+					
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th></th>
+								<th>Under A</th>
+								<th>Treatment Effect</th>
+								<th>Under B</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Alice</td>
+								<td>Yes</td>
+								<td>?</td>
+								<td>?</td>
+							</tr>
+							<tr>
+								<td>Bob</td>
+								<td>?</td>
+								<td>?</td>
+								<td>No</td>
+							</tr>
+							<tr>
+								<td>Charlie</td>
+								<td>No</td>
+								<td>?</td>
+								<td>?</td>
+							</tr>
+							<tr>
+								<td>Dirk</td>
+								<td>?</td>
+								<td>?</td>
+								<td>Yes</td>
+							</tr>
+							<tr>
+								<td>(Sample)</td>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+							</tr>
+							<tr class="info">
+								<td>Average</td>
+								<td>0.5</td>
+								<td><b>0.0</b></td>
+								<td>0.5</td>
+							</tr>
+
+						</tbody>
+					</table>
+
+					<p><small>[1] Rubin, Donald B. 1974. “Estimating Causal Effects of Treatments in Randomized and Nonrandomized Studies.” Journal of Educational Psychology 66 (5): 688–701.</small></p>
 				</section>
 				
 				<section id="app-expectation">
 					<simulation v-bind:effect="0.1"></simulation>
 				</section>
 
+				<section data-markdown>
+					## Randomization introduces quantifiable uncertainty
+					
+					- Every randomisation will likely give us a slightly different result
+						- Every time the experiment is repeated with new randomisation, the averages will be different
+						- We can quantify an expected range of results using a confidence interval
+					- Sometimes we will get “unlucky” in our randomisation
+						- We might randomly put all the men in one group and all the women in the other 
+						- We can estimate the likelihood of getting a particular result by chance using a test statistic
+					- Other potential, but unquantifiable, sources of uncertainty also exist
+						- The population may change
+						- The treatment may change
+						- The effect may change
+					- Stability of these other factors is (often implicitly) assumed
+				</section>
+
+				<section data-markdown>
+					## Confidence intervals
+					
+					- Every randomisation will assign treatment differently
+						- If we were to repeat the same experiment, assignment would change
+						- As a result, we would expect group averages to vary as well
+					- We can quantify the expected range of variation using a confidence interval
+						- We can expect results to be between X and Y 95% of the times we repeat the experiment
+					- This will (sadly) not tell us much about the true value of the parameter
+						- Counter intuitively, this does not prove the true value lies between X and Y with probability
+						- We can also not assume the true value lies “somewhere in the middle”
+						- Only that, in expectation, repeated sampling will result in values in that range
+				</section>
+
+				<section data-markdown>
+					## Test statistics (p-values) 
+
+					- Even with a fair die we might roll a six twice in a row
+						- The odds of rolling two sixes are one in six times one in six (⅙ * ⅙ * 100 ~= 2.78%)
+					- Even after three sixes, there is a chance that the die is fair and we got lucky
+						- The odds of rolling three sixes are pretty slim (⅙ * ⅙ * ⅙ * 100 ~= 0.46%)
+					
+					**The p-value is the probability of getting a result or more extreme by chance assuming there is no effect at all**
+					
+					- We might argue that small odds support accepting an alternative explanation
+						- For instance that the die is loaded, of that I can influence the result through telepathy
+					- Sometimes we will get “unlucky” in our randomisation
+						- We will have to decide at which point we will reject the idea that our result could be chance
+						- At this point, we will accept the alternative hypothesis and argue there is a causal effect
+				</section>
+
+				<section data-markdown>
+					## Misinterpreting p-values
+					
+					- p-values are often misinterpreted
+						- p-value gives us Prob(X >= x | H0), whereas what we want is Prob(H0 | X = x)
+					- Here are some incorrect statements from Steve Goodman’s A Dirty Dozen[2]
+						- If p = .05, the null hypothesis has only a 5% chance of being true
+						- A non-significant difference (e.g. p > .05) means there is no difference between groups
+						- p = .05 means that we have observed data that would occur only 5% of the time under the null
+						- p = .05 means that if you reject the null, the probability of a type I error (false positive) is 5%
+					- In many sciences, the standard threshold to reject the null is p < 0.05
+						- Note that rolling two sixes already meets this threshold (since ⅙ * ⅙ < 0.05)
+					- In the absence of an effect, we might still (falsely) reject the null
+						- This is called a “type-I” error
+						- When the boy cried wolf, there was none
+
+					[2] Goodman, Steve 2008. “A dirty dozen: twelve P-value misconceptions.” Seminars in Hematology, 45 (2008), pp. 135-140.
+				</section>
+
 				<section id="app-type-i">
 					<simulation v-bind:effect="0.0"></simulation>
+				</section>
+
+				<section data-markdown>
+					## Type-II errors and statistical power
+					
+					- In the presence of an effect, we might still (falsely) fail to reject the null
+						- This is called a “type-II” error
+						- When the wolf showed up, the boy failed to cry
+					- The result might simply not be that unlikely when assuming the null is true
+					
+					**Statistical power is the probability that the test correctly rejects the null hypothesis when the alternative hypothesis is true.**
+					
+					- Two main things that affect statistical power
+						- Sample size (more is better)
+						- Effect size (more is better)
+					- Effect size is unknown but assumed fixed
+					- Sample size may be increased is low power is expected
+				</section>
+
+				<section id="app-type-ii">
+					<simulation v-bind:effect="0.05"></simulation>
+				</section>
+
+				<section id="app-type-ii-2">
+					<simulation v-bind:effect="0.05" v-bind:n="2000"></simulation>
+				</section>
+
+				<section data-markdown>
+					## Multiple comparison and other protocol violations
+					
+					- The methods described assume strict adherence to experiment protocol
+						- A versus B
+						- Test a single hypothesis once
+						- Test for significance only once
+					- Deviations from protocol can increase error rate or introduce biased estimates
+						- Multiple testing increases type-I error rate
+						- Variant selection bias inflates estimate of average treatment effect
+					- Correcting for these deviations from standard protocol is possible
+						- See for example([www.exp-platform.com/Documents/p609-deng.pdf](www.exp-platform.com/Documents/p609-deng.pdf))
+					- More flexible protocols may be desirable
+						- Early stopping rules to mitigate damage from bad experiments
+						- Early shipping to minimize opportunity cost
+				</section>
+
+				<section data-markdown>
+					## Conclusion
+					
+					- We want gather evidence for a causal link between a change and behaviour
+						- “By switching to B, we will cause more people to buy our product!”
+					- Randomized controlled trials help us gather evidence for causality
+						- By controlling for other factors, leaving only causality and chance as possible explanations
+					- We will want to refute the hypothesis that there is no effect
+						- We will consider rejection of the “null hypothesis” as evidence for the “alternative hypothesis”
+					- Randomization introduces quantifiable uncertainty
+						- In expectation, the results are correct
+						- For a given experiment, they might deviate
+					- Different types of potential errors need to be considered
+						- Type-I errors of incorrectly rejecting the null
+						- Type-II errors of incorrectly failing to reject the null					
 				</section>
 			</div>
 		</div>
 		
 		<script src="reveal/lib/js/head.min.js"></script>		
 		<script src="reveal/js/reveal.js"></script>
-		<script>
-			// Full list of configuration options available at:
-			// https://github.com/hakimel/reveal.js#configuration
+		<script type="text/javascript">
 			Reveal.initialize({
 				controls: true,
 				progress: true,
@@ -269,7 +615,7 @@
 				center: true,
 				width: 1140,
 				height: 960,
-				margin: 0.1,
+				margin: 0.05,
 
 				transition: 'slide', // none/fade/slide/convex/concave/zoom
 
@@ -283,11 +629,11 @@
 					{ src: 'reveal/plugin/notes/notes.js', async: true }
 				]
 			});
-		</script>
-		
-		<script type="text/javascript">
-			appExpectation = new Vue({ el: '#app-expectation' });
+
+			new Vue({ el: '#app-expectation' });
 			new Vue({ el: '#app-type-i' });
+			new Vue({ el: '#app-type-ii' });
+			new Vue({ el: '#app-type-ii-2' });
 		</script>
 	</body>
 </html>
