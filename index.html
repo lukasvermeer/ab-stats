@@ -21,6 +21,35 @@
 				line-height: 0.9em;
 				margin-bottom: 0.75em;
 			}
+			
+			h1 span.title-divider {
+				overflow: hidden;
+				text-align: center;
+				display: block;
+				font: 90px "Times New Roman";
+				font-style: oblique;
+				text-transform: lowercase;
+				margin: -0.2em auto 0.1em;
+			}
+			h1 span.title-divider:before,
+			h1 span.title-divider:after {
+				background-color: #000;
+				content: "";
+				display: inline-block;
+				height: 2px;
+				border-radius: 100%;
+				position: relative;
+				vertical-align: middle;
+				width: 50%;
+			}
+			h1 span.title-divider:before {
+				right: 0.5em;
+				margin-left: -50%;
+			}
+			h1 span.title-divider:after {
+				left: 0.5em;
+				margin-right: -50%;
+			}
 		</style>
 	</head>
 	<body>
@@ -238,7 +267,7 @@
 		<div class="reveal">
 			<div class="slides">
 				<section>
-					<h1>Design of experiments</h1>
+					<h1>Design <span class="title-divider">of</span> experiments</h1>
 					<p>
 						Statistical foundations for people who do not like math
 						<br />
