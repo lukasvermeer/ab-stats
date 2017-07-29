@@ -185,16 +185,17 @@
 						var x = d3.scaleLinear().domain(this.bounds).rangeRound([0, this.width]);
 						var histogram = d3.histogram().domain(x.domain()).thresholds(x.ticks(this.bins));
 						var b1 = histogram(this.results.significant);
-						var b2 = histogram(this.results.insignificant);
-						var b3 = histogram(this.results.significant_opposite);
+						var b2 = histogram(this.results.significant_opposite);
+						var b3 = histogram(this.results.insignificant);
 						var b = d3.stack().keys(d3.range(3))(d3.transpose([b1.map(function(d) {return d.length}),b2.map(function(d) {return d.length}),b3.map(function(d) {return d.length})]));
-						var y = d3.scaleLinear().domain([0, d3.max(b[1], function(d) { return d[1]; })]).range([this.height, 0]);
+						var y = d3.scaleLinear().domain([0, d3.max(b[2], function(d) { return d[1]; })]).range([this.height, 0]);
 						var color = d3.scaleOrdinal().domain(d3.range(3)).range(d3.schemeCategory20);
+						var colorsort = [0,2,1];
 
 						var series = this.g.selectAll(".series").data(b);						
 						series.enter().append("g")
 								.attr("class", "series")
-								.attr("fill", function(d, i) { return color(i); })
+								.attr("fill", function(d, i) { return color(colorsort[i]); })
 							.merge(series);
 
 						var rect = series.selectAll("rect").data(function(d) { return d; });
