@@ -118,7 +118,8 @@
 						bounds: [-0.2,0.2],
 						results: { significant: [], insignificant: [], significant_opposite: [] },
 						g: '',
-						repeating: false
+						repeating: false,
+						my_slide: null,
 					}
 				},
 				computed: {
@@ -241,9 +242,10 @@
 					},
 					toggle_repeat: function() {
 						this.repeating = !this.repeating;
+						this.my_slide = Reveal.getIndices().h;
 					},
 					repeat: function() {
-						if (this.repeating) { this.step(); }
+						if (this.repeating && Reveal.getIndices().h == this.my_slide) { this.step(); }
 					},
 					rbinom: function(n, p) {
 						var b = 0;
