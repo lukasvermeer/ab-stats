@@ -62,8 +62,8 @@
 						<p><small class="text-muted"><var>n</var> = <var>{{n}}</var>, <var>base conversion rate</var> = <var>{{cr}}</var>, <var>effect of treatment</var> = <var>{{effect}}</var></small></p>
 						<div class="stretch chart-container"></div>
 						<div class="text-center">
-							<button type="button" class="btn btn-default" v-on:click="add_one">Run one experiment</button>
-							<button type="button" class="btn btn-default" v-on:click="restart">Repeat many experiments</button>
+							<button type="button" class="btn btn-default" v-on:click="step">Step</button>
+							<button type="button" class="btn btn-default" v-on:click="toggle_repeat">{{ this.repeating ? 'Pause' : 'Repeat'}}</button>
 						</div>
 						<div class="row">
 							<div class="col-md-6 col-xs-12" v-if="display_true_effect">
@@ -117,7 +117,8 @@
 						cr: 0.1,
 						bounds: [-0.2,0.2],
 						results: { significant: [], insignificant: [], significant_opposite: [] },
-						g: ''
+						g: '',
+						repeating: false
 					}
 				},
 				computed: {
@@ -177,6 +178,7 @@
 
 					this.g = d3.select(this.$el).select("svg").append("g").attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 					this.update(this.results);
+					d3.interval(this.repeat, SPEED);
 				},
 				methods: {
 					update: function(data) {
@@ -212,7 +214,7 @@
 							.attr("transform", "translate(0," + this.height + ")")
 							.call(d3.axisBottom(x));
 					},
-					add_one: function() {
+					step: function() {
 						var n = this.trials;
 						if (n >= 1000000) return;
 						for (var j = 0; j < Math.min(1000,10**(""+(n)).length/10); ++j) {
@@ -236,14 +238,17 @@
 							}
 						}
 					},
+					toggle_repeat: function() {
+						this.repeating = !this.repeating;
+					},
+					repeat: function() {
+						if (this.repeating) { this.step(); }
+					},
 					rbinom: function(n, p) {
 						var b = 0;
 						for (var i = 0; i < n; ++i) { if (Math.random() < p) ++b; };
 						return b;
 					},
-					restart: function() {
-						d3.interval(this.add_one, SPEED);
-					}
 				},
 				watch: {
 					trials: function(val) { this.update(val) }
