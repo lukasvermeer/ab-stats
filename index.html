@@ -63,11 +63,129 @@
 			.reveal table.align-center-except-first-column td:nth-child(1n+2) {
 				text-align: center;
 			}
+			.reveal table.align-center-except-first-column td:nth-child(1n+2):empty:after {
+				content: "?";
+				color: #BBB;
+			}
 		</style>
 	</head>
 	<body>
 		<script type="text/javascript">
-			var SPEED = 100;
+			Vue.component('rubin-model', {
+				template: `
+					<table class="table table-striped align-center-except-first-column">
+						<thead>
+							<tr>
+								<th>
+									<button type="button" class="btn btn-default" v-if="randomize" v-on:click="rerandomize">Shuffle</button>
+									<button type="button" class="btn btn-default" v-if="randomize" v-on:click="toggle_repeat">{{ this.repeating ? 'Pause' : 'Repeat'}}</button>
+								</th>
+								<th>Under A</th>
+								<th>Treatment Effect</th>
+								<th>Under B</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="(item, index) in realisation">
+								<td>{{ item.name }}</td>
+								<td>{{ item.a_show ? item.a : '' }}</td>
+								<td>{{ randomize ? '' : (item.b - item.a).toFixed(1)}}</td>
+								<td>{{ item.b_show ? item.b : ''}}</td>
+							</tr>
+							<tr class="text-very-muted">
+								<td>({{ this.sample_name }})</td>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+							</tr>
+							<tr class="info">
+								<td>Average</td>
+								<td>{{ this.display_ate ? avg_a.toFixed(1) : '' }}</td>
+								<td><b v-if="display_ate">{{ (avg_b - avg_a).toFixed(1) }}</b></td>
+								<td>{{ this.display_ate ? avg_b.toFixed(1) : '' }}</td>
+							</tr>
+
+						</tbody>
+					</table>
+				`,
+				props: {
+					display_ate:	 		{ type: Boolean, default: false },
+					randomize:	 			{ type: Boolean, default: false },
+					sample_name:	 		{ type: String, default: 'Everyone' },
+				},
+				data: function () {
+					return {
+						sample: [
+							{ name: 'Alice', a: 0.4, b: 0.9, a_show: 1, b_show: 1 },
+							{ name: 'Bob', a: 0.3, b: 0.8, a_show: 1, b_show: 1 },
+							{ name: 'Charlie', a: 0.5, b: 1, a_show: 1, b_show: 1 },
+							{ name: 'Dave', a: 0.2, b: 0.7, a_show: 1, b_show: 1 },
+							{ name: 'Eve', a: 0.4, b: 0.9, a_show: 1, b_show: 1 },
+							{ name: 'Frank', a: 0.1, b: 0.6, a_show: 1, b_show: 1 }
+						],
+						assignment: [],
+						repeating: false,
+						my_slide: null,
+					}
+				},
+				mounted: function() {
+					this.rerandomize();
+					d3.interval(this.repeat, 250);
+				},
+				computed: {
+					avg_a: function() {
+						return	this.realisation
+									.map(function(z) { return z.a == 'Yes' ? 1 : z.a == 'No' ? 0 : z.a })
+									.reduce(function(a, b) { return a + b; }) / 
+								this.realisation
+									.map(function(z) { return z.a_show })
+									.reduce(function(a, b) { return a + b; });
+					},
+					avg_b: function() {
+						return	this.realisation
+									.map(function(z) { return z.b == 'Yes' ? 1 : z.b == 'No' ? 0 : z.b })
+									.reduce(function(a, b) { return a + b; }) /
+								this.realisation
+									.map(function(z) { return z.b_show })
+									.reduce(function(a, b) { return a + b; }); 
+					},
+					realisation: function() { 
+						if (!this.randomize) {
+							return this.sample;
+						} else {
+							var c = this.assignment;
+							return this.sample.map(
+								function(row, index) {
+									return { 
+										name: row.name,
+										a: Math.random() < (row.a * c[index]) ? 'Yes' : 'No',
+										a_show: c[index],
+										b: Math.random() < (row.b * (1-c[index])) ? 'Yes' : 'No',
+										b_show: (1-c[index])
+									}
+								}
+							);
+						}
+					},
+				},
+				methods: {
+					complete_randomize: function() {
+						var n = 6;//this.sample.length;
+						var m = Math.ceil(n / 2);
+						return Array(m).fill(1).concat(Array(n-m).fill(0)).shuffle();
+					},
+					rerandomize: function() {
+						this.assignment = this.complete_randomize();
+					},
+					toggle_repeat: function() {
+						this.repeating = !this.repeating;
+						this.my_slide = Reveal.getIndices().h;
+					},
+					repeat: function() {
+						if (this.repeating && Reveal.getIndices().h == this.my_slide) { this.rerandomize(); }
+					},
+				}
+			});
 						
 			Vue.component('simulation', {
 				template: `
@@ -182,7 +300,7 @@
 
 					this.g = d3.select(this.$el).select("svg").append("g").attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 					this.update(this.results);
-					d3.interval(this.repeat, SPEED);
+					d3.interval(this.repeat, 100);
 				},
 				methods: {
 					update: function(data) {
@@ -209,7 +327,7 @@
 								.attr("transform", function(d, i) { return "translate(" + x(b1[i].x0) + "," + y(d[0]) + ")"; })
 								.attr("height", 0)
 							.merge(rect)
-								.transition().duration(SPEED)
+								.transition().duration(100)
 									.attr("transform", function(d, i) { return "translate(" + x(b1[i].x0) + "," + y(d[1]) + ")"; })
 									.attr("height", function(d) { return y(0) - y(d[1]-d[0]); });
 						
@@ -303,6 +421,26 @@
 
 				return g_test;
 			};
+			
+			// Shuffle an array. 'Borrowed' from https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+			Array.prototype.shuffle = function() {
+				var currentIndex = this.length, temporaryValue, randomIndex;
+
+				// While there remain elements to shuffle...
+				while (0 !== currentIndex) {
+
+				// Pick a remaining element...
+					randomIndex = Math.floor(Math.random() * currentIndex);
+					currentIndex -= 1;
+
+					// And swap it with the current element.
+					temporaryValue = this[currentIndex];
+					this[currentIndex] = this[randomIndex];
+					this[randomIndex] = temporaryValue;
+				}
+
+				return this;
+			}
 		</script>
 
 		<div class="reveal">
@@ -347,115 +485,19 @@
 						- What is the size of the causal effect?
 				</section>
 				
-				<section>
+				<section id="app-rubin-full">
 					<h3>Rubin causal model <small>(what we want to know)</small></h3>
 					
-					<table class="table table-striped align-center-except-first-column">
-						<thead>
-							<tr>
-								<th></th>
-								<th>Under A</th>
-								<th>Treatment Effect</th>
-								<th>Under B</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>Alice</td>
-								<td>0.4</td>
-								<td>0.1</td>
-								<td>0.5</td>
-							</tr>
-							<tr>
-								<td>Bob</td>
-								<td>0.3</td>
-								<td>0.1</td>
-								<td>0.4</td>
-							</tr>
-							<tr>
-								<td>Charlie</td>
-								<td>0.5</td>
-								<td>0.1</td>
-								<td>0.6</td>
-							</tr>
-							<tr>
-								<td>Dirk</td>
-								<td>0.2</td>
-								<td>0.1</td>
-								<td>0.3</td>
-							</tr>
-							<tr>
-								<td>(Everyone)</td>
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-							</tr>
-							<tr class="info">
-								<td>Average</td>
-								<td>0.35</td>
-								<td><b>0.1</b></td>
-								<td>0.45</td>
-							</tr>
-
-						</tbody>
-					</table>
+					<rubin-model display_ate></rubin-model>
 					
 					<p><small>[1] Rubin, Donald B. 1974. “Estimating Causal Effects of Treatments in Randomized and Nonrandomized Studies.” Journal of Educational Psychology 66 (5): 688–701.</small></p>
 				</section>
 
-				<section>
+				<section id="app-rubin-fpci">
 					<h3>Rubin causal model <small>(what we can measure)</small></h3>
 					
-					<table class="table table-striped align-center-except-first-column">
-						<thead>
-							<tr>
-								<th></th>
-								<th>Under A</th>
-								<th>Treatment Effect</th>
-								<th>Under B</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>Alice</td>
-								<td>Yes</td>
-								<td>?</td>
-								<td>?</td>
-							</tr>
-							<tr>
-								<td>Bob</td>
-								<td>?</td>
-								<td>?</td>
-								<td>No</td>
-							</tr>
-							<tr>
-								<td>Charlie</td>
-								<td>No</td>
-								<td>?</td>
-								<td>?</td>
-							</tr>
-							<tr>
-								<td>Dirk</td>
-								<td>?</td>
-								<td>?</td>
-								<td>Yes</td>
-							</tr>
-							<tr>
-								<td>(Sample)</td>
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-							</tr>
-							<tr class="info">
-								<td>Average</td>
-								<td>?</td>
-								<td><b>?</b></td>
-								<td>?</td>
-							</tr>
-
-						</tbody>
-					</table>
-
+					<rubin-model sample_name="Sample" randomize></rubin-model>
+					
 					<p><small>[1] Rubin, Donald B. 1974. “Estimating Causal Effects of Treatments in Randomized and Nonrandomized Studies.” Journal of Educational Psychology 66 (5): 688–701.</small></p>
 				</section>
 
@@ -493,59 +535,11 @@
 					**If we show A and B to random samples of the population, the difference between the fraction of wins in both groups will approximate the average treatment effect.**
 				</section>
 
-				<section>
+				<section id="app-rubin-ate">
 					<h3>Rubin causal model <small>(what randomisation gives us)</small></h3>
 					
-					<table class="table table-striped align-center-except-first-column">
-						<thead>
-							<tr>
-								<th></th>
-								<th>Under A</th>
-								<th>Treatment Effect</th>
-								<th>Under B</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>Alice</td>
-								<td>Yes</td>
-								<td>?</td>
-								<td>?</td>
-							</tr>
-							<tr>
-								<td>Bob</td>
-								<td>?</td>
-								<td>?</td>
-								<td>No</td>
-							</tr>
-							<tr>
-								<td>Charlie</td>
-								<td>No</td>
-								<td>?</td>
-								<td>?</td>
-							</tr>
-							<tr>
-								<td>Dirk</td>
-								<td>?</td>
-								<td>?</td>
-								<td>Yes</td>
-							</tr>
-							<tr>
-								<td>(Sample)</td>
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-							</tr>
-							<tr class="info">
-								<td>Average</td>
-								<td>0.5</td>
-								<td><b>0.0</b></td>
-								<td>0.5</td>
-							</tr>
-
-						</tbody>
-					</table>
-
+					<rubin-model sample_name="Sample" randomize display_ate></rubin-model>
+					
 					<p><small>[1] Rubin, Donald B. 1974. “Estimating Causal Effects of Treatments in Randomized and Nonrandomized Studies.” Journal of Educational Psychology 66 (5): 688–701.</small></p>
 				</section>
 				
@@ -729,6 +723,10 @@
 				]
 			});
 
+			new Vue({ el: '#app-rubin-full' });
+			new Vue({ el: '#app-rubin-fpci' });
+			new Vue({ el: '#app-rubin-ate' });
+			
 			new Vue({ el: '#app-expectation' });
 			new Vue({ el: '#app-type-i' });
 			new Vue({ el: '#app-type-ii' });
