@@ -73,40 +73,43 @@
 		<script type="text/javascript">
 			Vue.component('rubin-model', {
 				template: `
-					<table class="table table-striped align-center-except-first-column">
-						<thead>
-							<tr>
-								<th>
-									<button type="button" class="btn btn-default" v-if="randomize" v-on:click="rerandomize">Shuffle</button>
-									<button type="button" class="btn btn-default" v-if="randomize" v-on:click="toggle_repeat">{{ this.repeating ? 'Pause' : 'Repeat'}}</button>
-								</th>
-								<th>Under A</th>
-								<th>Treatment Effect</th>
-								<th>Under B</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr v-for="(item, index) in realisation">
-								<td>{{ item.name }}</td>
-								<td>{{ item.a_show ? item.a : '' }}</td>
-								<td>{{ randomize ? '' : (item.b - item.a).toFixed(1)}}</td>
-								<td>{{ item.b_show ? item.b : ''}}</td>
-							</tr>
-							<tr class="text-very-muted">
-								<td>({{ this.sample_name }})</td>
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-							</tr>
-							<tr class="info">
-								<td>Average</td>
-								<td>{{ this.display_ate ? avg_a.toFixed(1) : '' }}</td>
-								<td><b v-if="display_ate">{{ (avg_b - avg_a).toFixed(1) }}</b></td>
-								<td>{{ this.display_ate ? avg_b.toFixed(1) : '' }}</td>
-							</tr>
+					<div class="component">
+						<table class="table table-striped align-center-except-first-column">
+							<thead>
+								<tr>
+									<th>
+										<button type="button" class="btn btn-default" v-if="randomize" v-on:click="rerandomize">Shuffle</button>
+										<button type="button" class="btn btn-default" v-if="randomize" v-on:click="toggle_repeat">{{ this.repeating ? 'Pause' : 'Repeat'}}</button>
+									</th>
+									<th>Under A</th>
+									<th>Treatment Effect</th>
+									<th>Under B</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="(item, index) in realisation">
+									<td>{{ item.name }}</td>
+									<td>{{ item.a_show ? item.a : '' }}</td>
+									<td>{{ randomize ? '' : (item.b - item.a).toFixed(1)}}</td>
+									<td>{{ item.b_show ? item.b : ''}}</td>
+								</tr>
+								<tr class="text-very-muted">
+									<td>({{ this.sample_name }})</td>
+									<td>...</td>
+									<td>...</td>
+									<td>...</td>
+								</tr>
+								<tr class="info">
+									<td>Average</td>
+									<td>{{ this.display_ate ? avg_a.toFixed(1) : '' }}</td>
+									<td><b v-if="display_ate">{{ (avg_b - avg_a).toFixed(1) }}</b></td>
+									<td>{{ this.display_ate ? avg_b.toFixed(1) : '' }}</td>
+								</tr>
 
-						</tbody>
-					</table>
+							</tbody>
+						</table>
+						<p><small>[1] Rubin, Donald B. 1974. “Estimating Causal Effects of Treatments in Randomized and Nonrandomized Studies.” Journal of Educational Psychology 66 (5): 688–701.</small></p>
+					</div>
 				`,
 				props: {
 					display_ate:	 		{ type: Boolean, default: false },
@@ -447,11 +450,7 @@
 			<div class="slides">
 				<section>
 					<h1>Design <span class="title-divider">of</span> experiments</h1>
-					<p>
-						Statistical foundations for people who do not like math
-						<br />
-						<span class="text-very-muted">(and let’s be honest, very few people <em>really</em> like math)</span>
-					</p>
+					<p>Statistical foundations for causal inference</p>
 					<br />
 					<p>
 						<small>
@@ -465,126 +464,122 @@
 					</p>
 				</section>
 				
-				<section data-markdown>
-					## Controlled Experiments for Hypothesis Testing
+				<section>
+					<span class="text-muted">Making good decisions requires</span>
+					<h2>causal inference</h2>
+					<p>
+						<span class="fragment">Umbrellas often appear just before it pours,</span>
+						<span class="fragment">but banning them will not stop the rain;</span>
+						<span class="fragment">it will just make everyone more wet</span>
+					</p>
 
-					- We want gather evidence for a causal link between a change and behaviour
-						- “By switching to B, we will cause more people to click ads or buy our product!”
-					- Correlation is not sufficient for supporting decision making
-						- Direction of effect is as important as showing there is a relation at all
-						- Banning umbrellas will not stop the rain; it will just make everyone more wet
+					<aside class="notes" data-markdown>
+						- We want gather evidence for a causal link between a change and behaviour
+							- “By switching to B, we will cause more people to click ads or buy our product!”
+						- Correlation is not sufficient for supporting decision making
+							- Direction of effect is as important as showing there is a relation at all
+					</aside>
 				</section>
-				
-				<section data-markdown>
-					## Controlled Experiments for Hypothesis Testing
-					
-					- We will want to refute the hypothesis that there is no effect
-						- We will consider rejection of the “null hypothesis” as evidence for the “alternative hypothesis”
-					- We will encounter two main types of uncertainty
-						- Is there any causal effect?
-						- What is the size of the causal effect?
-				</section>
-				
+								
 				<section id="app-rubin-full">
 					<h3>Rubin causal model <small>(what we want to know)</small></h3>
-					
 					<rubin-model display_ate></rubin-model>
+				</section>
+
+				<section>
+					<span class="text-muted">The fundamental problem of</span>
+					<h2>causal inference</h2>
+					<ol>
+						<li class="fragment">We cannot sample the entire population</li>
+						<li class="fragment">We cannot expose units to both treatments exclusively</li>
+						<li class="fragment">We cannot directly observe underlying probabilities</li>
+					</ol>
 					
-					<p><small>[1] Rubin, Donald B. 1974. “Estimating Causal Effects of Treatments in Randomized and Nonrandomized Studies.” Journal of Educational Psychology 66 (5): 688–701.</small></p>
+					<aside class="notes" data-markdown>
+						- Other potential, but unquantifiable, sources of uncertainty also exist
+							- The population may change
+							- The treatment may change
+							- The effect may change
+						- Stability of these other factors is (often implicitly) assumed
+					</aside>
 				</section>
 
 				<section id="app-rubin-fpci">
 					<h3>Rubin causal model <small>(what we can measure)</small></h3>
-					
 					<rubin-model sample_name="Sample" randomize></rubin-model>
-					
-					<p><small>[1] Rubin, Donald B. 1974. “Estimating Causal Effects of Treatments in Randomized and Nonrandomized Studies.” Journal of Educational Psychology 66 (5): 688–701.</small></p>
 				</section>
 
-				<section data-markdown>
-					## Gathering evidence for causality
-					
-					- The “fundamental problem of causal inference” limits what we can measure
-						- We cannot sample the entire population
-						- We cannot expose units to both treatments exclusively
-						- We cannot directly observe underlying probabilities
-					- Randomized controlled trials can help us gather evidence for causality
-						- Random assignment does not depend on externalities and controls for other factors
+				<section>
+					<span class="text-muted">We will try to answer two</span>
+					<h2>key questions</h2>
+					<ol>
+						<li class="fragment">Is there any causal effect?</li>
+						<li class="fragment">What is the size of the causal effect?</li>
+					</ol>
+
+					<aside class="notes" data-markdown>
+						- Sometimes we will get “unlucky” in our randomisation
+							- We might randomly put all the men in one group and all the women in the other 
+							- We can estimate the likelihood of getting a particular result by chance using a test statistic
+						- Every randomisation will likely give us a slightly different result
+							- Every time the experiment is repeated with new randomisation, the averages will be different
+							- We can quantify an expected range of results using a confidence interval
+					</aside>
 				</section>
 				
-				<section data-markdown>
-					 ## Gathering evidence for causality
-					 
-					- Controlling for other things, only a few possible explanations remain
-						- **Causation** resulted in people behaving differently after treatment was applied 
-						- **Pure chance** resulted in a difference in the groups that was unrelated to the treatment
-						- **Measurement error** resulted in a difference unrelated to the experiment
-					- Controlled experiments are not the panacea for everything. ​
-						- Issues discussed in the journal survey paper ([http://bit.ly/expSurvey](http://bit.ly/expSurvey))​
-				</section>
+				<section>
+					<span class="text-muted">Our answers will be correct</span>
+					<h2>in expectation</h2>
+					<span class="fragment">If we show A and B to random samples of the population,</span>
+					<span class="fragment">then the fraction of wins in both groups is expected to converge on the average underlying probabilities</span>
+					<span class="fragment">and the difference is expected to converge on the <b>average treatment effect</b></span>
 
-				<section data-markdown>
-					## Randomisation and expectation
-					
-					- In expectation, the average of a random sample will approximate true mean of the population
-					- In expectation, the fraction of wins will approximate underlying probability
-						- We do not need to observe the probabilities directly if we have the outcomes for individuals
-					- In expectation, the difference between averages will give us the ATE
-						- We do not need to measure the treatment effects of each individual participant
-
-					**If we show A and B to random samples of the population, the difference between the fraction of wins in both groups will approximate the average treatment effect.**
+					<aside class="notes" data-markdown>
+						- In expectation, the average of a random sample will approximate true mean of the population
+						- In expectation, the fraction of wins will approximate underlying probability
+							- We do not need to observe the probabilities directly if we have the outcomes for individuals
+						- In expectation, the difference between averages will give us the ATE
+							- We do not need to measure the treatment effects of each individual participant
+					</aside>
 				</section>
 
 				<section id="app-rubin-ate">
 					<h3>Rubin causal model <small>(what randomisation gives us)</small></h3>
-					
 					<rubin-model sample_name="Sample" randomize display_ate></rubin-model>
-					
-					<p><small>[1] Rubin, Donald B. 1974. “Estimating Causal Effects of Treatments in Randomized and Nonrandomized Studies.” Journal of Educational Psychology 66 (5): 688–701.</small></p>
 				</section>
 				
 				<section id="app-expectation">
 					<simulation v-bind:effect="0.1" display_true_effect display_observed_effect></simulation>
 				</section>
 
-				<section data-markdown>
-					## Randomization introduces quantifiable uncertainty
+				<section>
+					<span class="text-muted">Randomisation ensures only three things can</span>
+					<h2>explain a difference</h2>
 					
-					- Every randomisation will likely give us a slightly different result
-						- Every time the experiment is repeated with new randomisation, the averages will be different
-						- We can quantify an expected range of results using a confidence interval
-					- Sometimes we will get “unlucky” in our randomisation
-						- We might randomly put all the men in one group and all the women in the other 
-						- We can estimate the likelihood of getting a particular result by chance using a test statistic
+					<ol>
+						<li class="fragment"><b>Causation</b> resulted in people behaving differently when treatment was applied</li>
+						<li class="fragment"><b>Pure chance</b> resulted in a difference unrelated to the treatment</li>
+						<li class="fragment"><b>Measurement error</b> resulted in a difference unrelated to the experiment</li>
+					</ol>
+					
+					<aside class="notes" data-markdown>
+						- Controlled experiments are not the panacea for everything. ​
+							- Issues discussed in the journal survey paper ([http://bit.ly/expSurvey](http://bit.ly/expSurvey))​
+					</aside>
 				</section>
 
-				<section data-markdown>
-					## Randomization introduces quantifiable uncertainty
+				<section>
+					<span class="text-muted">We want to reject the </span>
+					<h2>null hypothesis</h2>
+					<p>
+						<span class="fragment">One swallow does not a summer make, nor one fine day,</span>
+						<span class="fragment">but how many swallows do we count before we pack away our umbrellas?</span>
+					</p>
 					
-					- Other potential, but unquantifiable, sources of uncertainty also exist
-						- The population may change
-						- The treatment may change
-						- The effect may change
-					- Stability of these other factors is (often implicitly) assumed
-				</section>
-
-				<section data-markdown>
-					## Confidence intervals
-					
-					- Every randomisation will assign treatment differently
-						- If we were to repeat the same experiment, assignment would change
-						- As a result, we would expect group averages to vary as well
-					- We can quantify the expected range of variation using a confidence interval
-						- We can expect results to be between X and Y 95% of the times we repeat the experiment
-				</section>
-
-				<section data-markdown>
-					## Confidence intervals
-					
-					- This will (sadly) not tell us much about the true value of the parameter
-						- Counter intuitively, this does not prove the true value lies between X and Y with probability
-						- We can also not assume the true value lies “somewhere in the middle”
-						- Only that, in expectation, repeated sampling will result in values in that range
+					<aside class="notes" data-markdown>
+						- We will want to refute the hypothesis that there is no effect
+							- We will consider rejection of the “null hypothesis” as evidence for the “alternative hypothesis”
+					</aside>
 				</section>
 
 				<section data-markdown>
@@ -642,6 +637,25 @@
 				</section>
 
 				<section data-markdown>
+					## Confidence intervals
+					
+					- Every randomisation will assign treatment differently
+						- If we were to repeat the same experiment, assignment would change
+						- As a result, we would expect group averages to vary as well
+					- We can quantify the expected range of variation using a confidence interval
+						- We can expect results to be between X and Y 95% of the times we repeat the experiment
+				</section>
+
+				<section data-markdown>
+					## Confidence intervals
+					
+					- This will (sadly) not tell us much about the true value of the parameter
+						- Counter intuitively, this does not prove the true value lies between X and Y with probability
+						- We can also not assume the true value lies “somewhere in the middle”
+						- Only that, in expectation, repeated sampling will result in values in that range
+				</section>
+
+				<section data-markdown>
 					## Type-II errors and statistical power
 					
 					- In the presence of an effect, we might still (falsely) fail to reject the null
@@ -692,8 +706,20 @@
 						- Early shipping to minimize opportunity cost
 				</section>
 
-				<section data-markdown>
-					## Questions?
+				<section>
+					<h1>Design <span class="title-divider">of</span> experiments</h1>
+					<p>Statistical foundations for causal inference</p>
+					<br />
+					<p>
+						<small>
+							Lukas Vermeer <span class="text-very-muted">is</span> Senior Product Owner <span class="text-very-muted">for</span> Experimentation <span class="text-very-muted">at</span> Booking.com
+						</small>
+					</p>
+					<p>
+						<small>							
+							<a href="http://twitter.com/lukasvermeer" target="_blank">@lukasvermeer</a> &mdash; <a href="http://lukasvermeer.github.io/ab-stats" target="_blank">lukasvermeer.github.io/ab-stats</a>
+						</small>
+					</p>
 				</section>
 			</div>
 		</div>
