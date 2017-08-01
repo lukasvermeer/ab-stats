@@ -132,6 +132,17 @@
 					}
 				},
 				mounted: function() {
+					EventBus.$on('fragmentMethod', params => {
+						if (params.id == this.$parent.$el.id) {
+							if (params.method == 'rerandomize') {
+								this.rerandomize();
+							}
+							if (params.method == 'toggle_repeat') {
+								this.toggle_repeat();
+							}
+						}
+					});
+					
 					this.rerandomize();
 					d3.interval(this.repeat, 250);
 				},
@@ -193,7 +204,6 @@
 			Vue.component('simulation', {
 				template: `
 					<div class="container">
-						<p><small class="text-muted"><var>n</var> = <var>{{n}}</var>, <var>base conversion rate</var> = <var>{{cr}}</var>, <var>effect of treatment</var> = <var>{{effect}}</var></small></p>
 						<div class="stretch chart-container"></div>
 						<div class="text-center">
 							<button type="button" class="btn btn-default" v-on:click="step">Step</button>
@@ -221,6 +231,7 @@
 								</tbody>
 							</table>
 						</div>
+						<p><small class="text-muted"><var>n</var> = <var>{{n}}</var>, <var>base conversion rate</var> = <var>{{cr}}</var>, <var>effect of treatment</var> = <var>{{effect}}</var></small></p>
 					</div>
 				`,
 				props: {
@@ -294,7 +305,18 @@
 						return (this.results.significant.length + this.results.significant_opposite.length) / this.trials;
 					}
 				},
-				mounted: function() {	
+				mounted: function() {
+					EventBus.$on('fragmentMethod', params => {
+						if (params.id == this.$parent.$el.id) {
+							if (params.method == 'step') {
+								this.step();
+							}
+							if (params.method == 'toggle_repeat') {
+								this.toggle_repeat();
+							}
+						}
+					});
+					
 					var svg = d3.select(this.$el).select('.chart-container').append("svg")
 						.attr("width", '100%')
 						.attr("height", '100%')
@@ -507,6 +529,8 @@
 				<section id="app-rubin-fpci">
 					<h3>Rubin causal model <small>(what we can measure)</small></h3>
 					<rubin-model sample_name="Sample" randomize></rubin-model>
+					<span class="fragment" data-method="rerandomize"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
 				</section>
 
 				<section>
@@ -546,10 +570,16 @@
 				<section id="app-rubin-ate">
 					<h3>Rubin causal model <small>(what randomisation gives us)</small></h3>
 					<rubin-model sample_name="Sample" randomize display_ate></rubin-model>
+					<span class="fragment" data-method="rerandomize"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
 				</section>
 				
 				<section id="app-expectation">
 					<simulation v-bind:effect="0.1" display_true_effect display_observed_effect></simulation>
+					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
 				</section>
 
 				<section>
@@ -634,6 +664,10 @@
 
 				<section id="app-type-i">
 					<simulation v-bind:effect="0.0" display_true_effect display_type_i></simulation>
+					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
 				</section>
 
 				<section data-markdown>
@@ -678,10 +712,12 @@
 
 				<section id="app-type-ii">
 					<simulation v-bind:effect="0.05" display_type_ii display_power></simulation>
+					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
 				</section>
 
 				<section id="app-type-ii-2">
 					<simulation v-bind:effect="0.05" v-bind:n="2000" display_type_ii display_power></simulation>
+					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
 				</section>
 
 				<section data-markdown>
@@ -748,7 +784,9 @@
 					{ src: 'reveal/plugin/notes/notes.js', async: true }
 				]
 			});
-
+			
+			const EventBus = new Vue();
+			
 			new Vue({ el: '#app-rubin-full' });
 			new Vue({ el: '#app-rubin-fpci' });
 			new Vue({ el: '#app-rubin-ate' });
@@ -757,6 +795,17 @@
 			new Vue({ el: '#app-type-i' });
 			new Vue({ el: '#app-type-ii' });
 			new Vue({ el: '#app-type-ii-2' });
+			
+			Reveal.addEventListener( 'fragmentshown', function( event ) {
+				if (event.fragment.hasAttribute('data-method')) {
+					EventBus.$emit('fragmentMethod', { id: event.fragment.parentNode.id, method: event.fragment.getAttribute('data-method')});
+				}
+			} );
+			Reveal.addEventListener( 'fragmenthidden', function( event ) {
+				if (event.fragment.hasAttribute('data-method') && event.fragment.hasAttribute('trigger-hidden')) {
+					EventBus.$emit('fragmentMethod', { id: event.fragment.parentNode.id, method: event.fragment.getAttribute('data-method')});
+				}
+			} );
 		</script>
 	</body>
 </html>
