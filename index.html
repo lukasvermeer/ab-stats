@@ -334,7 +334,7 @@
 						var b = d3.stack().keys(d3.range(3))(d3.transpose([b1.map(function(d) {return d.length}),b2.map(function(d) {return d.length}),b3.map(function(d) {return d.length})]));
 						var y = d3.scaleLinear().domain([0, d3.max(b[2], function(d) { return d[1]; })]).range([this.height, 0]);
 						var color = d3.scaleOrdinal().domain(d3.range(3)).range(d3.schemeCategory20);
-						var colorsort = [0,2,1];
+						var colorsort = [0,0,1];
 
 						var series = this.g.selectAll(".series").data(b);						
 						series.enter().append("g")
