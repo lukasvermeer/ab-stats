@@ -216,7 +216,7 @@
 								<tbody>
 									<tr>
 										<td v-if="display_true_effect" class="align-center big-font">{{this.effect}}</td>
-										<td v-if="display_observed_effect" class="align-center big-font">{{averages.total ? averages.total.toFixed(5) : "-"}}</td>
+										<td v-if="display_observed_effect" class="align-center big-font">{{averages.total ? averages.total.toFixed(3) : "-"}}</td>
 										<td v-if="display_type_i" class="align-center big-font">{{type_i_error.toLocaleString('us', {style: 'percent'})}}</td>
 										<td v-if="display_type_ii" class="align-center big-font">{{type_ii_error.toLocaleString('us', {style: 'percent'})}}</td>
 										<td v-if="display_power" class="align-center big-font">{{power.toLocaleString('us', {style: 'percent'})}}</td>
