@@ -67,6 +67,10 @@
 				content: "?";
 				color: #BBB;
 			}
+			.reveal mark {
+				background: #d9edf7;
+				font-weight: bold;
+			}
 		</style>
 	</head>
 	<body>
@@ -505,9 +509,9 @@
 					<span class="text-muted">The fundamental problem of</span>
 					<h2>causal inference</h2>
 					<ol>
-						<li class="fragment">We cannot sample the entire population</li>
-						<li class="fragment">We cannot expose units to both treatments exclusively</li>
-						<li class="fragment">We cannot directly observe underlying probabilities</li>
+						<li class="fragment">We cannot sample the entire <mark>population</mark></li>
+						<li class="fragment">We cannot expose units to both treatments <mark>exclusively</mark></li>
+						<li class="fragment">We cannot directly observe <mark>underlying</mark> probabilities</li>
 					</ol>
 					
 					<aside class="notes" data-markdown>
@@ -530,8 +534,8 @@
 					<span class="text-muted">We will try to answer two</span>
 					<h2>key questions</h2>
 					<ol>
-						<li class="fragment">Is there any causal effect?</li>
-						<li class="fragment">What is the size of the causal effect?</li>
+						<li class="fragment"><mark>Is there</mark> any causal effect?</li>
+						<li class="fragment">What is the <mark>size</mark> of the causal effect?</li>
 					</ol>
 
 					<aside class="notes" data-markdown>
@@ -549,7 +553,7 @@
 					<h2>in expectation</h2>
 					<span class="fragment">If we show A and B to random samples of the population,</span>
 					<span class="fragment">then the fraction of wins in both groups is expected to converge on the average underlying probabilities</span>
-					<span class="fragment">and the difference is expected to converge on the <b>average treatment effect</b></span>
+					<span class="fragment">and the difference is expected to converge on the <mark>average treatment effect</mark></span>
 
 					<aside class="notes" data-markdown>
 						- In expectation, the average of a random sample will approximate true mean of the population
@@ -580,9 +584,9 @@
 					<h2>explain a difference</h2>
 					
 					<ol>
-						<li class="fragment"><b>Causation</b> resulted in people behaving differently when treatment was applied</li>
-						<li class="fragment"><b>Pure chance</b> resulted in a difference unrelated to the treatment</li>
-						<li class="fragment"><b>Measurement error</b> resulted in a difference unrelated to the experiment</li>
+						<li class="fragment"><mark>Causation</mark> resulted in people behaving differently when treatment was applied</li>
+						<li class="fragment"><mark>Pure chance</mark> resulted in a difference between the two groups unrelated to the treatment</li>
+						<li class="fragment"><mark>Measurement error</mark> resulted in an unintended difference in results unrelated to user behaviour</li>
 					</ol>
 					
 					<aside class="notes" data-markdown>
