@@ -195,7 +195,7 @@
 				},
 				methods: {
 					complete_randomize: function() {
-						var n = 6;//this.sample.length;
+						var n = this.sample.length;
 						var m = Math.ceil(n / 2);
 						return Array(m).fill(1).concat(Array(n-m).fill(0)).shuffle();
 					},
