@@ -551,9 +551,11 @@
 				<section id="expectation">
 					<span class="text-muted">Our answers will be correct</span>
 					<h2>in expectation</h2>
-					<span class="fragment">If we show A and B to random samples of the population,</span>
-					<span class="fragment">then the fraction of wins in both groups is expected to converge on the average underlying probabilities</span>
-					<span class="fragment">and the difference is expected to converge on the <mark>average treatment effect</mark></span>
+					<p>
+						<span class="fragment">If we show A and B to random samples of the population,</span>
+						<span class="fragment">then the fraction of wins in both groups is expected to converge on the average underlying probabilities</span>
+						<span class="fragment">and the difference is expected to converge on the <mark>average treatment effect</mark></span>
+					</p>
 
 					<aside class="notes" data-markdown>
 						- In expectation, the average of a random sample will approximate true mean of the population
@@ -578,6 +580,30 @@
 					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
 					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
 				</section>
+
+				<!--
+				<section id="confidence-intervals">
+					<span class="text-muted">estimates are expected to fall</span>
+					<h2>within a range</h2>
+					
+					<p>
+						The following statement is technically incorrect, but I'm not sure how to explain it better. :-/
+					</p>
+					<p>
+						<span class="fragment">Every randomisation will assign treatment differently,</span>
+						<span class="fragment">so we can expect group averages to vary as well,</span>
+						<span class="fragment">but we can quantify the expected range of variation using a <mark>confidence interval</mark></span>
+					</p>
+
+					<aside class="notes" data-markdown>
+						- Every randomisation will assign treatment differently
+							- If we were to repeat the same experiment, assignment would change
+							- As a result, we would expect group averages to vary as well
+						- We can quantify the expected range of variation using a confidence interval
+							- We can expect results to be between X and Y 95% of the times we repeat the experiment
+					</aside>
+				</section>
+				-->
 
 				<section id="randomisation">
 					<span class="text-muted">Randomisation ensures only three things can</span>
@@ -639,7 +665,8 @@
 							- The odds of rolling three sixes are pretty slim (⅙ * ⅙ * ⅙ * 100 ~= 0.46%)
 						- Sometimes we will get “unlucky” in our randomisation
 							- We will have to decide at which point we will reject the idea that our result could be chance
-							- At this point, we will accept the alternative hypothesis and argue there is a causal effect					</aside>
+							- At this point, we will accept the alternative hypothesis and argue there is a causal effect
+					</aside>
 				</section>
 
 				<section id="misinterpreted-p-value">
@@ -684,35 +711,29 @@
 					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
 				</section>
 
-				<section data-markdown>
-					## Confidence intervals
-					
-					- Every randomisation will assign treatment differently
-						- If we were to repeat the same experiment, assignment would change
-						- As a result, we would expect group averages to vary as well
-					- We can quantify the expected range of variation using a confidence interval
-						- We can expect results to be between X and Y 95% of the times we repeat the experiment
-				</section>
-
-				<section data-markdown>
-					## Type-II errors and statistical power
-										
-					**Statistical power is the probability that the test correctly rejects the null hypothesis when the alternative hypothesis is true.**
-				</section>
-
-				<section data-markdown>
-					## Type-II errors and statistical power
-					
-					- Two main things that affect statistical power
-						- Sample size (more is better)
-						- Effect size (more is better)
-					- Effect size is unknown but assumed fixed
-					- Sample size may be increased is low power is expected
-				</section>
-
 				<section id="app-type-ii">
-					<simulation v-bind:effect="0.05" display_type_ii display_power></simulation>
+					<simulation v-bind:effect="0.05" display_true_effect display_type_ii></simulation>
 					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
+				</section>
+
+				<section id="power">
+					<span class="text-muted">The importance of</span>
+					<h2>Statistical power</h2>
+					
+					<p>
+						<span class="fragment">Statistical power is the probability that the test <mark>correctly rejects</mark> the null hypothesis when the alternative hypothesis is true</span>
+					</p>
+					<p>
+						<span class="fragment">Two main things that affect statistical power</span>
+						<ul>
+							<li class="fragment">Sample size <span class="text-very-muted">(more is better)</span></li>
+							<li class="fragment">Effect size <span class="text-very-muted">(more is better)</span></li>
+						</ul>
+					
+					<aside class="notes" data-markdown>
+						- Effect size is unknown but assumed fixed
+						- Sample size may be increased is low power is expected
+					</aside>
 				</section>
 
 				<section id="app-type-ii-2">
