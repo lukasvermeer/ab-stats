@@ -65,11 +65,21 @@
 			}
 			.reveal table.align-center-except-first-column td:nth-child(1n+2):empty:after {
 				content: "?";
-				color: #BBB;
+				color: #777;
 			}
 			.reveal mark {
 				background: #d9edf7;
 				font-weight: bold;
+			}
+			.reveal .dice {
+				font-size: 20rem;
+				line-height: 0.6em;
+			}
+			.reveal .dice .rolling {
+				color: black;
+			}
+			.reveal .dice .not-six {
+				color: #777;
 			}
 		</style>
 	</head>
@@ -94,7 +104,7 @@
 									<td>{{ randomize ? '' : (item.b - item.a).toFixed(1)}}</td>
 									<td>{{ item.b_show ? item.b : ''}}</td>
 								</tr>
-								<tr class="text-very-muted">
+								<tr class="text-muted">
 									<td>({{ this.sample_name }})</td>
 									<td>...</td>
 									<td>...</td>
@@ -484,7 +494,7 @@
 					<br />
 					<p>
 						<small>
-							Lukas Vermeer <span class="text-very-muted">is</span> Senior Product Owner <span class="text-very-muted">for</span> Experimentation <span class="text-very-muted">at</span> Booking.com
+							Lukas Vermeer <span class="text-muted">is</span> Senior Product Owner <span class="text-muted">for</span> Experimentation <span class="text-muted">at</span> Booking.com
 						</small>
 					</p>
 					<p>
@@ -652,6 +662,21 @@
 					<p>
 						<span class="fragment"><b>How unlikely is this result <mark>assuming the null is true</mark>?</b></span>
 					</p>
+				</section>
+
+				<section id="loaded-die">
+					<span class="text-muted">Is this die</span>
+					<h2>Fair?</h2>
+					<p class="dice">
+						<span class="fragment">&#x2685</span>
+						<span class="fragment">&#x2685</span>
+						<span class="fragment">&#x2685</span>
+					</p>
+					<p>
+						<span class="fragment">p = 0.00462962</span>
+						</br>
+						<span class="fragment text-muted"><small>(Not fair; I cheated)</small></span>
+					</p>
 
 					<aside class="notes" data-markdown>
 						- We might argue that small odds support accepting an alternative explanation
@@ -671,10 +696,6 @@
 					</p>
 					
 					<aside class="notes" data-markdown>
-						- Even with a fair die we might roll a six twice in a row
-							- The odds of rolling two sixes are one in six times one in six (⅙ * ⅙ * 100 ~= 2.78%)
-						- Even after three sixes, there is a chance that the die is fair and we got lucky
-							- The odds of rolling three sixes are pretty slim (⅙ * ⅙ * ⅙ * 100 ~= 0.46%)
 						- Sometimes we will get “unlucky” in our randomisation
 							- We will have to decide at which point we will reject the idea that our result could be chance
 							- At this point, we will accept the alternative hypothesis and argue there is a causal effect
@@ -737,8 +758,8 @@
 					<p>
 						<span class="fragment"><b>Two main things affect statistical power:</b></span>
 						<ul>
-							<li class="fragment">Sample size <span class="text-very-muted">(more is better)</span></li>
-							<li class="fragment">Effect size <span class="text-very-muted">(more is better)</span></li>
+							<li class="fragment">Sample size <span class="text-muted">(more is better)</span></li>
+							<li class="fragment">Effect size <span class="text-muted">(more is better)</span></li>
 						</ul>
 					</p>
 					
@@ -803,7 +824,7 @@
 					<br />
 					<p>
 						<small>
-							Lukas Vermeer <span class="text-very-muted">is</span> Senior Product Owner <span class="text-very-muted">for</span> Experimentation <span class="text-very-muted">at</span> Booking.com
+							Lukas Vermeer <span class="text-muted">is</span> Senior Product Owner <span class="text-muted">for</span> Experimentation <span class="text-muted">at</span> Booking.com
 						</small>
 					</p>
 					<p>
