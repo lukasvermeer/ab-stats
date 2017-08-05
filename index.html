@@ -228,12 +228,13 @@
 								</tbody>
 							</table>
 						</div>
-						<p><small class="text-muted"><var>n</var> = <var>{{n}}</var>, <var>base conversion rate</var> = <var>{{cr}}</var>, <var>effect of treatment</var> = <var>{{effect}}</var></small></p>
+						<p><small class="text-muted"><mark v-if="n != 1000"><var>n</var> = <var>{{n}}</var></mark><span v-if="n == 1000"><var>n</var> = <var>{{n}}</var></span>, <var>base conversion rate</var> = <var>{{cr}}</var>, <var>effect of treatment</var> = <var>{{effect}}</var><span v-if="peek > 1">, <mark>peeking {{peek}} times</mark></span></small></p>
 					</div>
 				`,
 				props: {
 					effect: 					{ type: Number, default: 0 },
 					n:  						{ type: Number, default: 1000 },
+					peek:						{ type: Number, default: 1 },
 					display_true_effect: 		{ type: Boolean, default: false },
 					display_observed_effect:	{ type: Boolean, default: false },
 					display_type_i:				{ type: Boolean, default: false },
@@ -360,17 +361,27 @@
 							.call(d3.axisBottom(x));
 					},
 					step: function() {
-						var n = this.trials;
-						if (n >= 1000000) return;
-						for (var j = 0; j < Math.min(1000,10**(""+(n)).length/10); ++j) {
-							base_n = this.rbinom(this.n, 0.5);
-							var_n = this.n - base_n;
+						for (var j = 0; j < Math.min(100,10**(""+(this.trials)).length/10); ++j) {
+							var base_n  = 0; var var_n = 0; var base_c = 0; var var_c = 0;
+							for (var k = 0; k < this.peek; ++k) {
+								var n_add = Math.ceil(this.n / this.peek);
+								
+								var base_n_add = this.rbinom(n_add, 0.5);
+								var var_n_add = n_add - base_n_add;
+
+								base_n += base_n_add;
+								var_n += var_n_add;
 							
-							base_c = this.rbinom(base_n, this.cr);
-							var_c = this.rbinom(var_n, (this.cr + this.effect));
+								base_c += this.rbinom(base_n_add, this.cr);
+								var_c += this.rbinom(var_n_add, (this.cr + this.effect));
 							
-							effect = (var_c/var_n) - (base_c/base_n);
-							gval = calculate_g_test([[base_n - base_c, base_c], [var_n - var_c, var_c]]);
+								effect = (var_c/var_n) - (base_c/base_n);
+								gval = calculate_g_test([[base_n - base_c, base_c], [var_n - var_c, var_c]]);
+
+								if (gval >= 3.841459) {
+									break;
+								}
+							}
 
 							if (gval >= 3.841459) {
 								if (effect > 0) {
@@ -620,8 +631,9 @@
 					<span class="text-muted">We want to reject the</span>
 					<h2>null hypothesis</h2>
 					<p>
-						<span class="fragment">The difference we see could be the result of chance.</span>
-						<span class="fragment">If we could rule out chance, that would give us evidence for the <mark>alternative</mark>.</span>
+						<span class="fragment">Any difference we see could be the result of chance, </span>
+						<span class="fragment">but if we could reasonably rule out chance, </span>
+						<span class="fragment">we might consider this to be evidence for the <mark>alternative hypothesis</mark>.</span>
 					</p>
 					
 					<aside class="notes" data-markdown>
@@ -706,13 +718,12 @@
 				<section id="app-type-i">
 					<simulation v-bind:effect="0.0" display_true_effect display_type_i></simulation>
 					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
 					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
 				</section>
 
 				<section id="app-type-ii">
 					<simulation v-bind:effect="0.05" display_true_effect display_type_ii></simulation>
+					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
 					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
 				</section>
 
@@ -724,11 +735,12 @@
 						<span class="fragment">Statistical power is the probability that the test <mark>correctly rejects</mark> the null hypothesis when the alternative hypothesis is true</span>
 					</p>
 					<p>
-						<span class="fragment">Two main things that affect statistical power</span>
+						<span class="fragment"><b>Two main things affect statistical power:</b></span>
 						<ul>
 							<li class="fragment">Sample size <span class="text-very-muted">(more is better)</span></li>
 							<li class="fragment">Effect size <span class="text-very-muted">(more is better)</span></li>
 						</ul>
+					</p>
 					
 					<aside class="notes" data-markdown>
 						- Effect size is unknown but assumed fixed
@@ -741,26 +753,52 @@
 					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
 				</section>
 
-				<section data-markdown>
-					## Multiple comparison and other protocol violations
-					
-					- The methods described assume strict adherence to experiment protocol
-						- A versus B
-						- Test a single hypothesis once
-						- Test for significance only once
-					- Deviations from protocol can increase error rate or introduce biased estimates
-						- Multiple testing increases type-I error rate
-						- Variant selection bias inflates estimate of average treatment effect
+				<section id="app-type-ii-3">
+					<simulation v-bind:effect="0.05" v-bind:n="4000" display_type_ii display_power></simulation>
+					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
 				</section>
 
-				<section data-markdown>
-					## Multiple comparison and other protocol violations
+				<section id="protocol">
+					<span class="text-muted">The importance of sticking to</span>
+					<h2>Protocol</h2>
+					
+					<p>
+						<span class="fragment">The methods described assume strict adherence to protocol;</span>
+						<span class="fragment">violations of protocol such as <mark>peeking</mark> and <mark>multiple testing</mark> increase the type-I error rate</span>
+					</p>
+				</section>
 
-					- Correcting for these deviations from standard protocol is possible
-						- See for example([www.exp-platform.com/Documents/p609-deng.pdf](www.exp-platform.com/Documents/p609-deng.pdf))
-					- More flexible protocols may be desirable
-						- Early stopping rules to mitigate damage from bad experiments
-						- Early shipping to minimize opportunity cost
+				<section id="app-multiple-testing">
+					<simulation v-bind:effect="0.00" v-bind:peek="2" display_true_effect display_type_i></simulation>
+					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
+				</section>
+
+				<section id="app-multiple-testing-2">
+					<simulation v-bind:effect="0.00" v-bind:peek="100" display_true_effect display_type_i></simulation>
+					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
+				</section>
+
+				<section id="adaptive-methods">
+					<span class="text-muted">The importance of violating</span>
+					<h2>Protocol</h2>
+					
+					<p>
+						<span class="fragment">More flexible protocols may be desirable</span>
+						<ul>
+							<li class="fragment"><mark>early stopping rules</mark> to mitigate damage</li>
+							<li class="fragment"><mark>early shipping</mark> to minimize opportunity cost</li>
+							<li class="fragment"><mark>multiple variants</mark> to test several alternatives</li>
+							<li class="fragment"><mark>multiple metrics</mark> to guard business KPIs</li>
+						</ul>
+					</p>
+					<p>
+						<span class="fragment">All these are possible, but require protocol adjustments</span>
+					</p>
+					
+					<aside class="notes" data-markdown>
+						- Correcting for these deviations from standard protocol is possible
+							- See for example([www.exp-platform.com/Documents/p609-deng.pdf](www.exp-platform.com/Documents/p609-deng.pdf))
+					</aside>
 				</section>
 
 				<section id="end">
@@ -786,6 +824,7 @@
 						<li><small>Rubin, Donald B. 1974. “Estimating Causal Effects of Treatments in Randomized and Nonrandomized Studies.” Journal of Educational Psychology 66 (5): 688–701. (<a href="http://dx.doi.org/10.1037/h0037350" target="_blank">link</a>)</small></li>
 						<li><small>Goodman, Steve 2008. “A dirty dozen: twelve P-value misconceptions.” Seminars in Hematology, 45 (2008), pp. 135-140. (<a href="https://www.researchgate.net/publication/5272766_A_Dirty_Dozen_Twelve_P-Value_Misconceptions" target="_blank">link</a>)</small></li>
 						<li><small>Kohavi, R., Longbotham, R., Sommerfield, D. et al. “Controlled experiments on the web: survey and practical guide” Data Min Knowl Disc (2009) 18: 140. (<a href="http://bit.ly/expSurvey" target="_blank">link</a>)</small></li>
+						<li><small>Deng, A. ? (<a href="http://www.exp-platform.com/Documents/p609-deng.pdf" target="_blank">link</a>)</small></li>
 					</ol>
 				</section>
 			</div>
@@ -826,6 +865,9 @@
 			new Vue({ el: '#app-type-i' });
 			new Vue({ el: '#app-type-ii' });
 			new Vue({ el: '#app-type-ii-2' });
+			new Vue({ el: '#app-type-ii-3' });
+			new Vue({ el: '#app-multiple-testing' });
+			new Vue({ el: '#app-multiple-testing-2' });
 			
 			Reveal.addEventListener( 'fragmentshown', function( event ) {
 				if (event.fragment.hasAttribute('data-method')) {
