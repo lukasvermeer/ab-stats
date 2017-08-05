@@ -596,11 +596,11 @@
 				</section>
 
 				<section>
-					<span class="text-muted">We want to reject the </span>
+					<span class="text-muted">We want to reject the</span>
 					<h2>null hypothesis</h2>
 					<p>
-						<span class="fragment">One swallow does not a summer make, nor one fine day,</span>
-						<span class="fragment">but how many swallows do we count before we pack away our umbrellas?</span>
+						<span class="fragment">The difference we see could be the result of chance.</span>
+						<span class="fragment">If we could rule out chance, that would give us evidence for the <mark>alternative</mark>.</span>
 					</p>
 					
 					<aside class="notes" data-markdown>
@@ -609,54 +609,76 @@
 					</aside>
 				</section>
 
-				<section data-markdown>
-					## Test statistics (p-values) 
+				<section>
+					<span class="text-muted">We compute a</span>
+					<h2>p-value</h2>
+					<p>
+						<span class="fragment">Assuming there is no effect, </span>
+						<span class="fragment">the p-value is the probability of seeing a particular result or more extreme by chance.</span>
+					</p>
+					<p>
+						<span class="fragment"><b>How unlikely is this result <mark>assuming the null is true</mark>?</b></span>
+					</p>
 
-					- Even with a fair die we might roll a six twice in a row
-						- The odds of rolling two sixes are one in six times one in six (⅙ * ⅙ * 100 ~= 2.78%)
-					- Even after three sixes, there is a chance that the die is fair and we got lucky
-						- The odds of rolling three sixes are pretty slim (⅙ * ⅙ * ⅙ * 100 ~= 0.46%)
-					
-					**The p-value is the probability of getting a result or more extreme by chance assuming there is no effect at all**
-				</section>
-
-				<section data-markdown>
-					## Test statistics (p-values)
-					
-					- We might argue that small odds support accepting an alternative explanation
-						- For instance that the die is loaded, of that I can influence the result through telepathy
-					- Sometimes we will get “unlucky” in our randomisation
-						- We will have to decide at which point we will reject the idea that our result could be chance
-						- At this point, we will accept the alternative hypothesis and argue there is a causal effect
+					<aside class="notes" data-markdown>
+						- We might argue that small odds support accepting an alternative explanation
+							- For instance that the die is loaded, of that I can influence the result through telepathy
+					</aside>
 				</section>
 
 				<section>
-					<h2>Misinterpreting p-values</h2>
-
-					<ul>					
-						<li>p-values are often misinterpreted</li>
-						<ul>
-							<li>p-value gives us Prob(X >= x | H0), whereas what we want is Prob(H0 | X = x)</li>
-						</ul>
-						<li>Here are some incorrect statements from Steve Goodman’s A Dirty Dozen[2]</li>
-						<ul>
-							<li>If p = .05, the null hypothesis has only a 5% chance of being true</li>
-							<li>A non-significant difference (e.g. p > .05) means there is no difference between groups</li>
-							<li>p = .05 means that we have observed data that would occur only 5% of the time under the null</li>
-							<li>p = .05 means that if you reject the null, the probability of a type I error (false positive) is 5%</li>
-						</ul>
-					</ul>
-					<p><small>[2] Goodman, Steve 2008. “A dirty dozen: twelve P-value misconceptions.” Seminars in Hematology, 45 (2008), pp. 135-140.</small></p>
+					<span class="text-muted">We need to pick a</span>
+					<h2>threshold</h2>
+					<p>
+						<span class="fragment">One swallow does not a summer make, nor one fine day,</span>
+						<span class="fragment">but how many swallows do we count before we pack away our umbrellas?</span>
+					</p>
+					<p>
+						<span class="fragment"><b>Scientific standard:</b> <mark>p < 0.05</mark></span>
+					</p>
+					
+					<aside class="notes" data-markdown>
+						- Even with a fair die we might roll a six twice in a row
+							- The odds of rolling two sixes are one in six times one in six (⅙ * ⅙ * 100 ~= 2.78%)
+						- Even after three sixes, there is a chance that the die is fair and we got lucky
+							- The odds of rolling three sixes are pretty slim (⅙ * ⅙ * ⅙ * 100 ~= 0.46%)
+						- Sometimes we will get “unlucky” in our randomisation
+							- We will have to decide at which point we will reject the idea that our result could be chance
+							- At this point, we will accept the alternative hypothesis and argue there is a causal effect					</aside>
 				</section>
 
-				<section data-markdown>
-					## Misinterpreting p-values
+				<section>
+					<span class="text-muted">p-values are often<small>[2]</small></span>
+					<h2>misinterpreted</h2>
 					
-					- In many sciences, the standard threshold to reject the null is p < 0.05
-						- Note that rolling two sixes already meets this threshold (since ⅙ * ⅙ < 0.05)
-					- In the absence of an effect, we might still (falsely) reject the null
-						- This is called a “type-I” error
-						- When the boy cried wolf, there was none
+					<span class="fragment">Examples of <mark>incorrect</mark> interpretations</span>
+					<ol>
+						<li class="fragment">p = .05 means the null hypothesis has only a 5% chance of being true</li>
+						<li class="fragment">A non-significant difference (e.g. p > .05) means there is no difference between groups</li>
+						<li class="fragment">p = .05 means that we have observed data that would occur only 5% of the time under the null</li>
+						<!-- <li class="fragment">p = .05 means that if you reject the null, the probability of a type I error (false positive) is 5%</li> -->
+					</ol>
+					
+					<p><small>[2] Goodman, Steve 2008. “A dirty dozen: twelve P-value misconceptions.” Seminars in Hematology, 45 (2008), pp. 135-140.</small></p>
+					
+					<aside class="notes" data-markdown>
+						- p-value gives us Prob(X >= x | H0), whereas what we want is Prob(H0 | X = x)
+						- Here are some incorrect statements from Steve Goodman’s A Dirty Dozen[2]
+					</aside>
+				</section>
+
+				<section>
+					<span class="text-muted">Two types of</span>
+					<h2>errors</h2>
+					
+					<ol>
+						<li class="fragment"><mark>Type-I</mark> is the incorrect rejection of a true null hypothesis; <span class="fragment">we cried wolf when there was none</span></li>
+						<li class="fragment"><mark>Type-II</mark> is the failure to reject a false null hypothesis; <span class="fragment">we failed to detect a real effect</span></li>
+					</ol>
+					
+					<aside class="notes" data-markdown>
+						- The result might simply not be that unlikely when assuming the null is true
+					</aside>
 				</section>
 
 				<section id="app-type-i">
@@ -689,10 +711,6 @@
 				<section data-markdown>
 					## Type-II errors and statistical power
 					
-					- In the presence of an effect, we might still (falsely) fail to reject the null
-						- This is called a “type-II” error
-						- When the wolf showed up, the boy failed to cry
-					- The result might simply not be that unlikely when assuming the null is true
 					
 					**Statistical power is the probability that the test correctly rejects the null hypothesis when the alternative hypothesis is true.**
 				</section>
