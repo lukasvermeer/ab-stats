@@ -78,13 +78,74 @@
 			.reveal .dice .rolling {
 				color: black;
 			}
-			.reveal .dice .not-six {
-				color: #777;
+			.reveal .dice .six {
+				color: #00aaff;
 			}
 		</style>
 	</head>
 	<body>
 		<script type="text/javascript">
+			Vue.component('dice', {
+				template: `
+					<div class="component">
+						<p class="dice">
+							<span v-for="(item, index) in faces" v-html="'&#x268'+(item-1)" v-bind:class="{'six': item==6}"></span>
+						</p>
+					</div>
+				`,
+				props: {
+					n:	{ type: Number, default: 3 },
+				},
+				data: function () {
+					return {
+						faces: [],
+						repeating: false,
+						repeat_cycle_length: 16,
+						repeat_cycle_step: 0,
+						my_slide: null,
+					}
+				},
+				mounted: function() {
+					EventBus.$on('fragmentMethod', params => {
+						if (params.id == this.$parent.$el.id) {
+							if (params.method == 'rerandomize') {
+								this.rerandomize();
+							}
+							if (params.method == 'toggle_repeat') {
+								this.toggle_repeat();
+							}
+						}
+					});
+					
+					this.rerandomize();
+					d3.interval(this.repeat, 20);
+				},
+				methods: {
+					rerandomize: function() {
+						this.faces = Array(this.n).fill(1).map(function(i) { return Math.ceil(Math.random()*6) });
+					},
+					toggle_repeat: function() {
+						this.repeating = !this.repeating;
+						this.my_slide = Reveal.getIndices().h;
+						this.repeat_cycle_length = 16;
+						this.repeat_cycle_step = this.repeat_cycle_length - 1;
+					},
+					repeat: function() {
+						if (this.repeating && Reveal.getIndices().h == this.my_slide && !this.all_sixes()) {
+							this.repeat_cycle_step++;
+							if (this.repeat_cycle_length == this.repeat_cycle_step) {
+								this.rerandomize();
+								this.repeat_cycle_length = Math.max(1, this.repeat_cycle_length - 2);
+								this.repeat_cycle_step = 0;
+							}
+						}
+					},
+					all_sixes: function() {
+						return this.faces.reduce(function(a,b) {return a+b}) == 6*this.faces.length;
+					},
+				}
+			});
+
 			Vue.component('rubin-model', {
 				template: `
 					<div class="component">
@@ -667,11 +728,7 @@
 				<section id="loaded-die">
 					<span class="text-muted">Is this die</span>
 					<h2>Fair?</h2>
-					<p class="dice">
-						<span class="fragment">&#x2685</span>
-						<span class="fragment">&#x2685</span>
-						<span class="fragment">&#x2685</span>
-					</p>
+					<p class="dice"><span class="fragment six">&#x2685</span><span class="fragment six">&#x2685</span><span class="fragment six">&#x2685</span></p>
 					<p>
 						<span class="fragment">p = 0.00462962</span>
 						</br>
@@ -789,6 +846,19 @@
 					</p>
 				</section>
 
+				<section id="app-dice">
+					<span class="text-muted">Is this die</span>
+					<h2>Fair?</h2>
+					<span class="fragment"><dice></dice></span>
+					<span class="fragment" data-method="rerandomize"></span>
+					<span class="fragment" data-method="toggle_repeat" trigger-hidden></span>
+					<p>
+						<span class="fragment">p = 1</span>
+						</br>
+						<span class="fragment text-muted"><small>(Fair die; I still cheated)</small></span>
+					</p>
+				</section>
+
 				<section id="app-multiple-testing">
 					<simulation v-bind:effect="0.00" v-bind:peek="2" display_true_effect display_type_i></simulation>
 					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
@@ -800,7 +870,7 @@
 				</section>
 
 				<section id="adaptive-methods">
-					<span class="text-muted">The importance of violating</span>
+					<span class="text-muted">Reasons for violating</span>
 					<h2>Protocol</h2>
 					
 					<p>
@@ -885,6 +955,8 @@
 			new Vue({ el: '#app-type-ii-3' });
 			new Vue({ el: '#app-multiple-testing' });
 			new Vue({ el: '#app-multiple-testing-2' });
+			
+			new Vue({ el: '#app-dice' });
 			
 			Reveal.addEventListener( 'fragmentshown', function( event ) {
 				if (event.fragment.hasAttribute('data-method')) {
