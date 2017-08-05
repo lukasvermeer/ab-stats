@@ -467,7 +467,7 @@
 
 		<div class="reveal">
 			<div class="slides">
-				<section>
+				<section id="title">
 					<h1>Design <span class="title-divider">of</span> experiments</h1>
 					<p>Statistical foundations for causal inference</p>
 					<br />
@@ -483,13 +483,13 @@
 					</p>
 				</section>
 				
-				<section>
+				<section id="causal-inference">
 					<span class="text-muted">Making good decisions requires</span>
 					<h2>causal inference</h2>
 					<p>
 						<span class="fragment">Umbrellas often appear just before it pours,</span>
 						<span class="fragment">but banning them will not stop the rain;</span>
-						<span class="fragment">it will just make everyone more wet</span>
+						<span class="fragment">it will just make everyone <mark>more wet</mark></span>
 					</p>
 
 					<aside class="notes" data-markdown>
@@ -505,7 +505,7 @@
 					<rubin-model display_ate></rubin-model>
 				</section>
 
-				<section>
+				<section id="fundamental-problem">
 					<span class="text-muted">The fundamental problem of</span>
 					<h2>causal inference</h2>
 					<ol>
@@ -530,7 +530,7 @@
 					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
 				</section>
 
-				<section>
+				<section id="two-questions">
 					<span class="text-muted">We will try to answer two</span>
 					<h2>key questions</h2>
 					<ol>
@@ -548,7 +548,7 @@
 					</aside>
 				</section>
 				
-				<section>
+				<section id="expectation">
 					<span class="text-muted">Our answers will be correct</span>
 					<h2>in expectation</h2>
 					<span class="fragment">If we show A and B to random samples of the population,</span>
@@ -579,7 +579,7 @@
 					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
 				</section>
 
-				<section>
+				<section id="randomisation">
 					<span class="text-muted">Randomisation ensures only three things can</span>
 					<h2>explain a difference</h2>
 					
@@ -588,14 +588,9 @@
 						<li class="fragment"><mark>Pure chance</mark> resulted in a difference between the two groups unrelated to the treatment</li>
 						<li class="fragment"><mark>Measurement error</mark> resulted in an unintended difference in results unrelated to user behaviour</li>
 					</ol>
-					
-					<aside class="notes" data-markdown>
-						- Controlled experiments are not the panacea for everything. ​
-							- Issues discussed in the journal survey paper ([http://bit.ly/expSurvey](http://bit.ly/expSurvey))​
-					</aside>
 				</section>
 
-				<section>
+				<section id="null-hypothesis">
 					<span class="text-muted">We want to reject the</span>
 					<h2>null hypothesis</h2>
 					<p>
@@ -609,7 +604,7 @@
 					</aside>
 				</section>
 
-				<section>
+				<section id="p-value">
 					<span class="text-muted">We compute a</span>
 					<h2>p-value</h2>
 					<p>
@@ -626,7 +621,7 @@
 					</aside>
 				</section>
 
-				<section>
+				<section id="significance-threshold">
 					<span class="text-muted">We need to pick a</span>
 					<h2>threshold</h2>
 					<p>
@@ -634,7 +629,7 @@
 						<span class="fragment">but how many swallows do we count before we pack away our umbrellas?</span>
 					</p>
 					<p>
-						<span class="fragment"><b>Scientific standard:</b> <mark>p < 0.05</mark></span>
+						<span class="fragment"><b>Scientific standard for significance:</b> <mark>p < 0.05</mark></span>
 					</p>
 					
 					<aside class="notes" data-markdown>
@@ -647,11 +642,11 @@
 							- At this point, we will accept the alternative hypothesis and argue there is a causal effect					</aside>
 				</section>
 
-				<section>
+				<section id="misinterpreted-p-value">
 					<span class="text-muted">p-values are often<small>[2]</small></span>
 					<h2>misinterpreted</h2>
 					
-					<span class="fragment">Examples of <mark>incorrect</mark> interpretations</span>
+					<span class="fragment">Some examples of <mark>incorrect</mark> interpretations</span>
 					<ol>
 						<li class="fragment">p = .05 means the null hypothesis has only a 5% chance of being true</li>
 						<li class="fragment">A non-significant difference (e.g. p > .05) means there is no difference between groups</li>
@@ -667,7 +662,7 @@
 					</aside>
 				</section>
 
-				<section>
+				<section id="errors">
 					<span class="text-muted">Two types of</span>
 					<h2>errors</h2>
 					
@@ -700,18 +695,8 @@
 				</section>
 
 				<section data-markdown>
-					## Confidence intervals
-					
-					- This will (sadly) not tell us much about the true value of the parameter
-						- Counter intuitively, this does not prove the true value lies between X and Y with probability
-						- We can also not assume the true value lies “somewhere in the middle”
-						- Only that, in expectation, repeated sampling will result in values in that range
-				</section>
-
-				<section data-markdown>
 					## Type-II errors and statistical power
-					
-					
+										
 					**Statistical power is the probability that the test correctly rejects the null hypothesis when the alternative hypothesis is true.**
 				</section>
 
@@ -757,7 +742,7 @@
 						- Early shipping to minimize opportunity cost
 				</section>
 
-				<section>
+				<section id="end">
 					<h1>Design <span class="title-divider">of</span> experiments</h1>
 					<p>Statistical foundations for causal inference</p>
 					<br />
@@ -771,6 +756,16 @@
 							<a href="http://twitter.com/lukasvermeer" target="_blank">@lukasvermeer</a> &mdash; <a href="http://lukasvermeer.github.io/ab-stats" target="_blank">lukasvermeer.github.io/ab-stats</a>
 						</small>
 					</p>
+				</section>
+				
+				<section id="references">
+					<h2>References</h2>
+					
+					<ol>
+						<li><small>Rubin, Donald B. 1974. “Estimating Causal Effects of Treatments in Randomized and Nonrandomized Studies.” Journal of Educational Psychology 66 (5): 688–701. (<a href="http://dx.doi.org/10.1037/h0037350" target="_blank">link</a>)</small></li>
+						<li><small>Goodman, Steve 2008. “A dirty dozen: twelve P-value misconceptions.” Seminars in Hematology, 45 (2008), pp. 135-140. (<a href="https://www.researchgate.net/publication/5272766_A_Dirty_Dozen_Twelve_P-Value_Misconceptions" target="_blank">link</a>)</small></li>
+						<li><small>Kohavi, R., Longbotham, R., Sommerfield, D. et al. “Controlled experiments on the web: survey and practical guide” Data Min Knowl Disc (2009) 18: 140. (<a href="http://bit.ly/expSurvey" target="_blank">link</a>)</small></li>
+					</ol>
 				</section>
 			</div>
 		</div>
