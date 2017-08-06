@@ -630,11 +630,11 @@
 					</ol>
 
 					<aside class="notes">
-						- Sometimes we will get “unlucky” in our randomisation
+						- Sometimes we will get “unlucky” in our randomization
 							- We might randomly put all the men in one group and all the women in the other 
 							- We can estimate the likelihood of getting a particular result by chance using a test statistic
-						- Every randomisation will likely give us a slightly different result
-							- Every time the experiment is repeated with new randomisation, the averages will be different
+						- Every randomization will likely give us a slightly different result
+							- Every time the experiment is repeated with new randomization, the averages will be different
 							- We can quantify an expected range of results using a confidence interval
 					</aside>
 				</section>
@@ -644,13 +644,13 @@
 					<h2>in expectation</h2>
 					<p>
 						<span class="fragment">If we show A and B to random samples of the population,</span>
-						<span class="fragment">then the fraction of wins in both groups converges to the true underlying means,</span>
+						<span class="fragment">then the fraction of yes in both groups converges to the true underlying means,</span>
 						<span class="fragment">and the difference between the means converges to the <mark>average treatment effect</mark></span>
 					</p>
 
 					<aside class="notes">
 						- In expectation, the average of a random sample will approximate true mean of the population
-						- In expectation, the fraction of wins will approximate underlying probability
+						- In expectation, the fraction of yes will approximate underlying probability
 							- We do not need to observe the probabilities directly if we have the outcomes for individuals
 						- In expectation, the difference between averages will give us the ATE
 							- We do not need to measure the treatment effects of each individual participant
@@ -658,7 +658,7 @@
 				</section>
 
 				<section id="app-rubin-ate">
-					<h3>Rubin causal model <small>(what randomisation gives us)</small></h3>
+					<h3>Rubin causal model <small>(what randomization gives us)</small></h3>
 					<rubin-model sample_name="Sample" randomize display_ate></rubin-model>
 					<span class="fragment" data-method="rerandomize"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
 					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
@@ -681,13 +681,13 @@
 						The following statement is technically incorrect, but I'm not sure how to explain it better. :-/
 					</p>
 					<p>
-						<span class="fragment">Every randomisation will assign treatment differently,</span>
+						<span class="fragment">Every randomization will assign treatment differently,</span>
 						<span class="fragment">so we can expect group averages to vary as well,</span>
 						<span class="fragment">but we can quantify the expected range of variation using a <mark>confidence interval</mark></span>
 					</p>
 
 					<aside class="notes">
-						- Every randomisation will assign treatment differently
+						- Every randomization will assign treatment differently
 							- If we were to repeat the same experiment, assignment would change
 							- As a result, we would expect group averages to vary as well
 						- We can quantify the expected range of variation using a confidence interval
@@ -696,8 +696,8 @@
 				</section>
 				-->
 
-				<section id="randomisation">
-					<span class="text-muted">Randomisation ensures only three things can</span>
+				<section id="randomization">
+					<span class="text-muted">Randomization ensures only three things can</span>
 					<h2>explain a difference</h2>
 					
 					<ol>
@@ -711,9 +711,10 @@
 					<span class="text-muted">We want to reject the</span>
 					<h2>null hypothesis</h2>
 					<p>
-						<span class="fragment">Any difference we see could be the result of chance, </span>
-						<span class="fragment">but if we could reasonably rule out chance, </span>
-						<span class="fragment">we might consider this to be evidence for the <mark>alternative hypothesis</mark>.</span>
+						<span class="fragment">The <mark>null hypothesis</mark> assumes no difference between treatment and control; any difference we observe is simply due to chance.</span>
+					</p>
+					<p>
+						<span class="fragment">If we could reasonably rule out chance, we might reject the null and consider this to be evidence for the <mark>alternative hypothesis</mark>.</span>
 					</p>
 					
 					<aside class="notes">
@@ -726,11 +727,13 @@
 					<span class="text-muted">We compute a</span>
 					<h2>p-value</h2>
 					<p>
-						<span class="fragment">Assuming there is no effect, </span>
-						<span class="fragment">the p-value is the probability of seeing a particular result or more extreme by chance.</span>
+						<span class="fragment">We assume the null hypothesis is true and compute the p-value.</span>
 					</p>
 					<p>
-						<span class="fragment"><b>How unlikely is this result <mark>assuming the null is true</mark>?</b></span>
+						<span class="fragment">Assuming there is no effect, the p-value is the probability of seeing a particular result or more extreme by chance.</span>
+					</p>
+					<p>
+						<span class="fragment"><b>How likely is this result <mark>assuming the null is true</mark>?</b></span>
 					</p>
 				</section>
 
@@ -762,7 +765,7 @@
 					</p>
 					
 					<aside class="notes">
-						- Sometimes we will get “unlucky” in our randomisation
+						- Sometimes we will get “unlucky” in our randomization
 							- We will have to decide at which point we will reject the idea that our result could be chance
 							- At this point, we will accept the alternative hypothesis and argue there is a causal effect
 					</aside>
