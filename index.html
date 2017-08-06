@@ -4,15 +4,11 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>AB Statistics Presentation</title>
-
-		<script type="text/javascript" src="jquery/jquery-3.2.1.js"></script>
-		<script type="text/javascript" src="d3/d3.js"></script>
-		<script type="text/javascript" src="vue/vue.js"></script>
-		<script src="bootstrap/js/bootstrap.min.js"></script>
 		
 		<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
 		<link rel="stylesheet" href="reveal/css/reveal.css">
 		<link rel="stylesheet" href="reveal/css/theme/white.css">
+
 		<style>
 			.text-very-muted {
 				color: #BBB;
@@ -84,6 +80,9 @@
 		</style>
 	</head>
 	<body>
+		<script type="text/javascript" src="d3/d3.js"></script>
+		<script type="text/javascript" src="vue/vue.min.js"></script>
+		
 		<script type="text/javascript">
 			Vue.component('dice', {
 				template: `
@@ -574,7 +573,7 @@
 						<span class="fragment">it will just make everyone <mark>more wet</mark></span>
 					</p>
 
-					<aside class="notes" data-markdown>
+					<aside class="notes">
 						- We want gather evidence for a causal link between a change and behaviour
 							- “By switching to B, we will cause more people to click ads or buy our product!”
 						- Correlation is not sufficient for supporting decision making
@@ -596,7 +595,7 @@
 						<li class="fragment">We cannot directly observe <mark>underlying</mark> probabilities</li>
 					</ol>
 					
-					<aside class="notes" data-markdown>
+					<aside class="notes">
 						- Other potential, but unquantifiable, sources of uncertainty also exist
 							- The population may change
 							- The treatment may change
@@ -620,7 +619,7 @@
 						<li class="fragment">What is the <mark>size</mark> of the causal effect?</li>
 					</ol>
 
-					<aside class="notes" data-markdown>
+					<aside class="notes">
 						- Sometimes we will get “unlucky” in our randomisation
 							- We might randomly put all the men in one group and all the women in the other 
 							- We can estimate the likelihood of getting a particular result by chance using a test statistic
@@ -639,7 +638,7 @@
 						<span class="fragment">and the difference between the means converges to the <mark>average treatment effect</mark></span>
 					</p>
 
-					<aside class="notes" data-markdown>
+					<aside class="notes">
 						- In expectation, the average of a random sample will approximate true mean of the population
 						- In expectation, the fraction of wins will approximate underlying probability
 							- We do not need to observe the probabilities directly if we have the outcomes for individuals
@@ -677,7 +676,7 @@
 						<span class="fragment">but we can quantify the expected range of variation using a <mark>confidence interval</mark></span>
 					</p>
 
-					<aside class="notes" data-markdown>
+					<aside class="notes">
 						- Every randomisation will assign treatment differently
 							- If we were to repeat the same experiment, assignment would change
 							- As a result, we would expect group averages to vary as well
@@ -707,7 +706,7 @@
 						<span class="fragment">we might consider this to be evidence for the <mark>alternative hypothesis</mark>.</span>
 					</p>
 					
-					<aside class="notes" data-markdown>
+					<aside class="notes">
 						- We will want to refute the hypothesis that there is no effect
 							- We will consider rejection of the “null hypothesis” as evidence for the “alternative hypothesis”
 					</aside>
@@ -735,7 +734,7 @@
 						<span class="fragment text-muted"><small>(Not fair; I cheated)</small></span>
 					</p>
 
-					<aside class="notes" data-markdown>
+					<aside class="notes">
 						- We might argue that small odds support accepting an alternative explanation
 							- For instance that the die is loaded, of that I can influence the result through telepathy
 					</aside>
@@ -752,7 +751,7 @@
 						<span class="fragment"><b>Scientific standard for significance:</b> <mark>p < 0.05</mark></span>
 					</p>
 					
-					<aside class="notes" data-markdown>
+					<aside class="notes">
 						- Sometimes we will get “unlucky” in our randomisation
 							- We will have to decide at which point we will reject the idea that our result could be chance
 							- At this point, we will accept the alternative hypothesis and argue there is a causal effect
@@ -773,7 +772,7 @@
 					
 					<p><small>[2] Goodman, Steve 2008. “A dirty dozen: twelve P-value misconceptions.” Seminars in Hematology, 45 (2008), pp. 135-140.</small></p>
 					
-					<aside class="notes" data-markdown>
+					<aside class="notes">
 						- p-value gives us Prob(X >= x | H0), whereas what we want is Prob(H0 | X = x)
 						- Here are some incorrect statements from Steve Goodman’s A Dirty Dozen[2]
 					</aside>
@@ -788,7 +787,7 @@
 						<li class="fragment"><mark>Type-II</mark> is the failure to reject a false null hypothesis; <span class="fragment">we failed to detect a real effect</span></li>
 					</ol>
 					
-					<aside class="notes" data-markdown>
+					<aside class="notes">
 						- The result might simply not be that unlikely when assuming the null is true
 					</aside>
 				</section>
@@ -820,7 +819,7 @@
 						</ul>
 					</p>
 					
-					<aside class="notes" data-markdown>
+					<aside class="notes">
 						- Effect size is unknown but assumed fixed
 						- Sample size may be increased is low power is expected
 					</aside>
@@ -921,7 +920,7 @@
 		<script src="reveal/js/reveal.js"></script>
 		<script type="text/javascript">
 			Reveal.initialize({
-				controls: true,
+				controls: false,
 				progress: true,
 				history: true,
 				center: true,
@@ -933,11 +932,6 @@
 
 				// Optional reveal.js plugins
 				dependencies: [
-					{ src: 'reveal/lib/js/classList.js', condition: function() { return !document.body.classList; } },
-					{ src: 'reveal/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-					{ src: 'reveal/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-					{ src: 'reveal/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
-					{ src: 'reveal/plugin/zoom-js/zoom.js', async: true },
 					{ src: 'reveal/plugin/notes/notes.js', async: true }
 				]
 			});
