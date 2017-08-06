@@ -163,16 +163,16 @@
 								<tr>
 									<th></th>
 									<th>Under A</th>
-									<th>Treatment Effect</th>
 									<th>Under B</th>
+									<th>Treatment Effect</th>
 								</tr>
 							</thead>
 							<tbody>
 								<tr v-for="(item, index) in realisation">
 									<td>{{ item.name }}</td>
 									<td>{{ item.a_show ? item.a : '' }}</td>
-									<td>{{ randomize ? '' : (item.b - item.a).toFixed(1)}}</td>
 									<td>{{ item.b_show ? item.b : ''}}</td>
+									<td>{{ randomize ? '' : (item.b - item.a).toFixed(1)}}</td>
 								</tr>
 								<tr class="text-muted">
 									<td>({{ this.sample_name }})</td>
@@ -183,8 +183,8 @@
 								<tr class="info">
 									<td>Average</td>
 									<td>{{ this.display_ate ? avg_a.toFixed(1) : '' }}</td>
-									<td><b v-if="display_ate">{{ (avg_b - avg_a).toFixed(1) }}</b></td>
 									<td>{{ this.display_ate ? avg_b.toFixed(1) : '' }}</td>
+									<td><b v-if="display_ate">{{ (avg_b - avg_a).toFixed(1) }}</b></td>
 								</tr>
 
 							</tbody>
