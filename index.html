@@ -976,6 +976,17 @@
 					EventBus.$emit('fragmentMethod', { id: event.fragment.parentNode.id, method: event.fragment.getAttribute('data-method')});
 				}
 			} );
+			
+			if (window.location.search.match( /print-pdf/gi )) {
+				EventBus.$emit('fragmentMethod', { id: 'app-expectation', method: 'toggle_repeat'});
+				EventBus.$emit('fragmentMethod', { id: 'app-type-i', method: 'toggle_repeat'});
+				EventBus.$emit('fragmentMethod', { id: 'app-type-ii', method: 'toggle_repeat'});
+				EventBus.$emit('fragmentMethod', { id: 'app-type-ii-2', method: 'toggle_repeat'});
+				EventBus.$emit('fragmentMethod', { id: 'app-type-ii-3', method: 'toggle_repeat'});
+				EventBus.$emit('fragmentMethod', { id: 'app-multiple-testing', method: 'toggle_repeat'});
+				EventBus.$emit('fragmentMethod', { id: 'app-multiple-testing-2', method: 'toggle_repeat'});
+				EventBus.$emit('fragmentMethod', { id: 'app-dice', method: 'toggle_repeat'});
+			}
 		</script>
 	</body>
 </html>
