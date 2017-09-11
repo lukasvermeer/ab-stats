@@ -9,6 +9,8 @@
 		<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
 		<link rel="stylesheet" href="reveal/css/reveal.css">
 		<link rel="stylesheet" href="reveal/css/theme/white.css">
+		<link rel="stylesheet" href="ab-stats.css">
+
 		<script>
 			var link = document.createElement( 'link' );
 			link.rel = 'stylesheet';
@@ -17,80 +19,6 @@
 			document.getElementsByTagName( 'head' )[0].appendChild( link );
 		</script>
 
-		<style>
-			.text-very-muted {
-				color: #BBB;
-			}
-			.reveal h1 {
-				line-height: 0.9em;
-				margin-bottom: 0.75em;
-			}
-
-			h1 span.title-divider {
-				overflow: hidden;
-				text-align: center;
-				display: block;
-				font: 90px "Times New Roman";
-				font-style: oblique;
-				text-transform: lowercase;
-				margin: -0.2em auto 0.1em;
-			}
-			h1 span.title-divider:before,
-			h1 span.title-divider:after {
-				background-color: #000;
-				content: "";
-				display: inline-block;
-				height: 2px;
-				border-radius: 100%;
-				position: relative;
-				vertical-align: middle;
-				width: 50%;
-			}
-			h1 span.title-divider:before {
-				right: 0.5em;
-				margin-left: -50%;
-			}
-			h1 span.title-divider:after {
-				left: 0.5em;
-				margin-right: -50%;
-			}
-			.reveal table td.align-center {
-				text-align: center;
-			}
-			.reveal table th.align-center {
-				text-align: center;
-			}
-			.reveal table td.big-font {
-				font-size: 90px;
-			}
-			.reveal table.align-center-except-first-column th:nth-child(1n+2),
-			.reveal table.align-center-except-first-column td:nth-child(1n+2) {
-				text-align: center;
-			}
-			.reveal table.align-center-except-first-column td:nth-child(1n+2):empty:after {
-				content: "?";
-				color: #777;
-			}
-			.reveal mark {
-				background: #d9edf7;
-				font-weight: bold;
-				padding-left: 4px;
-				padding-right: 4px;
-			}
-			.reveal .slide-number {
-				font-size: 32px;
-			}
-			.reveal .dice {
-				font-size: 20rem;
-				line-height: 0.6em;
-			}
-			.reveal .dice .rolling {
-				color: black;
-			}
-			.reveal .dice .six {
-				color: #00aaff;
-			}
-		</style>
 		<script>
 			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

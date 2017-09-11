@@ -1,0 +1,106 @@
+/* Overview page specific overrides. */
+.overview.vcenter {
+  min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
+  min-height: 100vh; /* These two lines are counted as one :-)       */
+
+  display: flex;
+  align-items: center;
+}
+.overview h1 {
+  line-height: 0.9em;
+  margin-bottom: 0.5em;
+  font-size: 6em;
+  font-family: 'Source Sans Pro', Helvetica, sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  text-shadow: none;
+}
+.overview h2 {
+  font-size: 190px;
+  line-height: 0.8em;
+}
+.overview .lead {
+  font-size: 3em;
+  line-height: 0.9em;
+  margin-bottom: 0.9em;
+}
+.overview .col-md-6 {
+  padding-bottom: 10px;
+}
+
+/* Fancy title image. */
+.reveal h1 {
+  line-height: 0.9em;
+  margin-bottom: 0.75em;
+}
+h1 span.title-divider {
+  overflow: hidden;
+  text-align: center;
+  display: block;
+  font: 90px "Times New Roman";
+  font-style: oblique;
+  text-transform: lowercase;
+  margin: -0.2em auto 0.1em;
+}
+h1 span.title-divider:before,
+h1 span.title-divider:after {
+  background-color: #000;
+  content: "";
+  display: inline-block;
+  height: 2px;
+  border-radius: 100%;
+  position: relative;
+  vertical-align: middle;
+  width: 50%;
+}
+h1 span.title-divider:before {
+  right: 0.5em;
+  margin-left: -50%;
+}
+h1 span.title-divider:after {
+  left: 0.5em;
+  margin-right: -50%;
+}
+
+/* Bootstrap additions. */
+.text-very-muted {
+  color: #BBB;
+}
+
+/* Presentation specific overrides. */
+.reveal table td.align-center {
+  text-align: center;
+}
+.reveal table th.align-center {
+  text-align: center;
+}
+.reveal table td.big-font {
+  font-size: 90px;
+}
+.reveal table.align-center-except-first-column th:nth-child(1n+2),
+.reveal table.align-center-except-first-column td:nth-child(1n+2) {
+  text-align: center;
+}
+.reveal table.align-center-except-first-column td:nth-child(1n+2):empty:after {
+  content: "?";
+  color: #777;
+}
+.reveal mark {
+  background: #d9edf7;
+  font-weight: bold;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+.reveal .slide-number {
+  font-size: 32px;
+}
+.reveal .dice {
+  font-size: 20rem;
+  line-height: 0.6em;
+}
+.reveal .dice .rolling {
+  color: black;
+}
+.reveal .dice .six {
+  color: #00aaff;
+}
