@@ -7,7 +7,8 @@ Vue.component('dice', {
 		</div>
 	`,
 	props: {
-		n:	{ type: Number, default: 3 },
+		reveal_enabled:		{ type: Boolean, default: false },
+		n:								{ type: Number, default: 3 },
 	},
 	data: function () {
 		return {
@@ -39,12 +40,12 @@ Vue.component('dice', {
 		},
 		toggle_repeat: function() {
 			this.repeating = !this.repeating;
-			this.my_slide = Reveal.getIndices().h;
+			if (this.reveal_enabled) { this.my_slide = Reveal.getIndices().h; }
 			this.repeat_cycle_length = 16;
 			this.repeat_cycle_step = this.repeat_cycle_length - 1;
 		},
 		repeat: function() {
-			if (this.repeating && Reveal.getIndices().h == this.my_slide && !this.all_sixes()) {
+			if (this.repeating && (!this.reveal_enabled || Reveal.getIndices().h == this.my_slide) && !this.all_sixes()) {
 				this.repeat_cycle_step++;
 				if (this.repeat_cycle_length == this.repeat_cycle_step) {
 					this.rerandomize();
@@ -96,9 +97,10 @@ Vue.component('rubin-model', {
 		</div>
 	`,
 	props: {
-		display_ate:	 		{ type: Boolean, default: false },
-		randomize:	 			{ type: Boolean, default: false },
-		sample_name:	 		{ type: String, default: 'Everyone' },
+		reveal_enabled:		{ type: Boolean, default: false },
+		display_ate:			{ type: Boolean, default: false },
+		randomize:				{ type: Boolean, default: false },
+		sample_name:			{ type: String, default: 'Everyone' },
 	},
 	data: function () {
 		return {
@@ -177,17 +179,17 @@ Vue.component('rubin-model', {
 		},
 		toggle_repeat: function() {
 			this.repeating = !this.repeating;
-			this.my_slide = Reveal.getIndices().h;
+			if (this.reveal_enabled) { this.my_slide = Reveal.getIndices().h; }
 		},
 		repeat: function() {
-			if (this.repeating && Reveal.getIndices().h == this.my_slide) { this.rerandomize(); }
+			if (this.repeating && (!this.reveal_enabled || Reveal.getIndices().h == this.my_slide)) { this.rerandomize(); }
 		},
 	}
 });
 
 Vue.component('simulation', {
 	template: `
-		<div class="container">
+		<div>
 			<div class="stretch chart-container"></div>
 
 				<table class="table table-striped">
@@ -211,23 +213,24 @@ Vue.component('simulation', {
 					</tbody>
 				</table>
 
-			<p><small class="text-muted"><mark v-if="n != 1000"><var>n</var> = <var>{{n}}</var></mark><span v-if="n == 1000"><var>n</var> = <var>{{n}}</var></span>, <var>base conversion rate</var> = <var>{{cr}}</var>, <var>effect of treatment</var> = <var>{{effect}}</var><span v-if="peek > 1">, <mark>peeking {{peek}} times</mark></span></small></p>
+			<p class="text-center text-muted"><small><mark v-if="n != 1000"><var>n</var> = <var>{{n}}</var></mark><span v-if="n == 1000"><var>n</var> = <var>{{n}}</var></span>, <var>base conversion rate</var> = <var>{{cr}}</var>, <var>effect of treatment</var> = <var>{{effect}}</var><span v-if="peek > 1">, <mark>peeking {{peek}} times</mark></span></small></p>
 		</div>
 	`,
 	props: {
-		effect: 					{ type: Number, default: 0 },
-		n:  						{ type: Number, default: 1000 },
-		peek:						{ type: Number, default: 1 },
-		display_true_effect: 		{ type: Boolean, default: false },
+		reveal_enabled:						{ type: Boolean, default: false },
+		effect: 									{ type: Number, default: 0 },
+		n:  											{ type: Number, default: 1000 },
+		peek:											{ type: Number, default: 1 },
+		display_true_effect: 			{ type: Boolean, default: false },
 		display_observed_effect:	{ type: Boolean, default: false },
-		display_type_i:				{ type: Boolean, default: false },
-		display_type_ii:			{ type: Boolean, default: false },
-		display_power: 				{ type: Boolean, default: false },
+		display_type_i:						{ type: Boolean, default: false },
+		display_type_ii:					{ type: Boolean, default: false },
+		display_power: 						{ type: Boolean, default: false },
 	},
 	data: function () {
 		return {
-			w: 1140,
-			h: 500,
+			w: 800,
+			h: 400,
 			margin: {top: 10, right: 20, bottom: 20, left: 20},
 			bins: 200,
 			cr: 0.1,
@@ -379,10 +382,10 @@ Vue.component('simulation', {
 		},
 		toggle_repeat: function() {
 			this.repeating = !this.repeating;
-			this.my_slide = Reveal.getIndices().h;
+			if (this.reveal_enabled) { this.my_slide = Reveal.getIndices().h; }
 		},
 		repeat: function() {
-			if (this.repeating && Reveal.getIndices().h == this.my_slide) { this.step(); }
+			if (this.repeating && (!this.reveal_enabled || Reveal.getIndices().h == this.my_slide)) { this.step(); }
 		},
 		rbinom: function(n, p) {
 			var b = 0;

@@ -28,9 +28,32 @@
 						<p class="lead">Statistical foundations for causal inference</p>
 						<h2>Nothing to see here</h2>
 						<p>There is nothing to see here, because I haven't written the document yet.</p>
+
+						<h2>Rubin causal model</h2>
+						<div class="well" id="app-rubin-ate">
+							<div class="text-center"><button class="btn btn-default btn-xs" @click="EventBus.$emit('fragmentMethod', { id: 'app-rubin-ate', method: 'toggle_repeat'});">toggle simulation</button></div>
+							<rubin-model sample_name="Sample" randomize display_ate></rubin-model>
+						</div>
+
+						<h2>Expectation</h2>
+						<div class="well" id="app-expectation">
+							<div class="text-center"><button class="btn btn-default btn-xs" @click="EventBus.$emit('fragmentMethod', { id: 'app-expectation', method: 'toggle_repeat'});">toggle simulation</button></div>
+							<simulation v-bind:effect="0.1" display_true_effect display_observed_effect></simulation>
+						</div>
+
 					</div>
 				</div>
 			</div>
 		</div>
+
+		<script type="text/javascript" src="d3/d3.js"></script>
+		<script type="text/javascript" src="vue/vue.min.js"></script>
+		<script type="text/javascript" src="vue-components.js"></script>
+		<script type="text/javascript">
+			const EventBus = new Vue();
+
+			new Vue({ el: '#app-rubin-ate' });
+			new Vue({ el: '#app-expectation' });
+		</script>
 	</body>
 </html>
