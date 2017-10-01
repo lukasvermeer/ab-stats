@@ -113,6 +113,22 @@
 					</aside>
 				</section>
 
+				<section id="app-rubin-ate">
+					<h3>What randomization gives us <small>(Rubin Causal Model)</small></h3>
+					<rubin-model sample_name="Sample" randomize display_ate reveal_enabled></rubin-model>
+					<span class="fragment" data-method="rerandomize"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
+				</section>
+
+				<section id="app-expectation">
+					<h3>Repeating the same experiment <small>(Expectation)</small></h3>
+					<simulation v-bind:effect="0.1" display_true_effect display_observed_effect reveal_enabled></simulation>
+					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
+				</section>
+
 				<section id="expectation">
 					<span class="text-muted">Our answers will be correct</span>
 					<h2>in expectation</h2>
@@ -129,22 +145,6 @@
 						- In expectation, the difference between averages will give us the ATE
 							- We do not need to measure the treatment effects of each individual participant
 					</aside>
-				</section>
-
-				<section id="app-rubin-ate">
-					<h3>What randomization gives us <small>(Rubin Causal Model)</small></h3>
-					<rubin-model sample_name="Sample" randomize display_ate reveal_enabled></rubin-model>
-					<span class="fragment" data-method="rerandomize"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
-				</section>
-
-				<section id="app-expectation">
-					<h3>Repeating the same experiment <small>(Expectation)</small></h3>
-					<simulation v-bind:effect="0.1" display_true_effect display_observed_effect reveal_enabled></simulation>
-					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
 				</section>
 
 				<!--
