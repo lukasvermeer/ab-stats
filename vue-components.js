@@ -345,6 +345,21 @@ Vue.component('simulation', {
 				.attr("class", "axis axis--x")
 				.attr("transform", "translate(0," + this.height + ")")
 				.call(d3.axisBottom(x));
+
+			this.g.selectAll(".guide-line").remove();
+			this.g.append("line")
+				.attr("class", "guide-line")
+				.attr("x1", x(this.effect)).attr("y1", 0)
+				.attr("x2", x(this.effect)).attr("y2", this.height)
+				.attr("stroke-width", 1).attr("stroke", color(0)).style("stroke-dasharray", ("3, 3"));
+
+			if (this.effect != 0) {
+				this.g.append("line")
+					.attr("class", "guide-line")
+					.attr("x1", x(0)).attr("y1", 0)
+					.attr("x2", x(0)).attr("y2", this.height)
+					.attr("stroke-width", 1).attr("stroke", color(1)).style("stroke-dasharray", ("3, 3"));
+			}
 		},
 		step: function() {
 			for (var j = 0; j < Math.min(100,10**(""+(this.trials)).length/10); ++j) {
