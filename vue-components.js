@@ -197,6 +197,7 @@ Vue.component('simulation', {
 						<tr>
 							<th v-if="display_true_effect" class="align-center">simulated effect</th>
 							<th v-if="display_observed_effect" class="align-center">average observed effect</th>
+							<th v-if="display_last_effect" class="align-center">last observed effect</th>
 							<th v-if="display_type_i" class="align-center">type-I error rate</th>
 							<th v-if="display_type_ii" class="align-center">type-II error rate</th>
 							<th v-if="display_power" class="align-center">observed power</th>
@@ -204,8 +205,9 @@ Vue.component('simulation', {
 					</thead>
 					<tbody>
 						<tr>
-							<td v-if="display_true_effect" class="align-center big-font">{{this.effect}}</td>
+							<td v-if="display_true_effect" class="align-center big-font">{{effect}}</td>
 							<td v-if="display_observed_effect" class="align-center big-font">{{averages.total ? averages.total.toFixed(3) : "-"}}</td>
+							<td v-if="display_last_effect" class="align-center big-font">{{last_effect ? last_effect.toFixed(3) : "-"}}</td>
 							<td v-if="display_type_i" class="align-center big-font">{{type_i_error.toLocaleString('us', {style: 'percent'})}}</td>
 							<td v-if="display_type_ii" class="align-center big-font">{{type_ii_error.toLocaleString('us', {style: 'percent'})}}</td>
 							<td v-if="display_power" class="align-center big-font">{{power.toLocaleString('us', {style: 'percent'})}}</td>
@@ -222,10 +224,12 @@ Vue.component('simulation', {
 		n:  											{ type: Number, default: 1000 },
 		peek:											{ type: Number, default: 1 },
 		display_true_effect: 			{ type: Boolean, default: false },
+		display_last_effect: 			{ type: Boolean, default: false },
 		display_observed_effect:	{ type: Boolean, default: false },
 		display_type_i:						{ type: Boolean, default: false },
 		display_type_ii:					{ type: Boolean, default: false },
 		display_power: 						{ type: Boolean, default: false },
+		hide_guide: 						  { type: Boolean, default: false },
 	},
 	data: function () {
 		return {
@@ -236,6 +240,7 @@ Vue.component('simulation', {
 			cr: 0.1,
 			bounds: [-0.2,0.2],
 			results: { significant: [], insignificant: [], significant_opposite: [] },
+      last_effect: null,
 			g: '',
 			repeating: false,
 			my_slide: null,
@@ -347,13 +352,15 @@ Vue.component('simulation', {
 				.call(d3.axisBottom(x));
 
 			this.g.selectAll(".guide-line").remove();
-			this.g.append("line")
-				.attr("class", "guide-line")
-				.attr("x1", x(this.effect)).attr("y1", 0)
-				.attr("x2", x(this.effect)).attr("y2", this.height)
-				.attr("stroke-width", 1).attr("stroke", color(0)).style("stroke-dasharray", ("3, 3"));
+      if (!this.hide_guide) {
+        this.g.append("line")
+          .attr("class", "guide-line")
+          .attr("x1", x(this.effect)).attr("y1", 0)
+          .attr("x2", x(this.effect)).attr("y2", this.height)
+          .attr("stroke-width", 1).attr("stroke", color(0)).style("stroke-dasharray", ("3, 3"));
+      }
 
-			if (this.effect != 0) {
+			if (this.hide_guide || this.effect != 0) {
 				this.g.append("line")
 					.attr("class", "guide-line")
 					.attr("x1", x(0)).attr("y1", 0)
@@ -393,6 +400,7 @@ Vue.component('simulation', {
 				} else {
 					this.results.insignificant.push(effect);
 				}
+        this.last_effect = effect;
 			}
 		},
 		toggle_repeat: function() {
