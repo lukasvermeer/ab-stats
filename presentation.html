@@ -1,500 +1,500 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>AB Statistics Presentation</title>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AB Statistics Presentation</title>
 
-		<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		<link rel="stylesheet" href="reveal/css/reveal.css">
-		<link rel="stylesheet" href="reveal/css/theme/white.css">
-		<link rel="stylesheet" href="ab-stats.css">
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="reveal/css/reveal.css">
+    <link rel="stylesheet" href="reveal/css/theme/white.css">
+    <link rel="stylesheet" href="ab-stats.css">
 
-		<script>
-			var link = document.createElement( 'link' );
-			link.rel = 'stylesheet';
-			link.type = 'text/css';
-			link.href = window.location.search.match( /print-pdf/gi ) ? 'reveal/css/print/pdf.css' : 'reveal/css/print/paper.css';
-			document.getElementsByTagName( 'head' )[0].appendChild( link );
-		</script>
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'reveal/css/print/pdf.css' : 'reveal/css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
 
-		<script>
-			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-			})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-			ga('create', 'UA-105998856-2', 'auto');
-			ga('send', 'pageview');
-		</script>
-	</head>
-	<body>
-		<div class="reveal">
-			<div class="slides">
-				<section id="title">
-					<h1>Design <span class="title-divider">of</span> experiments</h1>
-					<p>Statistical foundations for causal inference</p>
-					<br />
-					<p>
-						<small>
-							<b>Lukas Vermeer</b> is <b>Senior Product Owner</b> for <b>Experimentation</b> at <b>Booking.com</b>
-						</small>
-					</p>
-					<p>
-						<small>
-							<a href="http://twitter.com/lukasvermeer" target="_blank">@lukasvermeer</a> &mdash; <a href="http://www.lukasvermeer.nl/ab-stats" target="_blank">lukasvermeer.nl/ab-stats</a>
-						</small>
-					</p>
-				</section>
+      ga('create', 'UA-105998856-2', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section id="title">
+          <h1>Design <span class="title-divider">of</span> experiments</h1>
+          <p>Statistical foundations for causal inference</p>
+          <br />
+          <p>
+            <small>
+              <b>Lukas Vermeer</b> is <b>Senior Product Owner</b> for <b>Experimentation</b> at <b>Booking.com</b>
+            </small>
+          </p>
+          <p>
+            <small>
+              <a href="http://twitter.com/lukasvermeer" target="_blank">@lukasvermeer</a> &mdash; <a href="http://www.lukasvermeer.nl/ab-stats" target="_blank">lukasvermeer.nl/ab-stats</a>
+            </small>
+          </p>
+        </section>
 
-				<section id="causal-inference">
-					<span class="text-muted">Making good decisions requires</span>
-					<h2>causal inference</h2>
-					<p>
-						<span class="fragment">Umbrellas often appear just before it pours,</span>
-						<span class="fragment">but banning them will not stop the rain;</span>
-						<span class="fragment">it will just make everyone <mark>more wet</mark></span>
-					</p>
+        <section id="causal-inference">
+          <span class="text-muted">Making good decisions requires</span>
+          <h2>causal inference</h2>
+          <p>
+            <span class="fragment">Umbrellas often appear just before it pours,</span>
+            <span class="fragment">but banning them will not stop the rain;</span>
+            <span class="fragment">it will just make everyone <mark>more wet</mark></span>
+          </p>
 
-					<aside class="notes">
-						- We want gather evidence for a causal link between a change and behaviour
-							- “By switching to B, we will cause more people to click ads or buy our product!”
-						- Correlation is not sufficient for supporting decision making
-							- Direction of effect is as important as showing there is a relation at all
-					</aside>
-				</section>
+          <aside class="notes">
+            - We want gather evidence for a causal link between a change and behaviour
+              - “By switching to B, we will cause more people to click ads or buy our product!”
+            - Correlation is not sufficient for supporting decision making
+              - Direction of effect is as important as showing there is a relation at all
+          </aside>
+        </section>
 
-				<section id="app-rubin-full">
-					<h3>What we want to know <small>(Rubin Causal Model)</small></h3>
-					<rubin-model display_ate></rubin-model>
-				</section>
+        <section id="app-rubin-full">
+          <h3>What we want to know <small>(Rubin Causal Model)</small></h3>
+          <rubin-model display_ate></rubin-model>
+        </section>
 
-				<section id="fundamental-problem">
-					<span class="text-muted">The fundamental problem of</span>
-					<h2>causal inference</h2>
-					<ol>
-						<li class="fragment">We cannot sample the entire <mark>population</mark></li>
-						<li class="fragment">We cannot expose units to both treatments <mark>exclusively</mark></li>
-						<li class="fragment">We cannot directly observe <mark>underlying</mark> probabilities</li>
-					</ol>
+        <section id="fundamental-problem">
+          <span class="text-muted">The fundamental problem of</span>
+          <h2>causal inference</h2>
+          <ol>
+            <li class="fragment">We cannot sample the entire <mark>population</mark></li>
+            <li class="fragment">We cannot expose units to both treatments <mark>exclusively</mark></li>
+            <li class="fragment">We cannot directly observe <mark>underlying</mark> probabilities</li>
+          </ol>
 
-					<aside class="notes">
-						- Other potential, but unquantifiable, sources of uncertainty also exist
-							- The population may change
-							- The treatment may change
-							- The effect may change
-						- Stability of these other factors is (often implicitly) assumed
-					</aside>
-				</section>
+          <aside class="notes">
+            - Other potential, but unquantifiable, sources of uncertainty also exist
+              - The population may change
+              - The treatment may change
+              - The effect may change
+            - Stability of these other factors is (often implicitly) assumed
+          </aside>
+        </section>
 
-				<section id="app-rubin-fpci">
-					<h3>What we can measure <small>(Rubin Causal Model)</small></h3>
-					<rubin-model sample_name="Sample" randomize reveal_enabled></rubin-model>
-					<span class="fragment" data-method="rerandomize"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
-				</section>
+        <section id="app-rubin-fpci">
+          <h3>What we can measure <small>(Rubin Causal Model)</small></h3>
+          <rubin-model sample_name="Sample" randomize reveal_enabled></rubin-model>
+          <span class="fragment" data-method="rerandomize"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
+        </section>
 
-				<section id="two-questions">
-					<span class="text-muted">We will try to answer two</span>
-					<h2>key questions</h2>
-					<ol>
-						<li class="fragment"><mark>Is there</mark> any causal effect?</li>
-						<li class="fragment">What is the <mark>size</mark> of the causal effect?</li>
-					</ol>
+        <section id="two-questions">
+          <span class="text-muted">We will try to answer two</span>
+          <h2>key questions</h2>
+          <ol>
+            <li class="fragment"><mark>Is there</mark> any causal effect?</li>
+            <li class="fragment">What is the <mark>size</mark> of the causal effect?</li>
+          </ol>
           <p class="fragment text-muted">(If the size is non-zero, there is an effect.)</p>
 
-					<aside class="notes">
-						- Sometimes we will get “unlucky” in our randomization
-							- We might randomly put all the men in one group and all the women in the other
-							- We can estimate the likelihood of getting a particular result by chance using a test statistic
-						- Every randomization will likely give us a slightly different result
-							- Every time the experiment is repeated with new randomization, the averages will be different
-							- We can quantify an expected range of results using a confidence interval
-					</aside>
-				</section>
+          <aside class="notes">
+            - Sometimes we will get “unlucky” in our randomization
+              - We might randomly put all the men in one group and all the women in the other
+              - We can estimate the likelihood of getting a particular result by chance using a test statistic
+            - Every randomization will likely give us a slightly different result
+              - Every time the experiment is repeated with new randomization, the averages will be different
+              - We can quantify an expected range of results using a confidence interval
+          </aside>
+        </section>
 
-				<section id="app-rubin-ate">
-					<h3>What randomization gives us <small>(Rubin Causal Model)</small></h3>
-					<rubin-model sample_name="Sample" randomize display_ate reveal_enabled></rubin-model>
-					<span class="fragment" data-method="rerandomize"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
-				</section>
+        <section id="app-rubin-ate">
+          <h3>What randomization gives us <small>(Rubin Causal Model)</small></h3>
+          <rubin-model sample_name="Sample" randomize display_ate reveal_enabled></rubin-model>
+          <span class="fragment" data-method="rerandomize"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
+        </section>
 
-				<section id="app-expectation">
-					<h3>Repeating the same experiment <small>(Expectation)</small></h3>
-					<simulation v-bind:effect="0.1" display_true_effect display_observed_effect reveal_enabled></simulation>
-					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
-				</section>
+        <section id="app-expectation">
+          <h3>Repeating the same experiment <small>(Expectation)</small></h3>
+          <simulation v-bind:effect="0.1" display_true_effect display_observed_effect reveal_enabled></simulation>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
+        </section>
 
-				<section id="expectation">
-					<span class="text-muted">Our answers will be correct</span>
-					<h2>in expectation</h2>
-					<p>
-						<span class="fragment">If we show A and B to random samples of the population,</span>
-						<span class="fragment">then on average the fraction of yes in both groups will be equal to the true underlying means,</span>
-						<span class="fragment">and on average the difference between the means will be equal to the <mark>average treatment effect</mark></span>
-					</p>
+        <section id="expectation">
+          <span class="text-muted">Our answers will be correct</span>
+          <h2>in expectation</h2>
+          <p>
+            <span class="fragment">If we show A and B to random samples of the population,</span>
+            <span class="fragment">then on average the fraction of yes in both groups will be equal to the true underlying means,</span>
+            <span class="fragment">and on average the difference between the means will be equal to the <mark>average treatment effect</mark></span>
+          </p>
 
-					<aside class="notes">
-						- In expectation, the average of a random sample will approximate true mean of the population
-						- In expectation, the fraction of yes will approximate underlying probability
-							- We do not need to observe the probabilities directly if we have the outcomes for individuals
-						- In expectation, the difference between averages will give us the ATE
-							- We do not need to measure the treatment effects of each individual participant
-					</aside>
-				</section>
+          <aside class="notes">
+            - In expectation, the average of a random sample will approximate true mean of the population
+            - In expectation, the fraction of yes will approximate underlying probability
+              - We do not need to observe the probabilities directly if we have the outcomes for individuals
+            - In expectation, the difference between averages will give us the ATE
+              - We do not need to measure the treatment effects of each individual participant
+          </aside>
+        </section>
 
-				<section id="app-one-trial">
+        <section id="app-one-trial">
           <h3>Up, down or neither?<small>(I don't know either)</small></h3>
           <simulation v-bind:effect="Math.random() > 0.5 ? 0 : Math.random() > 0.5 ? 0.1 : -0.1" hide_guide display_observed_effect display_last_effect reveal_enabled></simulation>
-					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
-				</section>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
+        </section>
 
-				<!--
-				<section id="confidence-intervals">
-					<span class="text-muted">estimates are expected to fall</span>
-					<h2>within a range</h2>
+        <!--
+        <section id="confidence-intervals">
+          <span class="text-muted">estimates are expected to fall</span>
+          <h2>within a range</h2>
 
-					<p>
-						The following statement is technically incorrect, but I'm not sure how to explain it better. :-/
-					</p>
-					<p>
-						<span class="fragment">Every randomization will assign treatment differently,</span>
-						<span class="fragment">so we can expect group averages to vary as well,</span>
-						<span class="fragment">but we can quantify the expected range of variation using a <mark>confidence interval</mark></span>
-					</p>
+          <p>
+            The following statement is technically incorrect, but I'm not sure how to explain it better. :-/
+          </p>
+          <p>
+            <span class="fragment">Every randomization will assign treatment differently,</span>
+            <span class="fragment">so we can expect group averages to vary as well,</span>
+            <span class="fragment">but we can quantify the expected range of variation using a <mark>confidence interval</mark></span>
+          </p>
 
-					<aside class="notes">
-						- Every randomization will assign treatment differently
-							- If we were to repeat the same experiment, assignment would change
-							- As a result, we would expect group averages to vary as well
-						- We can quantify the expected range of variation using a confidence interval
-							- We can expect results to be between X and Y 95% of the times we repeat the experiment
-					</aside>
-				</section>
-				-->
-
-				<section id="randomization">
-					<span class="text-muted">Randomization ensures only three things can</span>
-					<h2>explain a difference</h2>
-
-					<ol>
-						<li class="fragment"><mark>Causation</mark> resulted in people behaving differently when treatment was applied</li>
-						<li class="fragment"><mark>Pure chance</mark> resulted in a difference between the two groups unrelated to the treatment</li>
-						<li class="fragment"><mark>Measurement error</mark> resulted in an unintended difference in results unrelated to user behaviour</li>
-					</ol>
-				</section>
-
-				<section id="null-hypothesis">
-					<span class="text-muted">We want to reject the</span>
-					<h2>null hypothesis</h2>
-					<p>
-						<span class="fragment">The <mark>null hypothesis</mark> assumes no difference between treatment and control; any difference we observe is simply due to chance.</span>
-					</p>
-					<p>
-						<span class="fragment">If we could reasonably rule out chance, we might reject the null and consider this to be evidence for the <mark>alternative hypothesis</mark>.</span>
-					</p>
-
-					<aside class="notes">
-						- We will want to refute the hypothesis that there is no effect
-							- We will consider rejection of the “null hypothesis” as evidence for the “alternative hypothesis”
-					</aside>
-				</section>
-
-				<section id="p-value">
-					<span class="text-muted">We compute a</span>
-					<h2>p-value</h2>
-					<p>
-						<span class="fragment">We assume the null hypothesis is true and compute the p-value.</span>
-					</p>
-					<p>
-						<span class="fragment">Assuming there is no effect, the p-value is the probability of seeing a particular result or more extreme by chance.</span>
-					</p>
-					<p>
-						<span class="fragment"><b>How likely is this result <mark>assuming the null is true</mark>?</b></span>
-					</p>
-				</section>
-
-				<section id="loaded-die">
-					<span class="text-muted">Is this die</span>
-					<h2>Fair?</h2>
-					<p class="dice"><span class="fragment six">&#x2685</span><span class="fragment six">&#x2685</span><span class="fragment six">&#x2685</span></p>
-					<p>
-						<span class="fragment">p = 0.00462962</span>
-						</br>
-						<span class="fragment text-muted"><small>(Not fair; I cheated)</small></span>
-					</p>
-
-					<aside class="notes">
-						- We might argue that small odds support accepting an alternative explanation
-							- For instance that the die is loaded, of that I can influence the result through telepathy
-					</aside>
-				</section>
-
-				<section id="significance-threshold">
-					<span class="text-muted">We need to pick a</span>
-					<h2>threshold</h2>
-					<p>
-						<span class="fragment">One swallow does not a summer make, nor one fine day,</span>
-						<span class="fragment">but how many swallows do we count before we pack away our umbrellas?</span>
-					</p>
-					<p>
-						<span class="fragment"><b>Scientific standard for significance:</b> <mark>p < 0.05</mark></span>
-					</p>
-
-					<aside class="notes">
-						- Sometimes we will get “unlucky” in our randomization
-							- We will have to decide at which point we will reject the idea that our result could be chance
-							- At this point, we will accept the alternative hypothesis and argue there is a causal effect
-					</aside>
-				</section>
-
-				<!--
-				<section id="misinterpreted-p-value">
-					<span class="text-muted">p-values are often<small>[2]</small></span>
-					<h2>misinterpreted</h2>
-
-					<span class="fragment">Some examples of <mark>incorrect</mark> interpretations</span>
-					<ol>
-						<li class="fragment">p = .05 means the null hypothesis has only a 5% chance of being true</li>
-						<li class="fragment">A non-significant difference (e.g. p > .05) means there is no difference between groups</li>
-						<li class="fragment">p = .05 means that we have observed data that would occur only 5% of the time under the null</li>
-						<li class="fragment">p = .05 means that if you reject the null, the probability of a type I error (false positive) is 5%</li>
-					</ol>
-
-					<p><small>[2] Goodman, Steve 2008. “A dirty dozen: twelve P-value misconceptions.” Seminars in Hematology, 45 (2008), pp. 135-140.</small></p>
-
-					<aside class="notes">
-						- p-value gives us Prob(X >= x | H0), whereas what we want is Prob(H0 | X = x)
-						- Here are some incorrect statements from Steve Goodman’s A Dirty Dozen[2]
-					</aside>
-				</section>
+          <aside class="notes">
+            - Every randomization will assign treatment differently
+              - If we were to repeat the same experiment, assignment would change
+              - As a result, we would expect group averages to vary as well
+            - We can quantify the expected range of variation using a confidence interval
+              - We can expect results to be between X and Y 95% of the times we repeat the experiment
+          </aside>
+        </section>
         -->
 
-				<section id="errors">
-					<span class="text-muted">Two types of</span>
-					<h2>errors</h2>
+        <section id="randomization">
+          <span class="text-muted">Randomization ensures only three things can</span>
+          <h2>explain a difference</h2>
 
-					<ol>
-						<li class="fragment"><mark>Type-I</mark> is the incorrect rejection of a true null hypothesis; <span class="fragment">we cried wolf when there was none</span></li>
-						<li class="fragment"><mark>Type-II</mark> is the failure to reject a false null hypothesis; <span class="fragment">we failed to detect a real effect</span></li>
-					</ol>
+          <ol>
+            <li class="fragment"><mark>Causation</mark> resulted in people behaving differently when treatment was applied</li>
+            <li class="fragment"><mark>Pure chance</mark> resulted in a difference between the two groups unrelated to the treatment</li>
+            <li class="fragment"><mark>Measurement error</mark> resulted in an unintended difference in results unrelated to user behaviour</li>
+          </ol>
+        </section>
 
-					<aside class="notes">
-						- The result might simply not be that unlikely when assuming the null is true
-					</aside>
-				</section>
+        <section id="null-hypothesis">
+          <span class="text-muted">We want to reject the</span>
+          <h2>null hypothesis</h2>
+          <p>
+            <span class="fragment">The <mark>null hypothesis</mark> assumes no difference between treatment and control; any difference we observe is simply due to chance.</span>
+          </p>
+          <p>
+            <span class="fragment">If we could reasonably rule out chance, we might reject the null and consider this to be evidence for the <mark>alternative hypothesis</mark>.</span>
+          </p>
 
-				<section id="app-type-i">
-					<h3>Repeating the same experiment <small>(No effect)</small></h3>
-					<simulation v-bind:effect="0.0" display_true_effect display_type_i reveal_enabled></simulation>
-					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
-				</section>
+          <aside class="notes">
+            - We will want to refute the hypothesis that there is no effect
+              - We will consider rejection of the “null hypothesis” as evidence for the “alternative hypothesis”
+          </aside>
+        </section>
 
-				<section id="app-type-ii">
-					<h3>Repeating the same experiment <small>(Small effect)</small></h3>
-					<simulation v-bind:effect="0.05" display_true_effect display_type_ii reveal_enabled></simulation>
-					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
-				</section>
+        <section id="p-value">
+          <span class="text-muted">We compute a</span>
+          <h2>p-value</h2>
+          <p>
+            <span class="fragment">We assume the null hypothesis is true and compute the p-value.</span>
+          </p>
+          <p>
+            <span class="fragment">Assuming there is no effect, the p-value is the probability of seeing a particular result or more extreme by chance.</span>
+          </p>
+          <p>
+            <span class="fragment"><b>How likely is this result <mark>assuming the null is true</mark>?</b></span>
+          </p>
+        </section>
 
-				<section id="power">
-					<span class="text-muted">The importance of</span>
-					<h2>Statistical power</h2>
+        <section id="loaded-die">
+          <span class="text-muted">Is this die</span>
+          <h2>Fair?</h2>
+          <p class="dice"><span class="fragment six">&#x2685</span><span class="fragment six">&#x2685</span><span class="fragment six">&#x2685</span></p>
+          <p>
+            <span class="fragment">p = 0.00462962</span>
+            </br>
+            <span class="fragment text-muted"><small>(Not fair; I cheated)</small></span>
+          </p>
 
-					<p>
-						<span class="fragment">Statistical power is the probability that the test <mark>correctly rejects</mark> the null hypothesis when the alternative hypothesis is true</span>
-					</p>
-					<p>
-						<span class="fragment"><b>Two main things affect statistical power:</b></span>
-						<ul>
-							<li class="fragment">Sample size <span class="text-muted">(more is better)</span></li>
-							<li class="fragment">Effect size <span class="text-muted">(more is better)</span></li>
-						</ul>
-					</p>
+          <aside class="notes">
+            - We might argue that small odds support accepting an alternative explanation
+              - For instance that the die is loaded, of that I can influence the result through telepathy
+          </aside>
+        </section>
 
-					<aside class="notes">
-						- Effect size is unknown but assumed fixed
-						- Sample size may be increased is low power is expected
-					</aside>
-				</section>
+        <section id="significance-threshold">
+          <span class="text-muted">We need to pick a</span>
+          <h2>threshold</h2>
+          <p>
+            <span class="fragment">One swallow does not a summer make, nor one fine day,</span>
+            <span class="fragment">but how many swallows do we count before we pack away our umbrellas?</span>
+          </p>
+          <p>
+            <span class="fragment"><b>Scientific standard for significance:</b> <mark>p < 0.05</mark></span>
+          </p>
 
-				<section id="app-type-ii-2">
-					<h3>Repeating the same experiment <small>(More power)</small></h3>
-					<simulation v-bind:effect="0.05" v-bind:n="2000" display_type_ii display_power reveal_enabled></simulation>
-					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
-				</section>
+          <aside class="notes">
+            - Sometimes we will get “unlucky” in our randomization
+              - We will have to decide at which point we will reject the idea that our result could be chance
+              - At this point, we will accept the alternative hypothesis and argue there is a causal effect
+          </aside>
+        </section>
 
-				<section id="app-type-ii-3">
-					<h3>Repeating the same experiment <small>(MOAR POWER!!11)</small></h3>
-					<simulation v-bind:effect="0.05" v-bind:n="4000" display_type_ii display_power reveal_enabled></simulation>
-					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
-				</section>
+        <!--
+        <section id="misinterpreted-p-value">
+          <span class="text-muted">p-values are often<small>[2]</small></span>
+          <h2>misinterpreted</h2>
 
-				<section id="app-one-trial-2">
+          <span class="fragment">Some examples of <mark>incorrect</mark> interpretations</span>
+          <ol>
+            <li class="fragment">p = .05 means the null hypothesis has only a 5% chance of being true</li>
+            <li class="fragment">A non-significant difference (e.g. p > .05) means there is no difference between groups</li>
+            <li class="fragment">p = .05 means that we have observed data that would occur only 5% of the time under the null</li>
+            <li class="fragment">p = .05 means that if you reject the null, the probability of a type I error (false positive) is 5%</li>
+          </ol>
+
+          <p><small>[2] Goodman, Steve 2008. “A dirty dozen: twelve P-value misconceptions.” Seminars in Hematology, 45 (2008), pp. 135-140.</small></p>
+
+          <aside class="notes">
+            - p-value gives us Prob(X >= x | H0), whereas what we want is Prob(H0 | X = x)
+            - Here are some incorrect statements from Steve Goodman’s A Dirty Dozen[2]
+          </aside>
+        </section>
+        -->
+
+        <section id="errors">
+          <span class="text-muted">Two types of</span>
+          <h2>errors</h2>
+
+          <ol>
+            <li class="fragment"><mark>Type-I</mark> is the incorrect rejection of a true null hypothesis; <span class="fragment">we cried wolf when there was none</span></li>
+            <li class="fragment"><mark>Type-II</mark> is the failure to reject a false null hypothesis; <span class="fragment">we failed to detect a real effect</span></li>
+          </ol>
+
+          <aside class="notes">
+            - The result might simply not be that unlikely when assuming the null is true
+          </aside>
+        </section>
+
+        <section id="app-type-i">
+          <h3>Repeating the same experiment <small>(No effect)</small></h3>
+          <simulation v-bind:effect="0.0" display_true_effect display_type_i reveal_enabled></simulation>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
+        </section>
+
+        <section id="app-type-ii">
+          <h3>Repeating the same experiment <small>(Small effect)</small></h3>
+          <simulation v-bind:effect="0.05" display_true_effect display_type_ii reveal_enabled></simulation>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
+        </section>
+
+        <section id="power">
+          <span class="text-muted">The importance of</span>
+          <h2>Statistical power</h2>
+
+          <p>
+            <span class="fragment">Statistical power is the probability that the test <mark>correctly rejects</mark> the null hypothesis when the alternative hypothesis is true</span>
+          </p>
+          <p>
+            <span class="fragment"><b>Two main things affect statistical power:</b></span>
+            <ul>
+              <li class="fragment">Sample size <span class="text-muted">(more is better)</span></li>
+              <li class="fragment">Effect size <span class="text-muted">(more is better)</span></li>
+            </ul>
+          </p>
+
+          <aside class="notes">
+            - Effect size is unknown but assumed fixed
+            - Sample size may be increased is low power is expected
+          </aside>
+        </section>
+
+        <section id="app-type-ii-2">
+          <h3>Repeating the same experiment <small>(More power)</small></h3>
+          <simulation v-bind:effect="0.05" v-bind:n="2000" display_type_ii display_power reveal_enabled></simulation>
+          <span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
+        </section>
+
+        <section id="app-type-ii-3">
+          <h3>Repeating the same experiment <small>(MOAR POWER!!11)</small></h3>
+          <simulation v-bind:effect="0.05" v-bind:n="4000" display_type_ii display_power reveal_enabled></simulation>
+          <span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
+        </section>
+
+        <section id="app-one-trial-2">
           <h3>Up, down or neither?<small>(I don't know either)</small></h3>
           <simulation v-bind:effect="Math.random() > 0.5 ? 0 : Math.random() > 0.5 ? 0.1 : -0.1" hide_guide display_observed_effect display_last_effect reveal_enabled></simulation>
-					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
-					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
-				</section>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
+        </section>
 
-				<section id="protocol">
-					<span class="text-muted">The importance of sticking to</span>
-					<h2>Protocol</h2>
+        <section id="protocol">
+          <span class="text-muted">The importance of sticking to</span>
+          <h2>Protocol</h2>
 
-					<p>
-						<span class="fragment">The methods described assume strict adherence to protocol;</span>
-						<span class="fragment">violations of protocol such as <mark>peeking</mark> and <mark>multiple testing</mark> increase the type-I error rate</span>
-					</p>
-				</section>
+          <p>
+            <span class="fragment">The methods described assume strict adherence to protocol;</span>
+            <span class="fragment">violations of protocol such as <mark>peeking</mark> and <mark>multiple testing</mark> increase the type-I error rate</span>
+          </p>
+        </section>
 
-				<section id="app-dice">
-					<span class="text-muted">Can telekenisis influence</span>
-					<h2>Three dice?</h2>
-					<span class="fragment"><dice reveal_enabled></dice></span>
-					<span class="fragment" data-method="rerandomize"></span>
-					<span class="fragment" data-method="toggle_repeat" trigger-hidden></span>
-					<p>
-						<span class="fragment">p = 1</span>
-						</br>
-						<span class="fragment text-muted"><small>(Fair die; I still cheated)</small></span>
-					</p>
-				</section>
+        <section id="app-dice">
+          <span class="text-muted">Can telekenisis influence</span>
+          <h2>Three dice?</h2>
+          <span class="fragment"><dice reveal_enabled></dice></span>
+          <span class="fragment" data-method="rerandomize"></span>
+          <span class="fragment" data-method="toggle_repeat" trigger-hidden></span>
+          <p>
+            <span class="fragment">p = 1</span>
+            </br>
+            <span class="fragment text-muted"><small>(Fair die; I still cheated)</small></span>
+          </p>
+        </section>
 
-				<section id="app-multiple-testing">
-					<h3>Repeating the same experiment <small>(Peeking twice)</small></h3>
-					<simulation v-bind:effect="0.00" v-bind:peek="2" display_true_effect display_type_i reveal_enabled></simulation>
-					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
-				</section>
+        <section id="app-multiple-testing">
+          <h3>Repeating the same experiment <small>(Peeking twice)</small></h3>
+          <simulation v-bind:effect="0.00" v-bind:peek="2" display_true_effect display_type_i reveal_enabled></simulation>
+          <span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
+        </section>
 
-				<section id="app-multiple-testing-2">
-					<h3>Repeating the same experiment <small>(Peeking 100x)</small></h3>
-					<simulation v-bind:effect="0.00" v-bind:peek="100" display_true_effect display_type_i reveal_enabled></simulation>
-					<span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
-				</section>
+        <section id="app-multiple-testing-2">
+          <h3>Repeating the same experiment <small>(Peeking 100x)</small></h3>
+          <simulation v-bind:effect="0.00" v-bind:peek="100" display_true_effect display_type_i reveal_enabled></simulation>
+          <span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
+        </section>
 
-				<section id="adaptive-methods">
-					<span class="text-muted">Reasons for violating</span>
-					<h2>Protocol</h2>
+        <section id="adaptive-methods">
+          <span class="text-muted">Reasons for violating</span>
+          <h2>Protocol</h2>
 
-					<p>
-						<span class="fragment">More flexible protocols may be desirable</span>
-						<ul>
-							<li class="fragment"><mark>early stopping rules</mark> to mitigate damage</li>
-							<li class="fragment"><mark>early shipping</mark> to minimize opportunity cost</li>
-							<li class="fragment"><mark>multiple variants</mark> to test several alternatives</li>
-							<li class="fragment"><mark>multiple metrics</mark> to guard business KPIs</li>
-						</ul>
-					</p>
-					<div class="fragment">
-						<p>All these are possible<small>[4]</small>, but require protocol adjustments</p>
-						<p><small>[4] Alex Deng, Tianxi Li, Yu Guo 2014 “Statistical Inference in Two-Stage Online Controlled Experiments with Treatment Selection and Validation” WWW '14. 609–618.</small></p>
-					</div>
-				</section>
+          <p>
+            <span class="fragment">More flexible protocols may be desirable</span>
+            <ul>
+              <li class="fragment"><mark>early stopping rules</mark> to mitigate damage</li>
+              <li class="fragment"><mark>early shipping</mark> to minimize opportunity cost</li>
+              <li class="fragment"><mark>multiple variants</mark> to test several alternatives</li>
+              <li class="fragment"><mark>multiple metrics</mark> to guard business KPIs</li>
+            </ul>
+          </p>
+          <div class="fragment">
+            <p>All these are possible<small>[4]</small>, but require protocol adjustments</p>
+            <p><small>[4] Alex Deng, Tianxi Li, Yu Guo 2014 “Statistical Inference in Two-Stage Online Controlled Experiments with Treatment Selection and Validation” WWW '14. 609–618.</small></p>
+          </div>
+        </section>
 
-				<section id="end">
-					<h1>Design <span class="title-divider">of</span> experiments</h1>
-					<p>Statistical foundations for causal inference</p>
-					<br />
-					<p>
-						<small>
-							<b>Lukas Vermeer</b> is <b>Senior Product Owner</b> for <b>Experimentation</b> at <b>Booking.com</b>
-						</small>
-					</p>
-					<p>
-						<small>
-							<a href="http://twitter.com/lukasvermeer" target="_blank">@lukasvermeer</a> &mdash; <a href="http://www.lukasvermeer.nl/ab-stats" target="_blank">lukasvermeer.nl/ab-stats</a>
-						</small>
-					</p>
-				</section>
+        <section id="end">
+          <h1>Design <span class="title-divider">of</span> experiments</h1>
+          <p>Statistical foundations for causal inference</p>
+          <br />
+          <p>
+            <small>
+              <b>Lukas Vermeer</b> is <b>Senior Product Owner</b> for <b>Experimentation</b> at <b>Booking.com</b>
+            </small>
+          </p>
+          <p>
+            <small>
+              <a href="http://twitter.com/lukasvermeer" target="_blank">@lukasvermeer</a> &mdash; <a href="http://www.lukasvermeer.nl/ab-stats" target="_blank">lukasvermeer.nl/ab-stats</a>
+            </small>
+          </p>
+        </section>
 
-				<section id="references">
-					<h2>References</h2>
+        <section id="references">
+          <h2>References</h2>
 
-					<ol>
-						<li><small>Rubin, Donald B. 1974. “Estimating Causal Effects of Treatments in Randomized and Nonrandomized Studies.” Journal of Educational Psychology 66 (5): 688–701. (<a href="http://dx.doi.org/10.1037/h0037350" target="_blank">link</a>)</small></li>
-						<li><small>Goodman, Steve 2008. “A dirty dozen: twelve P-value misconceptions.” Seminars in Hematology, 45 (2008), pp. 135-140. (<a href="https://www.researchgate.net/publication/5272766_A_Dirty_Dozen_Twelve_P-Value_Misconceptions" target="_blank">link</a>)</small></li>
-						<li><small>Kohavi, R., Longbotham, R., Sommerfield, D. et al. 2009 “Controlled experiments on the web: survey and practical guide” Data Min Knowl Disc (2009) 18: 140. (<a href="http://bit.ly/expSurvey" target="_blank">link</a>)</small></li>
-						<li><small>Alex Deng, Tianxi Li, Yu Guo 2014 “Statistical Inference in Two-Stage Online Controlled Experiments with Treatment Selection and Validation” WWW '14. 609–618.(<a href="http://www.exp-platform.com/Documents/p609-deng.pdf" target="_blank">link</a>)</small></li>
-					</ol>
-				</section>
-			</div>
-		</div>
+          <ol>
+            <li><small>Rubin, Donald B. 1974. “Estimating Causal Effects of Treatments in Randomized and Nonrandomized Studies.” Journal of Educational Psychology 66 (5): 688–701. (<a href="http://dx.doi.org/10.1037/h0037350" target="_blank">link</a>)</small></li>
+            <li><small>Goodman, Steve 2008. “A dirty dozen: twelve P-value misconceptions.” Seminars in Hematology, 45 (2008), pp. 135-140. (<a href="https://www.researchgate.net/publication/5272766_A_Dirty_Dozen_Twelve_P-Value_Misconceptions" target="_blank">link</a>)</small></li>
+            <li><small>Kohavi, R., Longbotham, R., Sommerfield, D. et al. 2009 “Controlled experiments on the web: survey and practical guide” Data Min Knowl Disc (2009) 18: 140. (<a href="http://bit.ly/expSurvey" target="_blank">link</a>)</small></li>
+            <li><small>Alex Deng, Tianxi Li, Yu Guo 2014 “Statistical Inference in Two-Stage Online Controlled Experiments with Treatment Selection and Validation” WWW '14. 609–618.(<a href="http://www.exp-platform.com/Documents/p609-deng.pdf" target="_blank">link</a>)</small></li>
+          </ol>
+        </section>
+      </div>
+    </div>
 
-		<script type="text/javascript" src="d3/d3.js"></script>
-		<script type="text/javascript" src="vue/vue.min.js"></script>
-		<script type="text/javascript" src="vue-components.js"></script>
-		<script type="text/javascript" src="reveal/lib/js/head.min.js"></script>
-		<script type="text/javascript" src="reveal/js/reveal.js"></script>
-		<script type="text/javascript">
-			Reveal.initialize({
-				controls: false,
-				progress: true,
-				history: true,
-				center: true,
-				width: 1140,
-				height: 960,
-				margin: 0.05,
-				slideNumber: 'c/t',
-				transition: 'slide',
-				dependencies: [
-					{ src: 'reveal/plugin/notes/notes.js', async: true }
-				]
-			});
+    <script type="text/javascript" src="d3/d3.js"></script>
+    <script type="text/javascript" src="vue/vue.min.js"></script>
+    <script type="text/javascript" src="vue-components.js"></script>
+    <script type="text/javascript" src="reveal/lib/js/head.min.js"></script>
+    <script type="text/javascript" src="reveal/js/reveal.js"></script>
+    <script type="text/javascript">
+      Reveal.initialize({
+        controls: false,
+        progress: true,
+        history: true,
+        center: true,
+        width: 1140,
+        height: 960,
+        margin: 0.05,
+        slideNumber: 'c/t',
+        transition: 'slide',
+        dependencies: [
+          { src: 'reveal/plugin/notes/notes.js', async: true }
+        ]
+      });
 
-			const EventBus = new Vue();
+      const EventBus = new Vue();
 
-			new Vue({ el: '#app-rubin-full' });
-			new Vue({ el: '#app-rubin-fpci' });
-			new Vue({ el: '#app-rubin-ate' });
+      new Vue({ el: '#app-rubin-full' });
+      new Vue({ el: '#app-rubin-fpci' });
+      new Vue({ el: '#app-rubin-ate' });
 
-			new Vue({ el: '#app-expectation' });
-			new Vue({ el: '#app-one-trial' });
-			new Vue({ el: '#app-one-trial-2' });
-			new Vue({ el: '#app-type-i' });
-			new Vue({ el: '#app-type-ii' });
-			new Vue({ el: '#app-type-ii-2' });
-			new Vue({ el: '#app-type-ii-3' });
-			new Vue({ el: '#app-multiple-testing' });
-			new Vue({ el: '#app-multiple-testing-2' });
+      new Vue({ el: '#app-expectation' });
+      new Vue({ el: '#app-one-trial' });
+      new Vue({ el: '#app-one-trial-2' });
+      new Vue({ el: '#app-type-i' });
+      new Vue({ el: '#app-type-ii' });
+      new Vue({ el: '#app-type-ii-2' });
+      new Vue({ el: '#app-type-ii-3' });
+      new Vue({ el: '#app-multiple-testing' });
+      new Vue({ el: '#app-multiple-testing-2' });
 
-			new Vue({ el: '#app-dice' });
+      new Vue({ el: '#app-dice' });
 
-			Reveal.addEventListener( 'fragmentshown', function( event ) {
-				if (event.fragment.hasAttribute('data-method')) {
-					EventBus.$emit('fragmentMethod', { id: event.fragment.parentNode.id, method: event.fragment.getAttribute('data-method')});
-				}
-			} );
-			Reveal.addEventListener( 'fragmenthidden', function( event ) {
-				if (event.fragment.hasAttribute('data-method') && event.fragment.hasAttribute('trigger-hidden')) {
-					EventBus.$emit('fragmentMethod', { id: event.fragment.parentNode.id, method: event.fragment.getAttribute('data-method')});
-				}
-			} );
+      Reveal.addEventListener( 'fragmentshown', function( event ) {
+        if (event.fragment.hasAttribute('data-method')) {
+          EventBus.$emit('fragmentMethod', { id: event.fragment.parentNode.id, method: event.fragment.getAttribute('data-method')});
+        }
+      } );
+      Reveal.addEventListener( 'fragmenthidden', function( event ) {
+        if (event.fragment.hasAttribute('data-method') && event.fragment.hasAttribute('trigger-hidden')) {
+          EventBus.$emit('fragmentMethod', { id: event.fragment.parentNode.id, method: event.fragment.getAttribute('data-method')});
+        }
+      } );
 
-			if (window.location.search.match( /print-pdf/gi )) {
-				EventBus.$emit('fragmentMethod', { id: 'app-expectation', method: 'toggle_repeat'});
-				EventBus.$emit('fragmentMethod', { id: 'app-type-i', method: 'toggle_repeat'});
-				EventBus.$emit('fragmentMethod', { id: 'app-type-ii', method: 'toggle_repeat'});
-				EventBus.$emit('fragmentMethod', { id: 'app-type-ii-2', method: 'toggle_repeat'});
-				EventBus.$emit('fragmentMethod', { id: 'app-type-ii-3', method: 'toggle_repeat'});
-				EventBus.$emit('fragmentMethod', { id: 'app-multiple-testing', method: 'toggle_repeat'});
-				EventBus.$emit('fragmentMethod', { id: 'app-multiple-testing-2', method: 'toggle_repeat'});
-				EventBus.$emit('fragmentMethod', { id: 'app-dice', method: 'toggle_repeat'});
-			}
-		</script>
-	</body>
+      if (window.location.search.match( /print-pdf/gi )) {
+        EventBus.$emit('fragmentMethod', { id: 'app-expectation', method: 'toggle_repeat'});
+        EventBus.$emit('fragmentMethod', { id: 'app-type-i', method: 'toggle_repeat'});
+        EventBus.$emit('fragmentMethod', { id: 'app-type-ii', method: 'toggle_repeat'});
+        EventBus.$emit('fragmentMethod', { id: 'app-type-ii-2', method: 'toggle_repeat'});
+        EventBus.$emit('fragmentMethod', { id: 'app-type-ii-3', method: 'toggle_repeat'});
+        EventBus.$emit('fragmentMethod', { id: 'app-multiple-testing', method: 'toggle_repeat'});
+        EventBus.$emit('fragmentMethod', { id: 'app-multiple-testing-2', method: 'toggle_repeat'});
+        EventBus.$emit('fragmentMethod', { id: 'app-dice', method: 'toggle_repeat'});
+      }
+    </script>
+  </body>
 </html>

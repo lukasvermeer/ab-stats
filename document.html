@@ -1,59 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>AB Statistics Document</title>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AB Statistics Document</title>
 
-		<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		<link rel="stylesheet" href="ab-stats.css">
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="ab-stats.css">
 
-		<script>
-			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-			})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-			ga('create', 'UA-105998856-2', 'auto');
-			ga('send', 'pageview');
-		</script>
-	</head>
-	<body>
-		<div class="vcenter">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-offset-2 col-md-8">
-						<h1>Design of experiments</h1>
-						<p class="lead">Statistical foundations for causal inference</p>
-						<h2>Nothing to see here</h2>
-						<p>There is nothing to see here, because I haven't written the document yet.</p>
+      ga('create', 'UA-105998856-2', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </head>
+  <body>
+    <div class="vcenter">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-offset-2 col-md-8">
+            <h1>Design of experiments</h1>
+            <p class="lead">Statistical foundations for causal inference</p>
+            <h2>Nothing to see here</h2>
+            <p>There is nothing to see here, because I haven't written the document yet.</p>
 
-						<h2>Rubin causal model</h2>
-						<div class="well" id="app-rubin-ate">
-							<div class="text-center"><button class="btn btn-default btn-xs" @click="EventBus.$emit('fragmentMethod', { id: 'app-rubin-ate', method: 'toggle_repeat'});">toggle simulation</button></div>
-							<rubin-model sample_name="Sample" randomize display_ate></rubin-model>
-						</div>
+            <h2>Rubin causal model</h2>
+            <div class="well" id="app-rubin-ate">
+              <div class="text-center"><button class="btn btn-default btn-xs" @click="EventBus.$emit('fragmentMethod', { id: 'app-rubin-ate', method: 'toggle_repeat'});">toggle simulation</button></div>
+              <rubin-model sample_name="Sample" randomize display_ate></rubin-model>
+            </div>
 
-						<h2>Expectation</h2>
-						<div class="well" id="app-expectation">
-							<div class="text-center"><button class="btn btn-default btn-xs" @click="EventBus.$emit('fragmentMethod', { id: 'app-expectation', method: 'toggle_repeat'});">toggle simulation</button></div>
-							<simulation v-bind:effect="0.1" display_true_effect display_observed_effect></simulation>
-						</div>
+            <h2>Expectation</h2>
+            <div class="well" id="app-expectation">
+              <div class="text-center"><button class="btn btn-default btn-xs" @click="EventBus.$emit('fragmentMethod', { id: 'app-expectation', method: 'toggle_repeat'});">toggle simulation</button></div>
+              <simulation v-bind:effect="0.1" display_true_effect display_observed_effect></simulation>
+            </div>
 
-					</div>
-				</div>
-			</div>
-		</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-		<script type="text/javascript" src="d3/d3.js"></script>
-		<script type="text/javascript" src="vue/vue.min.js"></script>
-		<script type="text/javascript" src="vue-components.js"></script>
-		<script type="text/javascript">
-			const EventBus = new Vue();
+    <script type="text/javascript" src="d3/d3.js"></script>
+    <script type="text/javascript" src="vue/vue.min.js"></script>
+    <script type="text/javascript" src="vue-components.js"></script>
+    <script type="text/javascript">
+      const EventBus = new Vue();
 
-			new Vue({ el: '#app-rubin-ate' });
-			new Vue({ el: '#app-expectation' });
-		</script>
-	</body>
+      new Vue({ el: '#app-rubin-ate' });
+      new Vue({ el: '#app-expectation' });
+    </script>
+  </body>
 </html>
