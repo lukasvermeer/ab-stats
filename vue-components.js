@@ -237,7 +237,7 @@ Vue.component('simulation', {
       h: 400,
       margin: {top: 10, right: 20, bottom: 20, left: 20},
       bins: 200,
-      cr: 0.1,
+      cr: 0.2,
       bounds: [-0.2,0.2],
       results: { significant: [], insignificant: [], significant_opposite: [] },
       last_effect: null,
@@ -383,7 +383,7 @@ Vue.component('simulation', {
           base_c += this.rbinom(base_n_add, this.cr);
           var_c += this.rbinom(var_n_add, (this.cr + this.effect));
 
-          effect = (var_c/var_n) - (base_c/base_n);
+          obs_effect = (var_c/var_n) - (base_c/base_n);
           gval = calculate_g_test([[base_n - base_c, base_c], [var_n - var_c, var_c]]);
 
           if (gval >= 3.841459) {
@@ -392,15 +392,15 @@ Vue.component('simulation', {
         }
 
         if (gval >= 3.841459) {
-          if (effect > 0) {
-            this.results.significant.push(effect);
+          if ((obs_effect > 0) == (this.effect > 0)) {
+            this.results.significant.push(obs_effect);
           } else {
-            this.results.significant_opposite.push(effect);
+            this.results.significant_opposite.push(obs_effect);
           }
         } else {
-          this.results.insignificant.push(effect);
+          this.results.insignificant.push(obs_effect);
         }
-        this.last_effect = effect;
+        this.last_effect = obs_effect;
       }
     },
     toggle_repeat: function() {
