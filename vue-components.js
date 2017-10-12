@@ -215,7 +215,7 @@ Vue.component('simulation', {
           </tbody>
         </table>
 
-      <p class="text-center text-muted"><small><mark v-if="n != 1000"><var>n</var> = <var>{{n}}</var></mark><span v-if="n == 1000"><var>n</var> = <var>{{n}}</var></span>, <var>base conversion rate</var> = <var>{{cr}}</var>, <var>effect of treatment</var> = <var>{{effect}}</var><span v-if="peek > 1">, <mark>peeking {{peek}} times</mark></span></small></p>
+      <p class="text-center text-muted"><small><mark v-if="n != 1000"><var>n</var> = <var>{{n}}</var></mark><span v-if="n == 1000"><var>n</var> = <var>{{n}}</var></span>, <var>base conversion rate</var> = <var>{{cr}}</var><span v-if="!hide_guide">, <var>effect of treatment</var> = <var>{{effect}}</var></span><span v-if="peek > 1">, <mark>peeking {{peek}} times</mark></span></small></p>
     </div>
   `,
   props: {
