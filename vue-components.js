@@ -105,12 +105,12 @@ Vue.component('rubin-model', {
   data: function () {
     return {
       sample: [
-        { name: 'Alice', a: 0.4, b: 0.9, a_show: 1, b_show: 1 },
+        { name: 'Alice', a: 0.4, b: 0.8, a_show: 1, b_show: 1 },
         { name: 'Bob', a: 0.3, b: 0.8, a_show: 1, b_show: 1 },
-        { name: 'Charlie', a: 0.5, b: 1, a_show: 1, b_show: 1 },
-        { name: 'Dave', a: 0.2, b: 0.7, a_show: 1, b_show: 1 },
+        { name: 'Charlie', a: 0.3, b: 1, a_show: 1, b_show: 1 },
+        { name: 'Dave', a: 0.1, b: 0.7, a_show: 1, b_show: 1 },
         { name: 'Eve', a: 0.4, b: 0.9, a_show: 1, b_show: 1 },
-        { name: 'Frank', a: 0.1, b: 0.6, a_show: 1, b_show: 1 }
+        { name: 'Frank', a: 0.3, b: 0.6, a_show: 1, b_show: 1 }
       ],
       assignment: [],
       repeating: false,
