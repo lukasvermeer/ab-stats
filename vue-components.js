@@ -230,6 +230,8 @@ Vue.component('simulation', {
     display_type_ii:          { type: Boolean, default: false },
     display_power:            { type: Boolean, default: false },
     hide_guide:               { type: Boolean, default: false },
+    hide_significance:        { type: Boolean, default: false },
+    graph_p_values:           { type: Boolean, default: false },
   },
   data: function () {
     return {
@@ -305,6 +307,8 @@ Vue.component('simulation', {
         }
       }
     });
+
+    if (this.graph_p_values) { this.bounds = [0,1]; }
 
     var svg = d3.select(this.$el).select('.chart-container').append("svg")
       .attr("width", '100%')
@@ -391,7 +395,9 @@ Vue.component('simulation', {
           }
         }
 
-        if (gval >= 3.841459) {
+        if (this.graph_p_values) { obs_effect = (1-jStat.chisquare.cdf(gval, 1)); }
+
+        if (gval >= 3.841459 && !this.hide_significance) {
           if ((obs_effect > 0) == (this.effect > 0)) {
             this.results.significant.push(obs_effect);
           } else {

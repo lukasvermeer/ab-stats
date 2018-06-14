@@ -240,6 +240,20 @@
           </aside>
         </section>
 
+        <section id="app-non-null-p-values">
+          <span class="text-muted">When the null is <mark>false</mark> p-values</span>
+          <h3>tend to be small</h3>
+          <simulation v-bind:effect="0.05" hide_guide hide_significance graph_p_values reveal_enabled></simulation>
+          <span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
+        </section>
+
+        <section id="app-null-p-values">
+          <span class="text-muted">When the null is <mark>true</mark> p-values will be</span>
+          <h3>uniformly distributed</h3>
+          <simulation v-bind:effect="0.0" hide_guide hide_significance graph_p_values reveal_enabled></simulation>
+          <span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
+        </section>
+
         <section id="significance-threshold">
           <span class="text-muted">We need to pick a</span>
           <h2>threshold</h2>
@@ -256,6 +270,13 @@
               - We will have to decide at which point we will reject the idea that our result could be chance
               - At this point, we will accept the alternative hypothesis and argue there is a causal effect
           </aside>
+        </section>
+
+        <section id="app-p-values-significance">
+          <span class="text-muted">Results under our threshold are called</span>
+          <h3>statistically significant</h3>
+          <simulation v-bind:effect="0.05" hide_guide graph_p_values reveal_enabled></simulation>
+          <span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
         </section>
 
         <!--
@@ -436,6 +457,7 @@
     </div>
 
     <script type="text/javascript" src="d3/d3.js"></script>
+    <script type="text/javascript" src="jstat/jstat.min.js"></script>
     <script type="text/javascript" src="vue/vue.min.js"></script>
     <script type="text/javascript" src="vue-components.js"></script>
     <script type="text/javascript" src="reveal/lib/js/head.min.js"></script>
@@ -465,6 +487,9 @@
       new Vue({ el: '#app-expectation' });
       new Vue({ el: '#app-one-trial' });
       new Vue({ el: '#app-one-trial-2' });
+      new Vue({ el: '#app-non-null-p-values' });
+      new Vue({ el: '#app-null-p-values' });
+      new Vue({ el: '#app-p-values-significance' });
       new Vue({ el: '#app-type-i' });
       new Vue({ el: '#app-type-ii' });
       new Vue({ el: '#app-type-ii-2' });
