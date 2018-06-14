@@ -123,7 +123,7 @@
 
         <section id="app-expectation">
           <h3>Repeating the same experiment <small>(Expectation)</small></h3>
-          <simulation v-bind:effect="0.1" display_true_effect display_observed_effect reveal_enabled></simulation>
+          <simulation v-bind:effect="0.1" hide_significance display_true_effect display_observed_effect reveal_enabled></simulation>
           <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
           <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
           <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
@@ -150,7 +150,7 @@
 
         <section id="app-one-trial">
           <h3>Up, down or neither?<small>(I don't know either)</small></h3>
-          <simulation v-bind:effect="Math.random() > 0.5 ? 0 : Math.random() > 0.5 ? 0.1 : -0.1" hide_guide display_observed_effect display_last_effect reveal_enabled></simulation>
+          <simulation v-bind:effect="Math.random() > 0.5 ? 0 : Math.random() > 0.5 ? 0.1 : -0.1" hide_significance hide_guide display_observed_effect display_last_effect reveal_enabled></simulation>
           <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
           <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
           <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
