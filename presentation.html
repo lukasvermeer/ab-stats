@@ -194,6 +194,24 @@
           </ol>
         </section>
 
+        <section id="loaded-die">
+          <span class="text-muted">Is this die</span>
+          <h2>Fair?</h2>
+          <p class="dice"><span class="fragment six">&#x2685</span><span class="fragment six">&#x2685</span><span class="fragment six">&#x2685</span></p>
+          <p>
+            <span class="fragment">Not fair; I cheated.</span>
+          </p>
+        </section>
+
+        <section id="decision-rule">
+          <span class="text-muted">How did you decide you were confident</span>
+          <h2>that I was cheating?</h2>
+          <p>
+            <span class="fragment">You did not need to know what to expect from a loaded die.</span>
+            <span class="fragment">Instead, you simply <mark>rejected the idea that it was fair</mark>.</span>
+          </p>
+        </section>
+
         <section id="null-hypothesis">
           <span class="text-muted">We want to reject the</span>
           <h2>null hypothesis</h2>
@@ -203,41 +221,18 @@
           <p>
             <span class="fragment">If we could reasonably rule out mistakes and chance, we might reject the null and consider this to be evidence for an <mark>alternative</mark></span>
           </p>
-
-          <aside class="notes">
-            - We will want to refute the hypothesis that there is no effect
-              - We will consider rejection of the “null hypothesis” as evidence for the “alternative hypothesis”
-          </aside>
         </section>
 
         <section id="p-value">
           <span class="text-muted">We compute a</span>
           <h2>p-value</h2>
           <p>
-            <span class="fragment">We assume the null hypothesis is true and compute the p-value.</span>
+            <span class="fragment">Assuming there is no effect,</span>
+            <span class="fragment">the p-value is the probability of seeing a particular result or more extreme by chance.</span>
           </p>
           <p>
-            <span class="fragment">Assuming there is no effect, the p-value is the probability of seeing a particular result or more extreme by chance.</span>
+            <span class="fragment text-muted"><small>(The probability of rolling three sixes on a fair die is 0.00462962.)</small></span>
           </p>
-          <p>
-            <span class="fragment"><b>How likely is this result <mark>assuming the null is true</mark>?</b></span>
-          </p>
-        </section>
-
-        <section id="loaded-die">
-          <span class="text-muted">Is this die</span>
-          <h2>Fair?</h2>
-          <p class="dice"><span class="fragment six">&#x2685</span><span class="fragment six">&#x2685</span><span class="fragment six">&#x2685</span></p>
-          <p>
-            <span class="fragment">p = 0.00462962</span>
-            </br>
-            <span class="fragment text-muted"><small>(Not fair; I cheated)</small></span>
-          </p>
-
-          <aside class="notes">
-            - We might argue that small odds support accepting an alternative explanation
-              - For instance that the die is loaded, of that I can influence the result through telepathy
-          </aside>
         </section>
 
         <section id="app-non-null-p-values">
@@ -390,9 +385,10 @@
           <span class="fragment" data-method="rerandomize"></span>
           <span class="fragment" data-method="toggle_repeat" trigger-hidden></span>
           <p>
-            <span class="fragment">p = 1</span>
-            </br>
-            <span class="fragment text-muted"><small>(Fair die; I still cheated)</small></span>
+            <span class="fragment">Fair die; I still cheated.</span>
+          </p>
+          <p>
+            <span class="fragment text-muted"><small>(The probability of rolling three sixes on a fair die <mark>if you keep trying</mark> is 1.)</small></span>
           </p>
         </section>
 
