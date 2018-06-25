@@ -158,9 +158,9 @@ Vue.component('rubin-model', {
           function(row, index) {
             return {
               name: row.name,
-              a: Math.random() < (row.a * c[index]) ? 'Yes' : 'No',
+              a: Math.random() < row.a ? 'Yes' : 'No',
               a_show: c[index],
-              b: Math.random() < (row.b * (1-c[index])) ? 'Yes' : 'No',
+              b: Math.random() < row.b ? 'Yes' : 'No',
               b_show: (1-c[index])
             }
           }
