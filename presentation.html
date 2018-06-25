@@ -237,6 +237,13 @@
           </p>
         </section>
 
+        <section id="app-rubin-p-value">
+          <h3>Randomization inference <small>(Rubin Causal Model)</small></h3>
+          <rubin-model sample_name="Sample" randomize display_ate reveal_enabled></rubin-model>
+          <span class="fragment" data-method="randomization_inference"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
+        </section>
+
         <section id="app-non-null-p-values">
           <span class="text-muted">When the null is <mark>false</mark> p-values</span>
           <h3>tend to be small</h3>
@@ -481,6 +488,7 @@
       new Vue({ el: '#app-rubin-full' });
       new Vue({ el: '#app-rubin-fpci' });
       new Vue({ el: '#app-rubin-ate' });
+      new Vue({ el: '#app-rubin-p-value' });
 
       new Vue({ el: '#app-expectation' });
       new Vue({ el: '#app-one-trial' });

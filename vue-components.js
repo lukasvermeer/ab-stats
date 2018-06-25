@@ -97,10 +97,11 @@ Vue.component('rubin-model', {
     </div>
   `,
   props: {
-    reveal_enabled:   { type: Boolean, default: false },
-    display_ate:      { type: Boolean, default: false },
-    randomize:        { type: Boolean, default: false },
-    sample_name:      { type: String, default: 'Everyone' },
+    reveal_enabled:       { type: Boolean, default: false },
+    display_ate:          { type: Boolean, default: false },
+    randomize:            { type: Boolean, default: false },
+    show_counterfactuals: { type: Boolean, default: false },
+    sample_name:          { type: String, default: 'Everyone' },
   },
   data: function () {
     return {
@@ -120,6 +121,9 @@ Vue.component('rubin-model', {
   mounted: function() {
     EventBus.$on('fragmentMethod', params => {
       if (params.id == this.$parent.$el.id) {
+        if (params.method == 'randomization_inference') {
+          this.randomization_inference();
+        }
         if (params.method == 'rerandomize') {
           this.rerandomize();
         }
@@ -135,7 +139,7 @@ Vue.component('rubin-model', {
   computed: {
     avg_a: function() {
       return  this.realisation
-            .map(function(z) { return z.a == 'Yes' ? 1 : z.a == 'No' ? 0 : z.a })
+            .map(function(z) { return z.a_show ? z.a == 'Yes' ? 1 : z.a == 'No' ? 0 : z.a : 0 })
             .reduce(function(a, b) { return a + b; }) /
           this.realisation
             .map(function(z) { return z.a_show })
@@ -143,7 +147,7 @@ Vue.component('rubin-model', {
     },
     avg_b: function() {
       return  this.realisation
-            .map(function(z) { return z.b == 'Yes' ? 1 : z.b == 'No' ? 0 : z.b })
+            .map(function(z) { return z.b_show ? z.b == 'Yes' ? 1 : z.b == 'No' ? 0 : z.b : 0 })
             .reduce(function(a, b) { return a + b; }) /
           this.realisation
             .map(function(z) { return z.b_show })
@@ -159,11 +163,11 @@ Vue.component('rubin-model', {
             return {
               name: row.name,
               a: Math.random() < row.a ? 'Yes' : 'No',
-              a_show: c[index],
+              a_show: (c[index] || this.show_counterfactuals) ? 1 : 0,
               b: Math.random() < row.b ? 'Yes' : 'No',
-              b_show: (1-c[index])
+              b_show: ((1-c[index]) || this.show_counterfactuals) ? 1 : 0
             }
-          }
+          }, this
         );
       }
     },
@@ -175,7 +179,22 @@ Vue.component('rubin-model', {
       return Array(m).fill(1).concat(Array(n-m).fill(0)).shuffle();
     },
     rerandomize: function() {
+      this.show_counterfactuals = false;
       this.assignment = this.complete_randomize();
+    },
+    randomization_inference: function() {
+      var c = this.assignment;
+      this.sample = this.realisation.map(
+        function(row, index) {
+          var r = c[index] == 1 ? row.a : row.b;
+          return {
+            name: row.name,
+            a: r == 'Yes' ? 1 : 0,
+            b: r == 'Yes' ? 1 : 0,
+          }
+        }
+      );
+      this.show_counterfactuals = true;
     },
     toggle_repeat: function() {
       this.repeating = !this.repeating;
