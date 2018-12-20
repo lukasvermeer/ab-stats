@@ -272,7 +272,7 @@ Vue.component('simulation', {
     height: function() { return +this.h - this.margin.top - this.margin.bottom},
     averages: function() {
       var a = {}, total_sum = 0;
-      for (var k in this.results) {
+      for (let k in this.results) {
         if (this.results[k].length == 0) {
           a[k] = NaN;
         } else {
@@ -392,9 +392,9 @@ Vue.component('simulation', {
       }
     },
     step: function() {
-      for (var j = 0; j < Math.min(100,10**(""+(this.trials)).length/10); ++j) {
+      for (let j = 0; j < Math.min(100,10**(""+(this.trials)).length/10); ++j) {
         var base_n  = 0; var var_n = 0; var base_c = 0; var var_c = 0;
-        for (var k = 0; k < this.peek; ++k) {
+        for (let k = 0; k < this.peek; ++k) {
           var n_add = Math.ceil(this.n / this.peek);
 
           var base_n_add = this.rbinom(n_add, 0.5);
@@ -437,7 +437,7 @@ Vue.component('simulation', {
     },
     rbinom: function(n, p) {
       var b = 0;
-      for (var i = 0; i < n; ++i) { if (Math.random() < p) ++b; }
+      for (let i = 0; i < n; ++i) { if (Math.random() < p) ++b; }
       return b;
     },
   },
@@ -454,20 +454,20 @@ function calculate_g_test (data) {
 
   // Initialize our subtotals
   var row_totals = [];
-  for (var i = 0; i < rows; i++) {
+  for (let i = 0; i < rows; i++) {
     row_totals[i] = 0;
   }
 
   var column_totals = [];
-  for (var j = 0; j < columns; j++) {
+  for (let j = 0; j < columns; j++) {
     column_totals[j] = 0;
   }
 
   var total = 0;
 
   // First we calculate the totals for the row and the column
-  for (var i = 0; i < rows; i++) {
-    for (var j = 0; j < columns; j++) {
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < columns; j++) {
       var entry = data[i][j] - 0;  // - 0 ensures numeric
       row_totals[i]    += entry;
       column_totals[j] += entry;
@@ -477,8 +477,8 @@ function calculate_g_test (data) {
 
   // Now we calculate the g-test contribution from each entry.
   var g_test = 0;
-  for (var i = 0; i < rows; i++) {
-    for (var j = 0; j < columns; j++) {
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < columns; j++) {
       var expected = row_totals[i] * column_totals[j] / total;
       var seen     = data[i][j];
 
