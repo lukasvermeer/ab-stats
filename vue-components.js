@@ -329,7 +329,7 @@ Vue.component('simulation', {
 
     if (this.graph_p_values) { this.bounds = [0,1]; }
 
-    var svg = d3.select(this.$el).select('.chart-container').append("svg")
+    d3.select(this.$el).select('.chart-container').append("svg")
       .attr("width", '100%')
       .attr("height", '100%')
       .attr('viewBox','0 0 '+this.w+' '+this.h)
@@ -406,8 +406,8 @@ Vue.component('simulation', {
           base_c += this.rbinom(base_n_add, this.cr);
           var_c += this.rbinom(var_n_add, (this.cr + this.effect));
 
-          obs_effect = (var_c/var_n) - (base_c/base_n);
-          gval = calculate_g_test([[base_n - base_c, base_c], [var_n - var_c, var_c]]);
+          var obs_effect = (var_c/var_n) - (base_c/base_n);
+          var gval = calculate_g_test([[base_n - base_c, base_c], [var_n - var_c, var_c]]);
 
           if (gval >= 3.841459) {
             break;
@@ -437,7 +437,7 @@ Vue.component('simulation', {
     },
     rbinom: function(n, p) {
       var b = 0;
-      for (var i = 0; i < n; ++i) { if (Math.random() < p) ++b; };
+      for (var i = 0; i < n; ++i) { if (Math.random() < p) ++b; }
       return b;
     },
   },
@@ -476,7 +476,7 @@ function calculate_g_test (data) {
   }
 
   // Now we calculate the g-test contribution from each entry.
-  var g_test = 0;;
+  var g_test = 0;
   for (var i = 0; i < rows; i++) {
     for (var j = 0; j < columns; j++) {
       var expected = row_totals[i] * column_totals[j] / total;
@@ -487,7 +487,7 @@ function calculate_g_test (data) {
   }
 
   return g_test;
-};
+}
 
 // Shuffle an array. 'Borrowed' from https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 Array.prototype.shuffle = function() {
