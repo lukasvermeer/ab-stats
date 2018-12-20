@@ -37,7 +37,7 @@ h1 span.title-divider {
   overflow: hidden;
   text-align: center;
   display: block;
-  font: 90px "Times New Roman";
+  font: 90px "Times New Roman", Times, serif;
   font-style: oblique;
   text-transform: lowercase;
   margin: -0.2em auto 0.1em;
