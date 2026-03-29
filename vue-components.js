@@ -250,6 +250,7 @@ Vue.component('simulation', {
     display_power:            { type: Boolean, default: false },
     hide_guide:               { type: Boolean, default: false },
     hide_significance:        { type: Boolean, default: false },
+    hide_first_effect:        { type: Boolean, default: false },
     graph_p_values:           { type: Boolean, default: false },
   },
   data: function () {
@@ -262,6 +263,7 @@ Vue.component('simulation', {
       bounds: [-0.2,0.2],
       results: { significant: [], insignificant: [], significant_opposite: [] },
       last_effect: null,
+      first_effect: null,
       g: '',
       repeating: false,
       my_slide: null,
@@ -390,6 +392,14 @@ Vue.component('simulation', {
           .attr("x2", x(0)).attr("y2", this.height)
           .attr("stroke-width", 1).attr("stroke", color(1)).style("stroke-dasharray", ("3, 3"));
       }
+
+      if (!this.hide_first_effect && this.first_effect != null) {
+        this.g.append("line")
+          .attr("class", "guide-line")
+          .attr("x1", x(this.first_effect)).attr("y1", 0)
+          .attr("x2", x(this.first_effect)).attr("y2", this.height)
+          .attr("stroke-width", 1).attr("stroke", color(2));
+      }
     },
     step: function() {
       for (let j = 0; j < Math.min(100,10**(""+(this.trials)).length/10); ++j) {
@@ -426,6 +436,7 @@ Vue.component('simulation', {
           this.results.insignificant.push(obs_effect);
         }
         this.last_effect = obs_effect;
+        if (!this.first_effect) { this.first_effect = obs_effect; }
       }
     },
     toggle_repeat: function() {
