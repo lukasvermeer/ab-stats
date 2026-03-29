@@ -211,6 +211,28 @@
           <span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
         </section>
 
+        <section id="app-randomization-inference">
+          <h3>Randomization inference <small>(Rubin Causal Model)</small></h3>
+          <simulation v-bind:effect="0" v-bind:force_first_result="0.01" hide_significance display_pval reveal_enabled></simulation>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
+        </section>
+
+        <section id="app-randomization-inference-ii">
+          <h3>Randomization inference <small>(Rubin Causal Model)</small></h3>
+          <simulation v-bind:effect="0" v-bind:force_first_result="0.05" hide_significance display_pval reveal_enabled></simulation>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="step"><small class="text-very-muted"><i class="glyphicon glyphicon-step-forward"></i></small></span>
+          <span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
+        </section>
+
         <section id="app-non-null-p-values">
           <span class="text-muted">When the null is <mark>false</mark> p-values</span>
           <h3>tend to be small</h3>
@@ -460,6 +482,8 @@
       new Vue({ el: '#app-expectation' });
       new Vue({ el: '#app-one-trial' });
       new Vue({ el: '#app-one-trial-2' });
+      new Vue({ el: '#app-randomization-inference' });
+      new Vue({ el: '#app-randomization-inference-ii' });
       new Vue({ el: '#app-non-null-p-values' });
       new Vue({ el: '#app-null-p-values' });
       new Vue({ el: '#app-p-values-significance' });
@@ -485,6 +509,8 @@
 
       if (window.location.search.match( /print-pdf/gi )) {
         EventBus.$emit('fragmentMethod', { id: 'app-expectation', method: 'toggle_repeat'});
+        EventBus.$emit('fragmentMethod', { id: 'app-randomization-inference', method: 'toggle_repeat'});
+        EventBus.$emit('fragmentMethod', { id: 'app-randomization-inference-ii', method: 'toggle_repeat'});
         EventBus.$emit('fragmentMethod', { id: 'app-type-i', method: 'toggle_repeat'});
         EventBus.$emit('fragmentMethod', { id: 'app-type-ii', method: 'toggle_repeat'});
         EventBus.$emit('fragmentMethod', { id: 'app-type-ii-2', method: 'toggle_repeat'});

@@ -220,6 +220,9 @@ Vue.component('simulation', {
               <th v-if="display_type_i" class="align-center">type-I error rate</th>
               <th v-if="display_type_ii" class="align-center">type-II error rate</th>
               <th v-if="display_power" class="align-center">observed power</th>
+              <th v-if="display_pval" class="align-center">trials</th>
+              <th v-if="display_pval" class="align-center">same or more extreme</th>
+              <th v-if="display_pval" class="align-center">p-value</th>
             </tr>
           </thead>
           <tbody>
@@ -230,6 +233,9 @@ Vue.component('simulation', {
               <td v-if="display_type_i" class="align-center big-font">{{type_i_error.toLocaleString('us', {style: 'percent'})}}</td>
               <td v-if="display_type_ii" class="align-center big-font">{{type_ii_error.toLocaleString('us', {style: 'percent'})}}</td>
               <td v-if="display_power" class="align-center big-font">{{power.toLocaleString('us', {style: 'percent'})}}</td>
+              <td v-if="display_pval" class="align-center big-font">{{trials ? trials.toFixed(0) : "-"}}</td>
+              <td v-if="display_pval" class="align-center big-font">{{trials_great_as_first ? trials_great_as_first.toFixed(0) : "-"}}</td>
+              <td v-if="display_pval" class="align-center big-font">{{pval ? pval.toFixed(3) : "-"}}</td>
             </tr>
           </tbody>
         </table>
@@ -240,6 +246,7 @@ Vue.component('simulation', {
   props: {
     reveal_enabled:           { type: Boolean, default: false },
     effect:                   { type: Number, default: 0 },
+    force_first_result:       { type: Number, default: null },
     n:                        { type: Number, default: 1000 },
     peek:                     { type: Number, default: 1 },
     display_true_effect:      { type: Boolean, default: false },
@@ -248,6 +255,7 @@ Vue.component('simulation', {
     display_type_i:           { type: Boolean, default: false },
     display_type_ii:          { type: Boolean, default: false },
     display_power:            { type: Boolean, default: false },
+    display_pval:             { type: Boolean, default: false },
     hide_guide:               { type: Boolean, default: false },
     hide_significance:        { type: Boolean, default: false },
     hide_first_effect:        { type: Boolean, default: false },
@@ -310,6 +318,17 @@ Vue.component('simulation', {
     },
     trials: function() {
       return this.results.significant.length + this.results.significant_opposite.length + this.results.insignificant.length;
+    },
+    trials_great_as_first: function() {
+      if (!this.first_effect) return 0;
+      return this.results.significant.reduce((count, val) => (Math.abs(val) >= Math.abs(this.first_effect) ? count + 1 : count), 0)
+           + this.results.significant_opposite.reduce((count, val) => (Math.abs(val) >= Math.abs(this.first_effect) ? count + 1 : count), 0)
+           + this.results.insignificant.reduce((count, val) => (Math.abs(val) >= Math.abs(this.first_effect) ? count + 1 : count), 0);
+    },
+    pval: function() {
+      if (!this.first_effect) { return null; }
+      if (this.trials_great_as_first == 0) return 1;
+      return this.trials_great_as_first / this.trials;
     },
     power: function() {
       if (this.effect == 0) return "-"; // if null is true, power is undefined.
@@ -423,6 +442,7 @@ Vue.component('simulation', {
             break;
           }
         }
+        if (!this.first_effect && this.force_first_result) obs_effect = this.force_first_result;
 
         if (this.graph_p_values) { obs_effect = (1-jStat.chisquare.cdf(gval, 1)); }
 
@@ -453,7 +473,7 @@ Vue.component('simulation', {
     },
   },
   watch: {
-    trials: function(val) { this.update(val) }
+    trials: function(val) { this.update(val) },
   }
 });
 
