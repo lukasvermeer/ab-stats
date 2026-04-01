@@ -219,6 +219,8 @@ Vue.component('simulation', {
               <th v-if="display_last_effect" class="align-center">last observed effect</th>
               <th v-if="display_type_i" class="align-center">type-I error rate</th>
               <th v-if="display_type_ii" class="align-center">type-II error rate</th>
+              <th v-if="display_type_m" class="align-center">type-S error rate</th>
+              <th v-if="display_type_s" class="align-center">type-M error rate</th>
               <th v-if="display_power" class="align-center">observed power</th>
               <th v-if="display_pval" class="align-center">trials</th>
               <th v-if="display_pval" class="align-center">same or more extreme</th>
@@ -232,6 +234,8 @@ Vue.component('simulation', {
               <td v-if="display_last_effect" class="align-center big-font">{{last_effect ? last_effect.toFixed(3) : "-"}}</td>
               <td v-if="display_type_i" class="align-center big-font">{{type_i_error.toLocaleString('us', {style: 'percent'})}}</td>
               <td v-if="display_type_ii" class="align-center big-font">{{type_ii_error.toLocaleString('us', {style: 'percent'})}}</td>
+              <td v-if="display_type_s" class="align-center big-font">{{type_s_error.toLocaleString('us', {style: 'percent'})}}</td>
+              <td v-if="display_type_m" class="align-center big-font">{{type_m_error.toLocaleString('us', {style: 'percent'})}}</td>
               <td v-if="display_power" class="align-center big-font">{{power.toLocaleString('us', {style: 'percent'})}}</td>
               <td v-if="display_pval" class="align-center big-font">{{trials ? trials.toFixed(0) : "-"}}</td>
               <td v-if="display_pval" class="align-center big-font">{{trials_great_as_first ? trials_great_as_first.toFixed(0) : "-"}}</td>
@@ -254,6 +258,8 @@ Vue.component('simulation', {
     display_observed_effect:  { type: Boolean, default: false },
     display_type_i:           { type: Boolean, default: false },
     display_type_ii:          { type: Boolean, default: false },
+    display_type_m:           { type: Boolean, default: false },
+    display_type_s:           { type: Boolean, default: false },
     display_power:            { type: Boolean, default: false },
     display_pval:             { type: Boolean, default: false },
     hide_guide:               { type: Boolean, default: false },
@@ -311,9 +317,13 @@ Vue.component('simulation', {
       return 1 - this.power;
     },
     type_m_error: function() {
+      if (this.effect == 0) return "-"; // if null is true, type-M error is undefined.
+      if (this.trials == 0) return "-";
       return this.average_abs_effect / this.effect;
     },
     type_s_error: function() {
+      if (this.effect == 0) return "-"; // if null is true, type-S error is undefined.
+      if (this.trials == 0) return "-";
       return this.results.significant_opposite.length / (this.results.significant.length + this.results.significant_opposite.length);
     },
     trials: function() {
