@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AB Statistics Document</title>
+    <title>Design of Experiments - AB Statistics</title>
 
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="ab-stats.css">
@@ -15,22 +15,655 @@
       <div class="container">
         <div class="row">
           <div class="col-md-offset-2 col-md-8">
-            <h1>Design of experiments</h1>
-            <p class="lead">Statistical foundations for causal inference</p>
-            <h2>Nothing to see here</h2>
-            <p>There is nothing to see here, because I haven't written the document yet.</p>
 
-            <h2>Rubin causal model</h2>
-            <div class="well" id="app-rubin-ate">
-              <div class="text-center"><button class="btn btn-default btn-xs" @click="EventBus.$emit('fragmentMethod', { id: 'app-rubin-ate', method: 'toggle_repeat'});">toggle simulation</button></div>
-              <rubin-model sample_name="Sample" randomize display_ate></rubin-model>
-            </div>
+            <section id="title">
+              <h1>Design of experiments</h1>
+              <p class="lead">Statistical foundations for causal inference</p>
+              <br />
+              <p>
+                <small>
+                  <strong>Lukas Vermeer</strong> is <strong>Senior Director of Product</strong> at <strong>VistaPrint</strong> and <strong>Advisor</strong> for <strong>ABsmartly</strong>
+                </small>
+              </p>
+              <p>
+                <small>
+                  <a href="https://www.lukasvermeer.nl/" target="_blank">lukasvermeer.nl</a> &mdash; <a href="http://www.lukasvermeer.nl/ab-stats" target="_blank">lukasvermeer.nl/ab-stats</a>
+                </small>
+              </p>
+            </section>
 
-            <h2>Expectation</h2>
-            <div class="well" id="app-expectation">
-              <div class="text-center"><button class="btn btn-default btn-xs" @click="EventBus.$emit('fragmentMethod', { id: 'app-expectation', method: 'toggle_repeat'});">toggle simulation</button></div>
-              <simulation v-bind:effect="0.1" display_true_effect display_observed_effect></simulation>
-            </div>
+            <hr />
+
+            <section id="causal-inference">
+              <h2>Causal Inference</h2>
+              <p class="text-muted">Making good decisions requires causal inference.</p>
+              <p>
+                In business and science alike, we frequently face decisions about whether to implement a change. Will a new button colour cause more people to click? Will a different pricing page lead to more conversions? Will a policy intervention improve outcomes? To answer these questions, we need more than just observations about what tends to happen together — we need evidence that one thing <em>causes</em> another.
+              </p>
+              <p>
+                Consider this: umbrellas often appear just before it pours, but banning them will not stop the rain; it will just make everyone <mark>more wet</mark>. The correlation between umbrellas and rain is strong, but the direction of causality runs the opposite way from what a naive intervention would assume. This illustrates why correlation alone is insufficient for decision making. The direction of effect is as important as showing that a relationship exists at all.
+              </p>
+              <p>
+                A/B testing — also known as a randomized controlled experiment — is the gold standard for establishing causality. By randomly assigning subjects to different treatments, we can isolate the effect of the treatment from all other confounding factors. The rest of this document walks through the statistical foundations that make this possible, from the Rubin Causal Model through hypothesis testing, error rates, and the dangers of peeking.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="rubin-full">
+              <h2>What we want to know <small>(Rubin Causal Model)</small></h2>
+              <p>
+                The Rubin Causal Model, developed by Donald Rubin in the 1970s, provides a rigorous framework for thinking about causality. At its core, the model defines the causal effect of a treatment on an individual as the difference between two potential outcomes: what would happen to that individual under treatment A, and what would happen to the same individual under treatment B.
+              </p>
+              <p>
+                The table below illustrates this with a small sample of six individuals. For each person, we can imagine their outcome under both treatments. Alice, for example, has a 0.4 probability of converting under treatment A and a 0.8 probability under treatment B, giving her an individual treatment effect of 0.4. Bob's effect is 0.5, Charlie's is 0.7, and so on.
+              </p>
+              <div class="well" id="app-rubin-full">
+                <rubin-model display_ate></rubin-model>
+              </div>
+              <p>
+                The <strong>Average Treatment Effect (ATE)</strong> — shown in the bottom row — is simply the average of all individual treatment effects. In this example, the ATE is 0.4, meaning that on average, switching from A to B increases the probability of a positive outcome by 40 percentage points. This is the quantity we ultimately want to estimate, but as we will see, we can never observe it directly.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="fundamental-problem">
+              <h2>The fundamental problem of causal inference</h2>
+              <p>
+                The Rubin Causal Model makes clear what we would ideally like to know, but it also highlights why causal inference is so difficult. There are three fundamental obstacles that prevent us from directly observing treatment effects.
+              </p>
+              <ol>
+                <li>We cannot sample the entire <mark>population</mark>. We always work with a subset, and our sample may not perfectly represent the broader population we care about.</li>
+                <li>We cannot expose units to both treatments <mark>exclusively</mark>. Each individual can only receive one treatment, so we can never observe both potential outcomes for the same person. This is sometimes called the "fundamental problem of causal inference."</li>
+                <li>We cannot directly observe <mark>underlying</mark> probabilities. Even when we see outcomes (yes or no), we do not observe the true probability that generated those outcomes — we only see a single realization of a random process.</li>
+              </ol>
+              <p>
+                Beyond these three fundamental problems, there are additional sources of uncertainty that are harder to quantify. The population itself may change over time — what works today may not work tomorrow. The treatment may be implemented differently in practice than it was in the experiment. The effect size may vary across contexts. In most analyses, we implicitly assume that these factors remain stable, but that assumption is not always warranted.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="rubin-fpci">
+              <h2>What we can measure <small>(Rubin Causal Model)</small></h2>
+              <p>
+                Since we cannot observe both potential outcomes for the same individual, we need a different strategy. The key insight of experimental design is that while we cannot know any individual's treatment effect, we <em>can</em> estimate the average treatment effect across a group — if we assign treatments randomly.
+              </p>
+              <p>
+                The simulation below shows what we actually observe in an experiment. Each individual is randomly assigned to either treatment A or treatment B. For those assigned to A, we see their outcome under A (but not under B). For those assigned to B, we see their outcome under B (but not under A). The counterfactual — what would have happened under the other treatment — remains unobserved.
+              </p>
+              <div class="well" id="app-rubin-fpci">
+                <div class="text-center"><button class="btn btn-default btn-xs" id="btn-rubin-fpci-rerandomize">Re-randomize</button></div>
+                <rubin-model sample_name="Sample" randomize></rubin-model>
+              </div>
+              <p>
+                Try clicking "Re-randomize" a few times. Each time, a different set of individuals is assigned to each treatment, and the observed outcomes change. This variability is the essence of sampling uncertainty — every randomization gives us a different window into the underlying reality.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="two-questions">
+              <h2>Two key questions</h2>
+              <p>
+                Throughout this document, we will return to two fundamental questions that any experiment must address.
+              </p>
+              <ol>
+                <li><mark>Is there</mark> any causal effect? In other words, can we rule out the possibility that the observed difference between groups is just due to random chance?</li>
+                <li>What is the <mark>size</mark> of the causal effect? If there is an effect, how large is it, and how precisely can we estimate it?</li>
+              </ol>
+              <p class="text-muted">If the size is non-zero, there is an effect. But establishing that the size is reliably different from zero is the harder task.</p>
+              <p>
+                The challenge is that every randomization will give us a slightly different result. We might randomly put all the high-value customers in one group and all the low-value customers in the other, creating a spurious difference that has nothing to do with the treatment. Statistical methods help us quantify how likely such accidents are.
+              </p>
+              <p>
+                For the first question, we use <strong>hypothesis testing</strong> to estimate the probability that our observed result could have occurred by chance. For the second, we use <strong>confidence intervals</strong> to quantify the range of plausible effect sizes. Both tools rely on the same underlying logic: if we repeated the experiment many times, what range of results would we expect to see?
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="rubin-ate">
+              <h2>What randomization gives us <small>(Rubin Causal Model)</small></h2>
+              <p>
+                When we randomize, we can compute the average outcome for each group and take their difference. This observed difference is our estimate of the Average Treatment Effect. It is not the true ATE — that would require knowing every individual's counterfactual outcome — but it is our best guess given the data we can actually collect.
+              </p>
+              <div class="well" id="app-rubin-ate">
+                <div class="text-center"><button class="btn btn-default btn-xs" id="btn-rubin-ate-rerandomize">Re-randomize</button> <button class="btn btn-default btn-xs" id="btn-rubin-ate-toggle">Toggle simulation</button></div>
+                <rubin-model sample_name="Sample" randomize display_ate></rubin-model>
+              </div>
+              <p>
+                The key property of randomization is that it ensures the two groups are comparable <em>in expectation</em>. On average, across many repetitions of the experiment, the groups will have the same mix of characteristics — the same proportion of high-value and low-value customers, the same distribution of preferences, and so on. This means that any systematic difference in outcomes between the groups can be attributed to the treatment rather than to pre-existing differences.
+              </p>
+              <p>
+                Click "Re-randomize" to see how the estimate varies. With only six individuals, the estimates bounce around quite a lot. In real experiments with thousands of participants, the estimates are much more stable — but the same principle applies.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="expectation-sim">
+              <h2>Repeating the same experiment <small>(Expectation)</small></h2>
+              <p>
+                To understand what randomization gives us, it helps to imagine repeating the same experiment many times. Each repetition uses the same underlying population and the same true treatment effect, but a different random assignment of individuals to groups.
+              </p>
+              <p>
+                The simulation below does exactly this. Each time you click "Step" (or toggle auto-run), a new trial is conducted with a sample of 1,000 individuals and a true effect of 0.1 (10 percentage points). The histogram accumulates the observed effect from each trial, building up a picture of what results we might expect to see.
+              </p>
+              <div class="well" id="app-expectation">
+                <div class="text-center"><button class="btn btn-default btn-xs" id="btn-expectation-step">Step</button> <button class="btn btn-default btn-xs" id="btn-expectation-toggle">Toggle simulation</button></div>
+                <simulation v-bind:effect="0.1" display_true_effect display_observed_effect></simulation>
+              </div>
+              <p>
+                Notice how the distribution of observed effects forms a bell-shaped curve centered on the true effect (shown as a dashed line). Individual trials may overestimate or underestimate the true effect, but the average of all trials converges to the truth. This is the meaning of "in expectation" — any single estimate may be wrong, but the method is unbiased.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="expectation">
+              <h2>Our answers will be correct in expectation</h2>
+              <p>
+                The simulation in the previous section illustrates a deep and powerful property of randomized experiments. If we show treatment A and treatment B to random samples of the population, then on average, the fraction of positive outcomes in each group will equal the true underlying probabilities for those groups. And on average, across many replications of the experiment, the difference between those group averages will equal the true Average Treatment Effect.
+              </p>
+              <p>
+                This works for three reasons. First, in expectation, the average of a random sample approximates the true mean of the population. This is the law of large numbers at work — larger samples give more precise estimates. Second, in expectation, the observed fraction of positive outcomes approximates the underlying probability that generated them. We do not need to observe these probabilities directly; the outcomes themselves contain all the information we need.
+              </p>
+              <p>
+                Third, and most importantly, in expectation, the difference between the group averages gives us the ATE. We do not need to measure the treatment effect for each individual participant — which would be impossible, since we can never observe both potential outcomes. Instead, we estimate the average effect across the group, and randomization ensures this estimate is unbiased.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="one-trial">
+              <h2>Up, down or neither?</h2>
+              <p>
+                The previous simulation showed what happens when we know the true effect and repeat the experiment many times. But in the real world, we only ever run the experiment once, and we do not know the true effect. All we have is the observed difference between the two groups.
+              </p>
+              <p>
+                The simulation below mimics this situation. It randomly picks a true effect — it might be zero (no effect), positive (treatment B is better), or negative (treatment A is better) — and then runs trials. You can see the observed effect from each trial, but you do not know which true effect was chosen.
+              </p>
+              <div class="well" id="app-one-trial">
+                <div class="text-center"><button class="btn btn-default btn-xs" id="btn-one-trial-step">Step</button> <button class="btn btn-default btn-xs" id="btn-one-trial-toggle">Toggle simulation</button></div>
+                <simulation v-bind:effect="0" hide_significance hide_guide display_observed_effect display_last_effect></simulation>
+              </div>
+              <p>
+                Can you tell from the observed results whether the true effect is up, down, or nonexistent? With only a handful of trials, it is very difficult to be confident. The observed effects bounce around, and a few positive results could easily be followed by negative ones. This uncertainty is exactly why we need formal statistical methods — intuition alone is not reliable for distinguishing signal from noise.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="randomization">
+              <h2>Randomization ensures only three things can explain a difference</h2>
+              <p>
+                When we observe a difference between the treatment and control groups in a properly randomized experiment, there are exactly three possible explanations for that difference. Understanding these three possibilities is the foundation of statistical inference.
+              </p>
+              <ol>
+                <li><mark>Causation</mark>: The treatment genuinely caused people to behave differently. This is the explanation we hope for — it means the treatment works.</li>
+                <li><mark>Pure chance</mark>: The random assignment happened to produce an imbalance between the groups that is unrelated to the treatment. Even with perfect randomization, we might get unlucky and put more responsive users in one group than the other.</li>
+                <li><mark>Mistakes</mark>: Something went wrong in the execution of the experiment. Perhaps the randomization was not implemented correctly, or there was a bug in the data collection, or the analysis was flawed.</li>
+              </ol>
+              <p>
+                Statistical methods help us quantify the likelihood of the second explanation (chance). The third explanation (mistakes) must be guarded against through careful experimental design and quality control. If we can rule out both mistakes and chance, we are left with causation as the most plausible explanation.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="loaded-die">
+              <h2>Is this die fair?</h2>
+              <p>
+                Before diving into the formal machinery of hypothesis testing, consider a simple example. Imagine I roll a die three times and it comes up six each time:
+              </p>
+              <p class="dice">&#x2685 &#x2685 &#x2685;</p>
+              <p>
+                Most people would immediately suspect that the die is not fair. But why? The outcome of three sixes is not impossible with a fair die — it is just very unlikely. The probability is (1/6)³ = 1/216 ≈ 0.0046, or about 0.5%.
+              </p>
+              <p>
+                Your intuitive reaction to this scenario already contains the essence of hypothesis testing. You did not need to know exactly how the die was loaded or what the probabilities of each face were under the loaded scenario. You simply looked at the observed outcome and decided that it was too unlikely to have come from a fair die.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="decision-rule">
+              <h2>How did you decide you were confident that I was cheating?</h2>
+              <p>
+                The key insight from the die example is that you did not need a specific alternative hypothesis to reject the null. You did not need to know that the die was loaded to always roll sixes, or that it was weighted toward high numbers. You simply evaluated whether the observed outcome was compatible with the assumption of fairness.
+              </p>
+              <p>
+                This is exactly how statistical hypothesis testing works. You do not need to specify what the treatment effect will be if the treatment works. You only need to specify what you would expect to see if the treatment does <em>not</em> work — and then check whether the data are compatible with that scenario.
+              </p>
+              <p>
+                In other words, you simply <mark>rejected the idea that the die was fair</mark> because the observed outcome was too improbable under that assumption. The same logic applies to A/B tests: we reject the null hypothesis when the observed data would be very unlikely if the null were true.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="null-hypothesis">
+              <h2>We want to reject the null hypothesis</h2>
+              <p>
+                In the context of A/B testing, the <mark>null hypothesis</mark> is the assumption that the treatment has no effect whatsoever. Under the null hypothesis, every individual would have the same outcome regardless of whether they received treatment A or treatment B. Any difference we observe between the groups is purely due to the luck of the random assignment.
+              </p>
+              <p>
+                The goal of statistical testing is not to prove that the treatment works. Instead, it is to assess whether the data are sufficiently inconsistent with the null hypothesis that we can reasonably reject it. If we can rule out chance as a plausible explanation for the observed difference (and we have guarded against mistakes), then we consider the data to be evidence in favour of the <mark>alternative hypothesis</mark> — that the treatment does have an effect.
+              </p>
+              <p>
+                This asymmetry is important. We never "accept" the null hypothesis; we either reject it or fail to reject it. Failing to reject the null does not mean there is no effect — it means we did not find sufficient evidence to conclude that there is one. The effect might be real but too small for us to detect with the sample size we used.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="p-value">
+              <h2>We compute a p-value</h2>
+              <p>
+                The p-value is the tool we use to quantify how incompatible the data are with the null hypothesis. Formally, the p-value is the probability of observing a result at least as extreme as the one we actually observed, <em>assuming the null hypothesis is true</em>.
+              </p>
+              <p>
+                A small p-value means that the observed result would be very unlikely if there were no true effect. This gives us evidence against the null hypothesis. A large p-value means the observed result is quite compatible with the null — it could easily have occurred by chance alone.
+              </p>
+              <p>
+                <strong>How likely is this result <mark>assuming the null is true</mark>?</strong> That is the question the p-value answers. It is important to note what the p-value does <em>not</em> tell us: it is not the probability that the null hypothesis is true, and it is not the probability that the result is "real." It is strictly a statement about the data under a specific assumption.
+              </p>
+              <p class="text-muted">Returning to the die example: the probability of rolling three sixes on a fair die is 0.00462962. This is the p-value for that observation. If we use a threshold of 0.05, this result would be considered statistically significant.</p>
+            </section>
+
+            <hr />
+
+            <section id="rubin-p-value">
+              <h2>Randomization inference <small>(Rubin Causal Model)</small></h2>
+              <p>
+                One elegant way to compute p-values in the context of randomized experiments is through randomization inference. The idea is simple: if the null hypothesis is true (the treatment has no effect), then the observed outcomes would have been the same regardless of which treatment each individual received. This means we can simulate what would have happened under different random assignments, using the actual observed outcomes.
+              </p>
+              <div class="well" id="app-rubin-p-value">
+                <div class="text-center"><button class="btn btn-default btn-xs" id="btn-rubin-p-value-ri">Run randomization inference</button> <button class="btn btn-default btn-xs" id="btn-rubin-p-value-toggle">Toggle simulation</button></div>
+                <rubin-model sample_name="Sample" randomize display_ate></rubin-model>
+              </div>
+              <p>
+                The process works as follows. First, we run the experiment and observe the outcomes. Then, we "re-randomize" — we reassign the same observed outcomes to different treatment groups, as if the randomization had turned out differently. Each re-randomization gives us a new estimated effect under the null hypothesis. By repeating this many times, we build up a distribution of effects that could plausibly occur by chance.
+              </p>
+              <p>
+                The p-value is then the fraction of re-randomizations that produce an effect at least as large as the one we actually observed. If very few re-randomizations produce such a large effect, the p-value is small, and we have evidence against the null.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="randomization-inference">
+              <h2>Randomization inference <small>(No effect)</small></h2>
+              <p>
+                The simulation below demonstrates randomization inference in a setting where there is truly no effect (the true effect is 0). The first trial is forced to produce a small observed effect of 0.01 — this represents the result of our actual experiment. Then, subsequent trials simulate what we would expect to see under the null hypothesis.
+              </p>
+              <div class="well" id="app-randomization-inference">
+                <div class="text-center"><button class="btn btn-default btn-xs" id="btn-randomization-inference-step">Step</button> <button class="btn btn-default btn-xs" id="btn-randomization-inference-toggle">Toggle simulation</button></div>
+                <simulation v-bind:effect="0" v-bind:force_first_result="0.01" display_pval></simulation>
+              </div>
+              <p>
+                Watch the table at the bottom as you step through. The "trials" column counts how many simulations have been run. The "same or more extreme" column counts how many of those trials produced an effect at least as large as the first observed effect of 0.01. The p-value is the ratio of these two numbers.
+              </p>
+              <p>
+                As more trials accumulate, the p-value stabilizes. In this case, since the true effect is zero and the first observed effect was small, the p-value will likely be quite large — meaning the first result is very compatible with the null hypothesis. There is no evidence of a real effect.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="randomization-inference-ii">
+              <h2>Randomization inference <small>(Larger observed effect)</small></h2>
+              <p>
+                Now consider the same scenario, but with a larger first observed effect of 0.05. The true effect is still zero — we are still under the null hypothesis — but the first trial happened to produce a larger observed difference between groups.
+              </p>
+              <div class="well" id="app-randomization-inference-ii">
+                <div class="text-center"><button class="btn btn-default btn-xs" id="btn-randomization-inference-ii-step">Step</button> <button class="btn btn-default btn-xs" id="btn-randomization-inference-ii-toggle">Toggle simulation</button></div>
+                <simulation v-bind:effect="0" v-bind:force_first_result="0.05" display_pval></simulation>
+              </div>
+              <p>
+                Because the first observed effect is larger, fewer subsequent trials will match or exceed it. This means the p-value will be smaller. The logic is intuitive: a more extreme observation is harder to explain by chance alone, so it provides stronger evidence against the null.
+              </p>
+              <p>
+                However, even with a first effect of 0.05, the p-value may not be particularly small, because effects of this magnitude are not that unusual when the true effect is zero. This illustrates why we need many trials (or equivalently, large sample sizes) to reliably distinguish small effects from noise.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="non-null-p-values">
+              <h2>When the null is <mark>false</mark>, p-values tend to be small</h2>
+              <p>
+                What happens when there actually <em>is</em> a treatment effect? The simulation below runs experiments with a true effect of 0.05 (5 percentage points) and plots the resulting p-values as a histogram.
+              </p>
+              <div class="well" id="app-non-null-p-values">
+                <div class="text-center"><button class="btn btn-default btn-xs" id="btn-non-null-p-values-toggle">Toggle simulation</button></div>
+                <simulation v-bind:effect="0.05" hide_guide hide_significance graph_p_values></simulation>
+              </div>
+              <p>
+                Notice how the p-values cluster near zero. When there is a real effect, most experiments will produce results that are unlikely under the null hypothesis, leading to small p-values. The histogram is heavily skewed to the left — most p-values are close to 0, and very few are close to 1.
+              </p>
+              <p>
+                This is exactly what we want from a good statistical test. When the null is false, we want the test to produce small p-values so that we can correctly reject the null. The probability of getting a p-value below our significance threshold (e.g., 0.05) when the null is false is called the <strong>power</strong> of the test.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="null-p-values">
+              <h2>When the null is <mark>true</mark>, p-values will be uniformly distributed</h2>
+              <p>
+                Now consider the opposite case: the true effect is zero, so the null hypothesis is true. The simulation below plots the p-values from many experiments conducted under the null.
+              </p>
+              <div class="well" id="app-null-p-values">
+                <div class="text-center"><button class="btn btn-default btn-xs" id="btn-null-p-values-toggle">Toggle simulation</button></div>
+                <simulation v-bind:effect="0.0" hide_guide hide_significance graph_p_values></simulation>
+              </div>
+              <p>
+                The histogram is approximately flat — the p-values are uniformly distributed between 0 and 1. This is a fundamental property of well-calibrated statistical tests: under the null hypothesis, every p-value is equally likely. A p-value of 0.01 is just as probable as a p-value of 0.99.
+              </p>
+              <p>
+                This uniformity has an important consequence: if we use a significance threshold of 0.05, then exactly 5% of experiments will produce a "significant" result purely by chance, even when there is no true effect. This 5% is the Type-I error rate, and it is directly controlled by our choice of threshold.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="significance-threshold">
+              <h2>We need to pick a threshold</h2>
+              <p>
+                The p-value gives us a continuous measure of evidence against the null hypothesis. But ultimately, we need to make a decision: do we act on the result or not? Do we ship the new feature or keep the old one? To make this decision, we need to draw a line somewhere.
+              </p>
+              <p>
+                One swallow does not a summer make, nor one fine day; but how many swallows do we count before we pack away our umbrellas? Similarly, how small does a p-value need to be before we are willing to reject the null hypothesis?
+              </p>
+              <p>
+                The scientific standard for statistical significance is <mark>p &lt; 0.05</mark>. This means we are willing to accept a 5% chance of incorrectly rejecting a true null hypothesis — a 5% Type-I error rate. This threshold is conventional rather than sacred; in some contexts, a more stringent threshold (e.g., 0.01 or 0.001) may be appropriate, while in others, a more lenient one may be justified.
+              </p>
+              <p>
+                The choice of threshold reflects a trade-off. A lower threshold reduces the risk of false positives but makes it harder to detect real effects (increasing false negatives). A higher threshold makes it easier to detect effects but increases the risk of acting on noise.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="p-values-significance">
+              <h2>Results under our threshold are called statistically significant</h2>
+              <p>
+                The simulation below shows p-values from experiments with a true effect of 0.05, with the significance threshold of 0.05 marked on the histogram. P-values that fall to the left of the threshold (in the shaded region) are called "statistically significant."
+              </p>
+              <div class="well" id="app-p-values-significance">
+                <div class="text-center"><button class="btn btn-default btn-xs" id="btn-p-values-significance-toggle">Toggle simulation</button></div>
+                <simulation v-bind:effect="0.05" hide_guide graph_p_values></simulation>
+              </div>
+              <p>
+                Notice that most p-values fall in the significant region, but not all of them. Some experiments produce p-values above 0.05 even though there is a real effect. These are Type-II errors — failures to detect a real effect. The proportion of experiments that produce significant results is the <strong>statistical power</strong> of the test.
+              </p>
+              <p>
+                If you compare this with the earlier simulation where the null was true, you will see a stark contrast: under the null, only 5% of p-values fall in the significant region; under the alternative, a much larger fraction does. This difference is what makes hypothesis testing work.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="errors">
+              <h2>Two types of errors</h2>
+              <p>
+                Whenever we make a decision based on a statistical test, there are two ways we can be wrong. Understanding these error types is essential for interpreting experimental results correctly.
+              </p>
+              <p>
+                A <mark>Type-I error</mark> (false positive) occurs when we reject a true null hypothesis. In the context of A/B testing, this means we conclude that the treatment has an effect when it actually does not. We "cried foul" when there was no foul to cry. The probability of a Type-I error is controlled by our significance threshold — if we use p &lt; 0.05, the Type-I error rate is 5%.
+              </p>
+              <p>
+                A <mark>Type-II error</mark> (false negative) occurs when we fail to reject a false null hypothesis. This means the treatment genuinely has an effect, but our experiment did not detect it. We missed a real effect. The probability of a Type-II error depends on the sample size, the effect size, and the significance threshold.
+              </p>
+              <p>
+                These two error types are in tension. Reducing the Type-I error rate (by using a stricter threshold) increases the Type-II error rate, and vice versa. The design of an experiment involves choosing an acceptable balance between these two risks.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="type-i">
+              <h2>Type-I errors in practice <small>(No effect)</small></h2>
+              <p>
+                The simulation below runs many experiments where the true effect is exactly zero. Every time a result is declared "significant," it is a Type-I error — a false positive. The table tracks the cumulative Type-I error rate across all trials.
+              </p>
+              <div class="well" id="app-type-i">
+                <div class="text-center"><button class="btn btn-default btn-xs" id="btn-type-i-step">Step</button> <button class="btn btn-default btn-xs" id="btn-type-i-toggle">Toggle simulation</button></div>
+                <simulation v-bind:effect="0.0" display_true_effect display_type_i></simulation>
+              </div>
+              <p>
+                As the number of trials grows, the observed Type-I error rate converges to approximately 5%. This is exactly what we expect from a well-calibrated test with a significance threshold of 0.05. About 1 in 20 experiments will produce a false positive, purely by chance.
+              </p>
+              <p>
+                This may seem like a small probability, but consider the implications at scale. If a company runs hundreds of A/B tests per year, and most of them have no real effect, then dozens of "significant" results will be false positives. Without proper controls, organizations can easily ship changes that do nothing — or worse, make things worse — based on spurious statistical findings.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="type-ii">
+              <h2>Type-II errors in practice <small>(Small effect)</small></h2>
+              <p>
+                Now consider the opposite scenario: there is a real effect of 0.05 (5 percentage points), but our experiment may not always detect it. The simulation below tracks the Type-II error rate — the proportion of experiments that fail to produce a significant result despite the real effect.
+              </p>
+              <div class="well" id="app-type-ii">
+                <div class="text-center"><button class="btn btn-default btn-xs" id="btn-type-ii-step">Step</button> <button class="btn btn-default btn-xs" id="btn-type-ii-toggle">Toggle simulation</button></div>
+                <simulation v-bind:effect="0.05" display_true_effect display_type_ii></simulation>
+              </div>
+              <p>
+                With a sample size of 1,000 per group, the Type-II error rate is quite high — many experiments fail to detect the effect. The complement of the Type-II error rate is the statistical power: the probability of correctly detecting the effect when it exists. Low power means we are leaving many real effects undetected.
+              </p>
+              <p>
+                This has important practical implications. An experiment with low power is not just inconclusive — it is systematically biased toward finding nothing. If an organization routinely runs underpowered experiments, most of its "non-significant" results will be false negatives, and potentially valuable improvements will be discarded.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="power">
+              <h2>The importance of statistical power</h2>
+              <p>
+                Statistical power is the probability that a test correctly rejects the null hypothesis when the alternative hypothesis is true. In practical terms, it is the probability that your experiment will detect a real effect if one exists. High power is essential for making reliable decisions.
+              </p>
+              <p>
+                Two main factors affect statistical power. The first is <strong>sample size</strong>: larger samples provide more precise estimates and make it easier to distinguish signal from noise. All else being equal, more data means more power. The second is <strong>effect size</strong>: larger effects are easier to detect than smaller ones. A 20 percentage point improvement is much easier to spot than a 1 percentage point improvement.
+              </p>
+              <p>
+                The effect size is unknown — it is what we are trying to estimate — but we can make assumptions about the minimum effect size we care about detecting. We can then choose a sample size that gives us adequate power (typically 80% or higher) to detect effects of that magnitude. If the required sample size is impractically large, we may need to reconsider whether the experiment is feasible at all.
+              </p>
+              <p class="text-muted">Effect size is unknown but assumed fixed for the purposes of power calculation. Sample size may be increased if low power is expected, but this comes at a cost in time and resources.</p>
+            </section>
+
+            <hr />
+
+            <section id="type-ii-2">
+              <h2>Increasing power with larger samples <small>(n = 2000)</small></h2>
+              <p>
+                The simulation below repeats the previous scenario — a true effect of 0.05 — but with a larger sample size of 2,000 per group instead of 1,000. The increased sample size provides more statistical power to detect the same effect.
+              </p>
+              <div class="well" id="app-type-ii-2">
+                <div class="text-center"><button class="btn btn-default btn-xs" id="btn-type-ii-2-toggle">Toggle simulation</button></div>
+                <simulation v-bind:effect="0.05" v-bind:n="2000" display_type_ii display_power></simulation>
+              </div>
+              <p>
+                Watch the "observed power" metric in the table. As trials accumulate, it converges to a value that is higher than in the previous simulation with n = 1,000. The Type-II error rate (1 minus power) correspondingly decreases. More experiments correctly detect the effect.
+              </p>
+              <p>
+                This demonstrates the practical value of running well-powered experiments. By investing in larger sample sizes, we reduce the risk of discarding genuinely effective treatments. The trade-off is that larger experiments take longer to run and require more resources, so there is a balance to strike.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="type-ii-3">
+              <h2>Even more power <small>(n = 4000)</small></h2>
+              <p>
+                Doubling the sample size again to 4,000 per group further increases the power. The simulation below shows the result.
+              </p>
+              <div class="well" id="app-type-ii-3">
+                <div class="text-center"><button class="btn btn-default btn-xs" id="btn-type-ii-3-toggle">Toggle simulation</button></div>
+                <simulation v-bind:effect="0.05" v-bind:n="4000" display_type_ii display_power></simulation>
+              </div>
+              <p>
+                With 4,000 participants per group, the power to detect a 5 percentage point effect is very high. The Type-II error rate is now quite low — most experiments correctly identify the effect. The observed power metric should converge to a value well above 80%.
+              </p>
+              <p>
+                The progression from n = 1,000 to n = 2,000 to n = 4,000 illustrates a general principle: power increases with sample size, but with diminishing returns. Each doubling of sample size gives a smaller incremental gain in power than the previous one. This is why it is important to do a power calculation before running an experiment — to ensure the sample size is large enough to be useful, but not so large that resources are wasted.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="one-trial-2">
+              <h2>Up, down or neither? <small>(Revisited)</small></h2>
+              <p>
+                Earlier in this document, we looked at a simulation where the true effect was hidden and asked whether you could determine from the observed results whether the effect was positive, negative, or zero. Now that you understand hypothesis testing and statistical significance, let us revisit that question.
+              </p>
+              <div class="well" id="app-one-trial-2">
+                <div class="text-center"><button class="btn btn-default btn-xs" id="btn-one-trial-2-step">Step</button> <button class="btn btn-default btn-xs" id="btn-one-trial-2-toggle">Toggle simulation</button></div>
+                <simulation v-bind:effect="0" hide_guide display_observed_effect display_last_effect></simulation>
+              </div>
+              <p>
+                The key difference from before is that you now know what to look for. Instead of just looking at the direction and magnitude of individual observed effects, you should consider whether the results are consistently significant and in which direction. If the true effect is zero, the observed effects will bounce around randomly with no consistent pattern. If the true effect is positive, the observed effects will tend to be positive, and a growing proportion will be statistically significant.
+              </p>
+              <p>
+                In practice, of course, we do not get to run the experiment repeatedly and watch the distribution of results accumulate. We typically have just one result. That is why the framework of hypothesis testing is so important — it tells us how to interpret a single observation in the context of what we would expect to see under the null hypothesis.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="protocol">
+              <h2>The importance of sticking to protocol</h2>
+              <p>
+                All of the statistical methods described in this document rest on a critical assumption: that the experiment was conducted according to a pre-specified protocol. The sample size was determined in advance, the analysis plan was fixed before looking at the data, and the results were evaluated exactly once at the end of the experiment.
+              </p>
+              <p>
+                Violations of this protocol — such as <mark>peeking</mark> at results before the experiment is complete, or running <mark>multiple tests</mark> and reporting only the significant ones — invalidate the statistical guarantees. The Type-I error rate of 5% that we have been relying on applies only when the experiment is analysed exactly once, at a pre-determined sample size.
+              </p>
+              <p>
+                This is not a minor technicality. In practice, protocol violations are extremely common and can dramatically inflate the false positive rate. The next sections illustrate exactly how and why this happens.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="dice">
+              <h2>Can telekinesis influence three dice?</h2>
+              <p>
+                Consider the following scenario: I claim that I can influence dice rolls with my mind (telekinesis). To test this, I roll three dice and they all come up sixes. Impressive, right?
+              </p>
+              <div class="well" id="app-dice">
+                <div class="text-center"><button class="btn btn-default btn-xs" id="btn-dice-rerandomize">Re-roll</button> <button class="btn btn-default btn-xs" id="btn-dice-toggle">Toggle simulation</button></div>
+                <dice></dice>
+              </div>
+              <p>
+                But wait — what if I kept rolling until I got three sixes? If I roll the dice over and over again, eventually I will get three sixes. The probability of getting three sixes <em>on a single attempt</em> is 1/216, but the probability of getting three sixes <em>if I keep trying</em> is 1. Given enough attempts, it is guaranteed to happen.
+              </p>
+              <p>
+                This is the essence of the peeking problem. If you check your experiment results repeatedly as data accumulates, you are effectively giving yourself multiple chances to see a "significant" result. Even when there is no true effect, repeated peeking makes it increasingly likely that you will see a spuriously significant result at some point. Fair die; I still cheated.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="multiple-testing">
+              <h2>The peeking problem <small>(Checking twice)</small></h2>
+              <p>
+                The simulation below demonstrates what happens when you peek at results twice during an experiment. The true effect is zero, so every significant result is a false positive. The experiment checks for significance at the halfway point and again at the end.
+              </p>
+              <div class="well" id="app-multiple-testing">
+                <div class="text-center"><button class="btn btn-default btn-xs" id="btn-multiple-testing-toggle">Toggle simulation</button></div>
+                <simulation v-bind:effect="0.00" v-bind:peek="2" display_true_effect display_type_i></simulation>
+              </div>
+              <p>
+                Watch the Type-I error rate as trials accumulate. With a single analysis at the end, we would expect a 5% false positive rate. But with two peeks, the rate is higher — because each peek is an additional opportunity to see a spurious significant result. If the first peek happens to show significance, the experiment might be stopped early and the result declared, even though the effect is not real.
+              </p>
+              <p>
+                The inflation from peeking twice may seem modest, but it compounds rapidly with more peeks. In practice, many experimenters check their dashboards daily or even more frequently, which means they are peeking dozens or hundreds of times over the course of an experiment.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="multiple-testing-2">
+              <h2>The peeking problem <small>(Checking 100 times)</small></h2>
+              <p>
+                The simulation below takes the peeking problem to its logical extreme: checking for significance 100 times during the experiment. The true effect is still zero.
+              </p>
+              <div class="well" id="app-multiple-testing-2">
+                <div class="text-center"><button class="btn btn-default btn-xs" id="btn-multiple-testing-2-toggle">Toggle simulation</button></div>
+                <simulation v-bind:effect="0.00" v-bind:peek="100" display_true_effect display_type_i></simulation>
+              </div>
+              <p>
+                The Type-I error rate is now dramatically inflated — far above the nominal 5%. With 100 opportunities to see a significant result, it becomes almost inevitable that at least one of them will cross the threshold by chance alone. The false positive rate can exceed 30% or even higher, depending on the exact setup.
+              </p>
+              <p>
+                This is why peeking is so dangerous. An experimenter who checks their results daily and stops the experiment as soon as significance is reached will declare many false positives. The statistical guarantees that we rely on — the 5% Type-I error rate — simply do not apply when the analysis plan is not followed.
+              </p>
+              <p>
+                The solution is either to stick to a pre-specified analysis plan (do not peek), or to use statistical methods that are designed to handle sequential analysis, such as group sequential designs or always-valid p-values. These methods adjust the significance threshold to account for the multiple looks, preserving the overall Type-I error rate.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="adaptive-methods">
+              <h2>Reasons for violating protocol</h2>
+              <p>
+                Given the dangers of protocol violations, one might wonder why anyone would want to peek or run multiple tests. The answer is that there are legitimate reasons for wanting more flexibility in experimental design.
+              </p>
+              <p>
+                <mark>Early stopping rules</mark> can be desirable to mitigate damage. If a treatment is causing harm, we want to stop the experiment as soon as possible rather than waiting for the pre-determined end date. Similarly, if a treatment is performing spectacularly well, we may want to stop early and roll it out to all users to avoid the opportunity cost of keeping half the users on an inferior experience.
+              </p>
+              <p>
+                <mark>Early shipping</mark> decisions are driven by business considerations. In fast-moving industries, the cost of waiting for a fully powered experiment may outweigh the benefit of additional precision. Organizations may choose to ship based on preliminary evidence, accepting a higher risk of error in exchange for speed.
+              </p>
+              <p>
+                <mark>Multiple variants</mark> are common in practice. Rather than testing just A versus B, organizations often want to test several alternatives simultaneously. This introduces a multiple comparisons problem: the more variants you test, the more likely you are to find a spurious significant result.
+              </p>
+              <p>
+                <mark>Multiple metrics</mark> are also standard. An experiment typically tracks not just the primary outcome of interest but also guardrail metrics to ensure that the treatment is not causing unintended harm elsewhere. Each additional metric is another opportunity for a false positive.
+              </p>
+              <p>All these practices are possible and sometimes desirable<small>[4]</small>, but they require protocol adjustments. Statistical methods exist to handle sequential testing, multiple comparisons, and multi-metric analysis while controlling the overall error rate. The key is to plan for these complexities in advance rather than improvising after seeing the data.</p>
+              <p><small>[4] Alex Deng, Tianxi Li, Yu Guo 2014 "Statistical Inference in Two-Stage Online Controlled Experiments with Treatment Selection and Validation" WWW '14. 609–618.</small></p>
+            </section>
+
+            <hr />
+
+            <section id="conclusion">
+              <h2>Conclusion</h2>
+              <p>
+                A/B testing is one of the most powerful tools available for making data-driven decisions. By randomly assigning subjects to different treatments, we can isolate the causal effect of a change from all other confounding factors. But the statistical machinery that makes this possible is subtle, and misusing it can lead to confidently wrong conclusions.
+              </p>
+              <p>
+                The key ideas covered in this document form a coherent framework. The Rubin Causal Model clarifies what we want to know — the average treatment effect — and why we cannot observe it directly. Randomization gives us an unbiased estimator of that effect, but any single estimate is uncertain. Hypothesis testing and p-values help us distinguish signal from noise by quantifying how likely our results would be under the null hypothesis of no effect. Statistical power tells us how likely we are to detect a real effect if one exists, and depends critically on sample size. And the discipline of sticking to a pre-specified protocol is what keeps the error rates under control.
+              </p>
+              <p>
+                The most common mistakes in practice are not subtle statistical errors — they are violations of the basic protocol. Peeking at results and stopping early, running multiple tests without correction, and changing the analysis plan after seeing the data all inflate the false positive rate far beyond the nominal level. These are not edge cases; they are the default behaviour of many experimenters who check their dashboards daily and declare victory at the first significant result.
+              </p>
+              <p>
+                The good news is that all of these problems have solutions. Sequential testing methods allow for early stopping while controlling error rates. Multiple comparison corrections handle the problem of testing many variants or metrics. And a culture of pre-registration — writing down the analysis plan before looking at the data — prevents the temptation to cherry-pick results. The statistical tools exist; what is required is the discipline to use them correctly.
+              </p>
+              <p>
+                Ultimately, good experimentation is not just about statistics — it is about epistemic humility. Every experiment is an attempt to learn something about an uncertain world. The methods described here do not give us certainty; they give us a calibrated sense of how uncertain we should be. And that is exactly what we need to make good decisions.
+              </p>
+            </section>
+
+            <hr />
+
+            <section id="references">
+              <h2>References</h2>
+              <ol>
+                <li><small>Rubin, Donald B. 1974. "Estimating Causal Effects of Treatments in Randomized and Nonrandomized Studies." Journal of Educational Psychology 66 (5): 688–701. (<a href="http://dx.doi.org/10.1037/h0037350" target="_blank">link</a>)</small></li>
+                <li><small>Goodman, Steve 2008. "A dirty dozen: twelve P-value misconceptions." Seminars in Hematology, 45 (2008), pp. 135-140. (<a href="https://www.researchgate.net/publication/5272766_A_Dirty_Dozen_Twelve_P-Value_Misconceptions" target="_blank">link</a>)</small></li>
+                <li><small>Kohavi, R., Longbotham, R., Sommerfield, D. et al. 2009 "Controlled experiments on the web: survey and practical guide" Data Min Knowl Disc (2009) 18: 140. (<a href="http://bit.ly/expSurvey" target="_blank">link</a>)</small></li>
+                <li><small>Alex Deng, Tianxi Li, Yu Guo 2014 "Statistical Inference in Two-Stage Online Controlled Experiments with Treatment Selection and Validation" WWW '14. 609–618. (<a href="http://www.exp-platform.com/Documents/p609-deng.pdf" target="_blank">link</a>)</small></li>
+              </ol>
+            </section>
 
           </div>
         </div>
@@ -38,13 +671,83 @@
     </div>
 
     <script type="text/javascript" src="d3/d3.js"></script>
+    <script type="text/javascript" src="jstat/jstat.min.js"></script>
     <script type="text/javascript" src="vue/vue.min.js"></script>
     <script type="text/javascript" src="vue-components.js"></script>
     <script type="text/javascript">
       const EventBus = new Vue();
 
+      function emitMethod(id, method) {
+        EventBus.$emit('fragmentMethod', { id: id, method: method });
+      }
+
+      new Vue({ el: '#app-rubin-full' });
+      new Vue({ el: '#app-rubin-fpci' });
       new Vue({ el: '#app-rubin-ate' });
+      new Vue({ el: '#app-rubin-p-value' });
+
       new Vue({ el: '#app-expectation' });
+      new Vue({ el: '#app-one-trial' });
+      new Vue({ el: '#app-one-trial-2' });
+      new Vue({ el: '#app-randomization-inference' });
+      new Vue({ el: '#app-randomization-inference-ii' });
+      new Vue({ el: '#app-non-null-p-values' });
+      new Vue({ el: '#app-null-p-values' });
+      new Vue({ el: '#app-p-values-significance' });
+      new Vue({ el: '#app-type-i' });
+      new Vue({ el: '#app-type-ii' });
+      new Vue({ el: '#app-type-ii-2' });
+      new Vue({ el: '#app-type-ii-3' });
+      new Vue({ el: '#app-multiple-testing' });
+      new Vue({ el: '#app-multiple-testing-2' });
+
+      new Vue({ el: '#app-dice' });
+
+      document.getElementById('btn-rubin-fpci-rerandomize').addEventListener('click', function() { emitMethod('app-rubin-fpci', 'rerandomize'); });
+
+      document.getElementById('btn-rubin-ate-rerandomize').addEventListener('click', function() { emitMethod('app-rubin-ate', 'rerandomize'); });
+      document.getElementById('btn-rubin-ate-toggle').addEventListener('click', function() { emitMethod('app-rubin-ate', 'toggle_repeat'); });
+
+      document.getElementById('btn-expectation-step').addEventListener('click', function() { emitMethod('app-expectation', 'step'); });
+      document.getElementById('btn-expectation-toggle').addEventListener('click', function() { emitMethod('app-expectation', 'toggle_repeat'); });
+
+      document.getElementById('btn-one-trial-step').addEventListener('click', function() { emitMethod('app-one-trial', 'step'); });
+      document.getElementById('btn-one-trial-toggle').addEventListener('click', function() { emitMethod('app-one-trial', 'toggle_repeat'); });
+
+      document.getElementById('btn-rubin-p-value-ri').addEventListener('click', function() { emitMethod('app-rubin-p-value', 'randomization_inference'); });
+      document.getElementById('btn-rubin-p-value-toggle').addEventListener('click', function() { emitMethod('app-rubin-p-value', 'toggle_repeat'); });
+
+      document.getElementById('btn-randomization-inference-step').addEventListener('click', function() { emitMethod('app-randomization-inference', 'step'); });
+      document.getElementById('btn-randomization-inference-toggle').addEventListener('click', function() { emitMethod('app-randomization-inference', 'toggle_repeat'); });
+
+      document.getElementById('btn-randomization-inference-ii-step').addEventListener('click', function() { emitMethod('app-randomization-inference-ii', 'step'); });
+      document.getElementById('btn-randomization-inference-ii-toggle').addEventListener('click', function() { emitMethod('app-randomization-inference-ii', 'toggle_repeat'); });
+
+      document.getElementById('btn-non-null-p-values-toggle').addEventListener('click', function() { emitMethod('app-non-null-p-values', 'toggle_repeat'); });
+
+      document.getElementById('btn-null-p-values-toggle').addEventListener('click', function() { emitMethod('app-null-p-values', 'toggle_repeat'); });
+
+      document.getElementById('btn-p-values-significance-toggle').addEventListener('click', function() { emitMethod('app-p-values-significance', 'toggle_repeat'); });
+
+      document.getElementById('btn-type-i-step').addEventListener('click', function() { emitMethod('app-type-i', 'step'); });
+      document.getElementById('btn-type-i-toggle').addEventListener('click', function() { emitMethod('app-type-i', 'toggle_repeat'); });
+
+      document.getElementById('btn-type-ii-step').addEventListener('click', function() { emitMethod('app-type-ii', 'step'); });
+      document.getElementById('btn-type-ii-toggle').addEventListener('click', function() { emitMethod('app-type-ii', 'toggle_repeat'); });
+
+      document.getElementById('btn-type-ii-2-toggle').addEventListener('click', function() { emitMethod('app-type-ii-2', 'toggle_repeat'); });
+
+      document.getElementById('btn-type-ii-3-toggle').addEventListener('click', function() { emitMethod('app-type-ii-3', 'toggle_repeat'); });
+
+      document.getElementById('btn-one-trial-2-step').addEventListener('click', function() { emitMethod('app-one-trial-2', 'step'); });
+      document.getElementById('btn-one-trial-2-toggle').addEventListener('click', function() { emitMethod('app-one-trial-2', 'toggle_repeat'); });
+
+      document.getElementById('btn-dice-rerandomize').addEventListener('click', function() { emitMethod('app-dice', 'rerandomize'); });
+      document.getElementById('btn-dice-toggle').addEventListener('click', function() { emitMethod('app-dice', 'toggle_repeat'); });
+
+      document.getElementById('btn-multiple-testing-toggle').addEventListener('click', function() { emitMethod('app-multiple-testing', 'toggle_repeat'); });
+
+      document.getElementById('btn-multiple-testing-2-toggle').addEventListener('click', function() { emitMethod('app-multiple-testing-2', 'toggle_repeat'); });
     </script>
   </body>
 </html>
