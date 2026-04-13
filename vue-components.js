@@ -244,7 +244,7 @@ Vue.component('simulation', {
           </tbody>
         </table>
 
-      <p class="text-center text-muted"><small><mark v-if="n != 1000"><var>n</var> = <var>{{n}}</var></mark><span v-if="n == 1000"><var>n</var> = <var>{{n}}</var></span>, <var>base conversion rate</var> = <var>{{cr}}</var><span v-if="!hide_guide">, <var>effect of treatment</var> = <var>{{effect}}</var></span><span v-if="peek > 1">, <mark>peeking {{peek}} times</mark></span></small></p>
+      <p class="text-center text-muted"><small><mark v-if="n != 1000"><var>n</var> = <var>{{n}}</var></mark><span v-if="n == 1000"><var>n</var> = <var>{{n}}</var></span>, <span v-if="alpha != 0.05"><mark><var>alpha</var> = <var>{{alpha}}</var></mark>, </span><var>base conversion rate</var> = <var>{{cr}}</var><span v-if="!hide_guide">, <var>effect of treatment</var> = <var>{{effect}}</var></span><span v-if="peek > 1">, <mark>peeking {{peek}} times</mark></span></small></p>
     </div>
   `,
   props: {
@@ -252,6 +252,7 @@ Vue.component('simulation', {
     effect:                   { type: Number, default: 0 },
     force_first_result:       { type: Number, default: null },
     n:                        { type: Number, default: 1000 },
+    alpha:                    { type: Number, default: 0.05 },
     peek:                     { type: Number, default: 1 },
     display_true_effect:      { type: Boolean, default: false },
     display_last_effect:      { type: Boolean, default: false },
@@ -446,17 +447,17 @@ Vue.component('simulation', {
           var_c += this.rbinom(var_n_add, (this.cr + this.effect));
 
           var obs_effect = (var_c/var_n) - (base_c/base_n);
-          var gval = calculate_g_test([[base_n - base_c, base_c], [var_n - var_c, var_c]]);
+          var pval = calculate_g_test_p_value([[base_n - base_c, base_c], [var_n - var_c, var_c]]);
 
-          if (gval >= 3.841459) {
+          if (pval < this.alpha) {
             break;
           }
         }
         if (!this.first_effect && this.force_first_result) obs_effect = this.force_first_result;
 
-        if (this.graph_p_values) { obs_effect = (1-jStat.chisquare.cdf(gval, 1)); }
+        if (this.graph_p_values) { obs_effect = pval; }
 
-        if (gval >= 3.841459 && !this.hide_significance) {
+        if (pval < this.alpha && !this.hide_significance) {
           if ((obs_effect > 0) == (this.effect > 0)) {
             this.results.significant.push(obs_effect);
           } else {
@@ -528,6 +529,64 @@ function calculate_g_test (data) {
   }
 
   return g_test;
+}
+
+/**
+ * Calculates the p-value associated with the G-test statistic.
+ * The p-value is derived from the Chi-Squared distribution.
+ * Created using Gemma4.
+ *
+ * @param {number} g_statistic - The raw G-test statistic.
+ * @param {number} rows - Number of rows (R).
+ * @param {number} columns - Number of columns (C).
+ * @returns {number} The calculated p-value.
+ */
+function calculate_p_value(g_statistic, rows, columns) {
+    // 1. Calculate Degrees of Freedom (df)
+    // For a contingency table, df = (R - 1) * (C - 1)
+    const degrees_of_freedom = (rows - 1) * (columns - 1);
+
+    if (degrees_of_freedom <= 0) {
+        return NaN; // Cannot calculate p-value if df is zero or negative
+    }
+
+    // 2. Calculate the Chi-Squared CDF
+    // The jStat library provides the CDF for the chi-squared distribution.
+    // CDF(x; k) = P(X <= x), where k is the degrees of freedom.
+    const cdf_value = jStat.chisquare.cdf(g_statistic, degrees_of_freedom);
+
+    // 3. Calculate the p-value
+    // p-value = P(X >= G) = 1 - P(X < G) = 1 - CDF(G)
+    const p_value = 1 - cdf_value;
+
+    return p_value;
+}
+
+/**
+ * Wrapper function that calculates both the G-test statistic and the resulting p-value.
+ * Created using Gemma4.
+ *
+ * @param {Array<Array<number>>} data - The contingency table data (array of arrays).
+ * @returns {number} The calculated p-value. Returns NaN if dimensions are invalid.
+ */
+function calculate_g_test_p_value(data) {
+    // 1. Check for valid input data
+    if (!Array.isArray(data) || data.length === 0 || !Array.isArray(data[0])) {
+        console.error("Invalid input data provided. Must be a non-empty array of arrays.");
+        return NaN;
+    }
+
+    // Extract dimensions
+    const rows = data.length;
+    const columns = data[0].length;
+
+    // 2. Calculate the raw G-test statistic
+    const g_stat = calculate_g_test(data);
+
+    // 3. Calculate the p-value using the dimensions and the statistic
+    const p_value = calculate_p_value(g_stat, rows, columns);
+
+    return p_value;
 }
 
 // Shuffle an array. 'Borrowed' from https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array

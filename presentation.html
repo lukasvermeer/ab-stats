@@ -93,7 +93,7 @@
             <li class="fragment"><mark>Is there</mark> any causal effect?</li>
             <li class="fragment">What is the <mark>size</mark> of the causal effect?</li>
           </ol>
-          <p class="fragment text-muted">(If the size is non-zero, there is an effect.)</p>
+          <p class="fragment text-muted">If the size is non-zero, there is an effect.</p>
 
           <aside class="notes">
             - Sometimes we will get “unlucky” in our randomization
@@ -127,7 +127,7 @@
           <p>
             <span class="fragment">If we show A and B to random samples of the population,</span>
             <span class="fragment">then on average the fraction of yes in both groups will be equal to the true underlying means,</span>
-            <span class="fragment">and on average across replications of the experiment the difference between the means will be equal to the <mark>average treatment effect</mark></span>
+            <span class="fragment">and on average across replications of the experiment the difference between the means will be equal to the <mark>average treatment effect</mark>.</span>
           </p>
 
           <aside class="notes">
@@ -183,10 +183,10 @@
           <span class="text-muted">We want to reject the</span>
           <h2>null hypothesis</h2>
           <p>
-            <span class="fragment">The <mark>null hypothesis</mark> assumes there is no treatment effect for any unit; any difference we observe is simply due to chance</span>
+            <span class="fragment">The <mark>null hypothesis</mark> assumes there is no treatment effect for any unit; any difference we observe is simply due to chance.</span>
           </p>
           <p>
-            <span class="fragment">If we could reasonably rule out mistakes and chance, we might reject the null and consider this to be evidence for an <mark>alternative</mark></span>
+            <span class="fragment">If we could reasonably rule out mistakes and chance, we might reject the null and consider this to be evidence for an <mark>alternative</mark>.</span>
           </p>
         </section>
 
@@ -200,7 +200,7 @@
             <span class="fragment"><strong>How likely is this result <mark>assuming the null is true</mark>?</strong></span>
           </p>
           <p>
-            <span class="fragment text-muted">(The probability of rolling three sixes on a fair die is 0.00462962.)</span>
+            <span class="fragment text-muted">The probability of rolling three sixes on a fair die is 0.00462962.</span>
           </p>
         </section>
 
@@ -255,7 +255,7 @@
             <span class="fragment">but how many swallows do we count before we pack away our umbrellas?</span>
           </p>
           <p>
-            <span class="fragment"><strong>Scientific standard for significance:</strong> <mark>p < 0.05</mark></span>
+            <span class="fragment"><strong>Scientific standard for significance:</strong> <mark>p < 0.05</mark>.</span>
           </p>
 
           <aside class="notes">
@@ -299,8 +299,8 @@
           <h2>errors</h2>
 
           <ol>
-            <li class="fragment"><mark>Type-I</mark> is the incorrect rejection of a true null hypothesis; <span class="fragment">we cried foul when there was none</span></li>
-            <li class="fragment"><mark>Type-II</mark> is the failure to reject a false null hypothesis; <span class="fragment">we failed to detect a real effect</span></li>
+            <li class="fragment"><mark>Type-I (&alpha;)</mark> is the incorrect rejection of a true null hypothesis; <span class="fragment">we cried foul when there was none</span></li>
+            <li class="fragment"><mark>Type-II (&beta;)</mark> is the failure to reject a false null hypothesis; <span class="fragment">we failed to detect a real effect</span></li>
           </ol>
 
           <aside class="notes">
@@ -327,7 +327,7 @@
           <h2>Statistical power</h2>
 
           <p>
-            <span class="fragment">Statistical power is the probability that the test <mark>correctly rejects</mark> the null hypothesis when the alternative hypothesis is true</span>
+            <span class="fragment">Power is the complement of the type-II error rate: the probability that the test <mark>correctly rejects</mark> the null hypothesis when the alternative hypothesis is true.</span>
           </p>
           <p>
             <span class="fragment"><strong>Two main things affect statistical power:</strong></span>
@@ -339,7 +339,7 @@
 
           <aside class="notes">
             - Effect size is unknown but assumed fixed
-            - Sample size may be increased is low power is expected
+            - Sample size may be increased if low power is expected
           </aside>
         </section>
 
@@ -352,6 +352,27 @@
         <section id="app-type-ii-3">
           <h3>Repeating the same experiment <small>(MOAR POWER!!11)</small></h3>
           <simulation v-bind:effect="0.05" v-bind:n="4000" display_type_ii display_power reveal_enabled></simulation>
+          <span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
+        </section>
+
+        <section id="tradeoff">
+          <span class="text-muted">The two types of errors are a </span>
+          <h2>tradeoff</h2>
+
+          <p>
+            <span class="fragment">We cannot decrease both the Type-I error rate (&alpha;) and the Type-II error rate (&beta;) without changing sample size or effect size.</span>
+          </p>
+          <p>
+            <ul>
+              <li class="fragment">Very conservative <span class="text-muted">(lower &alpha;)</span> &rarr; power will decrease <span class="text-muted">(increases &beta;)</span></li>
+              <li class="fragment">Very permissive <span class="text-muted">(increase &alpha;)</span> &rarr; power will increase <span class="text-muted">(lowers &beta;)</span></li>
+            </ul>
+          </p>
+        </section>
+
+        <section id="app-type-ii-4">
+          <h3>Repeating the same experiment <small>(conservative)</small></h3>
+          <simulation v-bind:effect="0.05" v-bind:n="4000" v-bind:alpha="0.0001" display_type_ii display_power reveal_enabled></simulation>
           <span class="fragment" data-method="toggle_repeat" trigger-hidden><small class="text-very-muted"><i class="glyphicon glyphicon-forward"></i></small></span>
         </section>
 
@@ -372,7 +393,7 @@
 
           <p>
             <span class="fragment">The methods described assume strict adherence to protocol;</span>
-            <span class="fragment">violations of protocol such as <mark>peeking</mark> and <mark>multiple testing</mark> increase the type-I error rate</span>
+            <span class="fragment">violations of protocol such as <mark>peeking</mark> and <mark>multiple testing</mark> increase the type-I error rate.</span>
           </p>
         </section>
 
@@ -386,7 +407,7 @@
             <span class="fragment">Fair die; I still cheated.</span>
           </p>
           <p>
-            <span class="fragment text-muted"><small>(The probability of rolling three sixes on a fair die <mark>if you keep trying</mark> is 1.)</small></span>
+            <span class="fragment text-muted"><small>The probability of rolling three sixes on a fair die <mark>if you keep trying</mark> is 1.</small></span>
           </p>
         </section>
 
@@ -491,6 +512,7 @@
       new Vue({ el: '#app-type-ii' });
       new Vue({ el: '#app-type-ii-2' });
       new Vue({ el: '#app-type-ii-3' });
+      new Vue({ el: '#app-type-ii-4' });
       new Vue({ el: '#app-multiple-testing' });
       new Vue({ el: '#app-multiple-testing-2' });
 
@@ -515,6 +537,7 @@
         EventBus.$emit('fragmentMethod', { id: 'app-type-ii', method: 'toggle_repeat'});
         EventBus.$emit('fragmentMethod', { id: 'app-type-ii-2', method: 'toggle_repeat'});
         EventBus.$emit('fragmentMethod', { id: 'app-type-ii-3', method: 'toggle_repeat'});
+        EventBus.$emit('fragmentMethod', { id: 'app-type-ii-4', method: 'toggle_repeat'});
         EventBus.$emit('fragmentMethod', { id: 'app-multiple-testing', method: 'toggle_repeat'});
         EventBus.$emit('fragmentMethod', { id: 'app-multiple-testing-2', method: 'toggle_repeat'});
         EventBus.$emit('fragmentMethod', { id: 'app-dice', method: 'toggle_repeat'});
