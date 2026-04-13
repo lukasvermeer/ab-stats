@@ -466,7 +466,7 @@
             <section id="power">
               <h2>The importance of statistical power</h2>
               <p>
-                Statistical power is the probability that a test correctly rejects the null hypothesis when the alternative hypothesis is true. In practical terms, it is the probability that your experiment will detect a real effect if one exists. High power is essential for making reliable decisions.
+                Power is the complement of the type-II error rate: the probability that a test correctly rejects the null hypothesis when the alternative hypothesis is true. In practical terms, it is the probability that your experiment will detect a real effect if one exists. High power is essential for making reliable decisions.
               </p>
               <p>
                 Two main factors affect statistical power. The first is <strong>sample size</strong>: larger samples provide more precise estimates and make it easier to distinguish signal from noise. All else being equal, more data means more power. The second is <strong>effect size</strong>: larger effects are easier to detect than smaller ones. A 20 percentage point improvement is much easier to spot than a 1 percentage point improvement.
@@ -513,6 +513,46 @@
               <p>
                 The progression from n = 1,000 to n = 2,000 to n = 4,000 illustrates a general principle: power increases with sample size, but with diminishing returns. Each doubling of sample size gives a smaller incremental gain in power than the previous one. This is why it is important to do a power calculation before running an experiment — to ensure the sample size is large enough to be useful, but not so large that resources are wasted.
               </p>
+            </section>
+
+            <hr />
+
+            <section id="tradeoff-deepdive">
+              <h2 style="font-size: 2em;">The Fundamental Statistical Trade-Off: Alpha, Beta, and Power</h2>
+              <p>The relationship between Type I error (&alpha;), Type II error (&beta;), and Power is not a simple correlation; it is a fundamental <mark>trade-off</mark> that governs the entire structure of the experimental design. To understand the trade-off, we must first solidify our definitions:</p>
+
+              <div class="alert alert-info" role="alert">
+                <h4 class="alert-heading">Key Definitions</h4>
+                <p><strong>Alpha (&alpha;)</strong>: This is the <strong>Significance Level</strong> (e.g., 0.05). It is the probability of committing a Type I error (false positive). It represents our willingness to reject the null hypothesis when it is actually true.</p>
+                <p><strong>Beta (&beta;)</strong>: This is the probability of committing a Type II error (false negative). It is the risk of failing to detect a real effect.</p>
+                <p><strong>Power:</strong> This is the complementary measure of &beta;. Power is defined as <code>1 - &beta;</code>. It represents the probability that the test will correctly reject a false null hypothesis—that is, the probability of detecting a real, pre-existing effect if one truly exists.</p>
+              </div>
+
+              <h3 class="mt-4">The Inherent Tension (The Trade-off)</h3>
+              <p>The core statistical reality is that <strong>we cannot decrease both the Type I error rate (&alpha;) and the Type II error rate (&beta;) simultaneously</strong>. If we hold everything else constant, tightening one risk inevitably increases the other. This tension is best understood by examining the effect of changing the significance threshold (&alpha;):</p>
+
+              <ul class="list-group">
+                <li class="list-group-item">
+                  <strong>Being Very Conservative (Lowering &alpha;):</strong>
+                  <p class="mt-2">If we set a very strict threshold (e.g., <code>&alpha; = 0.001</code>), we are demanding extremely strong evidence before declaring a winner. This dramatically reduces the chance of a false positive (low &alpha;).</p>
+                  <p class="small bg-warning p-2"><strong>The cost:</strong> By raising the bar so high, we make it much harder to detect a real, but moderate, effect. Consequently, the probability of missing a real effect (&beta;) increases, and <strong>power decreases</strong>.</p>
+                </li>
+                <li class="list-group-item">
+                  <strong>Being Very Permissive (Raising &alpha;):</strong>
+                  <p class="mt-2">If we set a very loose threshold (e.g., <code>&alpha; = 0.20</code>), we are willing to accept a higher rate of false positives.</p>
+                  <p class="small bg-danger p-2"><strong>The cost:</strong> While this makes it easier to declare an effect, it also lowers the standard for what counts as "strong evidence." In the absence of a true effect, we are more likely to stumble upon a spurious result. The test becomes less reliable.</p>
+                </li>
+              </ul>
+
+              <h3 class="mt-4">Overcoming the Trade-Off: The Role of Sample Size and Effect Size</h3>
+              <p>The statistical trade-off is not a permanent impasse. There are two primary levers that allow us to control both &alpha; and &beta; simultaneously: <mark>sample size</mark> and <mark>effect size</mark>.</p>
+
+              <ol>
+                <li><strong>Increase Sample Size (<code>N</code>):</strong> <p>By increasing <code>N</code>, we gain statistical precision, which allows us to distinguish genuine, systematic signals from random noise. With more data, we can stabilize our estimates. <strong>Increasing <code>N</code> decreases both &beta; and &alpha;</strong> (for a fixed effect size).</p></li>
+                <li><strong>Increase Effect Size (&delta;):</strong> <p>If we know that the real effect is large (e.g., a 50% lift), it is much easier to detect than a subtle effect (e.g., a 1% lift). Larger effect sizes inherently boost power. The effect size, however, is what we are trying to estimate.</p></li>
+              </ol>
+
+              <p class="mt-4">In practice, when designing an experiment, we typically make assumptions about a minimum <strong>Minimum Detectable Effect (MDE)</strong>—the smallest effect size that we care about detecting. We then use a <strong>power calculation</strong> to determine the minimum <strong>Sample Size (<code>N</code>)</strong> required to ensure that the experiment has sufficient statistical power (usually targeted at 80%) while maintaining our acceptable Type I error rate (&alpha;).</p>
             </section>
 
             <hr />
